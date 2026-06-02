@@ -1,0 +1,246 @@
+<!doctype html>
+<html class="no-js" lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://fonts.googleapis.com/css?family=Roboto:100,100i,300,300i,400,400i,500,500i,700,700i,900,900i" rel="stylesheet">
+    <title>Mi Carrito | El Edén</title>
+    <link rel="shortcut icon" type="image/icon" th:href="@{/assets/logo/favicon.png}"/>
+    <link rel="stylesheet" th:href="@{/assets/css/font-awesome.min.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/bootstrap.min.css}">
+
+    <th:block th:replace="~{fragments :: head-css}"></th:block>
+
+    <style>
+        body { background-color: #ededed; font-family: 'Roboto', sans-serif; color: #333; }
+        .nav-simple { background: #e69500; padding: 10px 0; margin-bottom: 20px; box-shadow: 0 1px 4px rgba(0,0,0,0.1); }
+        .cart-container { background: #fff; padding: 40px; margin-bottom: 50px; border-radius: 6px; box-shadow: 0 1px 2px 0 rgba(0,0,0,.12); max-width: 1000px; margin-left: auto; margin-right: auto; }
+        h1.cart-title { font-weight: 600; font-size: 24px; color: #333; margin-bottom: 30px; border-bottom: 1px solid #eee; padding-bottom: 15px; }
+        .cart-item-row { display: flex; align-items: flex-start; padding: 20px 0; border-bottom: 1px solid #eee; position: relative; transition: all 0.3s ease; }
+        .cart-img-wrapper { width: 80px; height: 80px; flex-shrink: 0; margin-right: 20px; border: 1px solid #f0f0f0; border-radius: 4px; overflow: hidden; }
+        .cart-img-wrapper img { width: 100%; height: 100%; object-fit: contain; }
+
+        /* 1. El contenedor ahora permite que los elementos se apilen */
+        .cart-info {
+            display: flex;
+            flex-direction: column; /* Alinea los hijos uno debajo del otro */
+            gap: 10px; /* Espacio exacto entre el nombre y los botones */
+            flex-grow: 1; /* Para que ocupe el espacio central */
+        }
+
+        /* 2. El nombre ahora es un bloque que empuja lo demás hacia abajo */
+        .product-name {
+            display: block; /* Ocupa todo el ancho disponible */
+            font-size: 16px;
+            font-weight: 500;
+            color: #333 !important;
+            text-decoration: none !important;
+            margin-bottom: 0; /* El espacio lo maneja el 'gap' del padre */
+            cursor: pointer;
+        }
+
+        /* 3. Aseguramos que los botones no se estiren */
+        .qty-box {
+            display: inline-flex; /* Mantiene los botones + y - en línea */
+            align-self: flex-start; /* Evita que el selector de cantidad ocupe todo el ancho */
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background: #fff;
+        }
+        .price-section { text-align: right; min-width: 120px; }
+        .item-price { font-size: 18px; font-weight: 400; color: #333; display: block; margin-bottom: 10px; }
+        .qty-btn { width: 30px; height: 30px; background: #fff; border: none; color: #e69500; font-size: 18px; cursor: pointer; }
+        .qty-input { width: 40px; height: 30px; border: none; text-align: center; font-size: 14px; color: #333; font-weight: 500; }
+        .summary-section { background-color: #f7f7f7; padding: 25px; border-radius: 6px; border: 1px solid #eee; }
+        .total-row { margin-top: 25px; border-top: 1px solid #ddd; padding-top: 20px; display: flex; justify-content: space-between; font-size: 20px; color: #333; font-weight: 700; }
+        .btn-finalizar { background-color: #e69500; color: white; border: none; border-radius: 6px; width: 100%; padding: 14px; font-size: 16px; font-weight: 600; margin-top: 20px; cursor: pointer; }
+        .btn-trash-main { color: #999; border: none; background: none; font-size: 14px; cursor: pointer; }
+        .btn-trash-main:hover { color: #d9534f; text-decoration: underline; }
+
+        body {background-color: #E9ECEF !important; /* Un gris medio-claro, pero notable (antes era #ededed) */
+
+            /* El resto dejalo igual */
+            font-family: 'Roboto', sans-serif;
+            color: #333; }
+
+        .card-container {
+            max-width: 1184px; margin: 0 auto 30px auto; background-color: #F8F9FA;
+            border-radius: 4px; box-shadow: 0 1px 2px 0 rgba(0,0,0,.12); padding: 40px;
+        }
+    </style>
+</head>
+
+<body>
+
+<nav class="nav-simple">
+    <div class="container">
+        <a href="/" style="color: white; font-size: 24px; font-weight: 800; text-decoration: none;">el edén.</a>
+    </div>
+</nav>
+
+<div class="container cart-container">
+    <h1 class="cart-title">Carrito de compras</h1>
+
+    <div class="row">
+        <div class="col-md-8">
+            <div th:if="${cart == null or cart.items.empty}" style="text-align: center; padding: 60px;">
+                <p>Tu carrito está vacío</p>
+                <a href="/" >Descubrir productos</a>
+            </div>
+
+            <div th:each="item : ${cart.items}" class="cart-item-row" th:id="'main-row-' + ${item.productDetail.id}">
+                <div class="cart-img-wrapper">
+                    <img th:src="@{${item.productDetail.imageUrl}}" alt="img">
+                </div>
+
+                <div class="cart-info">
+                    <a th:href="@{/product/{id}(id=${item.productDetail.id})}" class="product-name" th:text="${item.productDetail.name}">Producto</a>
+                    <div class="qty-box">
+                        <button class="qty-btn" th:onclick="'updateMainQty(' + ${item.productDetail.id} + ', -1, this)'">-</button>
+                        <input type="text" class="qty-input" th:id="'main-input-qty-' + ${item.productDetail.id}" th:value="${item.quantity}" readonly>
+                        <button class="qty-btn" th:onclick="'updateMainQty(' + ${item.productDetail.id} + ', 1, this)'">+</button>
+                    </div>
+                </div>
+
+                <div class="price-section">
+                  <span class="item-price" th:id="'main-price-' + ${item.productDetail.id}"
+                        th:data-unit-price="${item.productDetail.price}"
+                        th:data-main-total="${item.productDetail.price * item.quantity}"
+                        th:text="${'$' + #numbers.formatDecimal(item.productDetail.price * item.quantity, 1, 'POINT', 2, 'COMMA')}">
+</span>
+                    <button class="btn-trash-main" th:onclick="'removeMainItem(' + ${item.productDetail.id} + ')'">
+                        <i class="fa fa-trash-o"></i> Eliminar
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="summary-section">
+                <div class="d-flex justify-content-between">
+                    <span>Subtotal</span>
+                    <span id="main-total-display" th:text="${'$' + #numbers.formatDecimal(total, 1, 'POINT', 2, 'COMMA')}"></span>
+                </div>
+                <div class="total-row">
+                    <span>Total</span>
+                    <span id="main-final-total" th:text="${'$' + #numbers.formatDecimal(total, 1, 'POINT', 2, 'COMMA')}"></span>
+                </div>
+
+                <form th:action="@{/cart/checkout}" method="get">
+                    <button type="submit" class="btn-finalizar">Continuar compra</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div th:replace="~{fragments :: sideCartPanel}"></div>
+
+<script th:src="@{/assets/js/jquery.js}"></script>
+<script th:src="@{/assets/js/bootstrap.min.js}"></script>
+<script th:src="@{/assets/js/cart-logic.js}"></script>
+
+<script>
+    // Función para formatear dinero en JS (Estilo Argentina)
+    const formatter = new Intl.NumberFormat('es-AR', {
+        style: 'currency',
+        currency: 'ARS',
+        minimumFractionDigits: 2
+    });
+
+    async function updateMainQty(productId, change, btnElement) {
+        const input = document.getElementById('main-input-qty-' + productId);
+        const currentQty = parseInt(input.value);
+
+        // 1. Evitar cantidades menores a 1
+        if (currentQty + change < 1) return;
+
+        btnElement.disabled = true;
+
+        try {
+            const response = await fetch('/cart/api/update-quantity', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: new URLSearchParams({ 'productId': productId, 'delta': change })
+            });
+
+            if (response.ok) {
+                // 2. Actualizar cantidad en el input
+                const newQty = currentQty + change;
+                input.value = newQty;
+
+                // 3. Actualizar el subtotal de la fila inmediatamente
+                const priceEl = document.getElementById('main-price-' + productId);
+                const unitPrice = parseFloat(priceEl.getAttribute('data-unit-price'));
+                const newSubtotal = unitPrice * newQty;
+                priceEl.innerText = formatter.format(newSubtotal);
+
+                // 4. 🚀 RECALCULAR TOTAL GENERAL EN PANTALLA
+                recalculateMainTotal();
+
+                // 5. Sincronizar el carrito lateral por detrás
+                if (typeof refreshSideCart === "function") {
+                    await refreshSideCart();
+                }
+                if (typeof updateHeaderBadgeCount === "function") {
+                    updateHeaderBadgeCount();
+                }
+            }
+        } catch (e) {
+            console.error("Error en el update:", e);
+        } finally {
+            btnElement.disabled = false;
+        }
+    }
+
+    // 1. Recalcular Total (Directo y sin errores de x100)
+    function recalculateMainTotal() {
+        let total = 0;
+        document.querySelectorAll('.item-price').forEach(el => {
+            // Leemos el número puro del atributo que agregamos arriba
+            let val = parseFloat(el.getAttribute('data-main-total')) || 0;
+            total += val;
+        });
+
+        const formatted = formatter.format(total);
+        document.getElementById('main-total-display').innerText = formatted;
+        document.getElementById('main-final-total').innerText = formatted;
+    }
+
+    // 2. Eliminar Item (Ruta corregida y Sincronizado)
+    async function removeMainItem(productId) {
+        if (!confirm("¿Quitar producto?")) return;
+
+        try {
+            // 🚩 CAMBIO CLAVE: Usamos 'remove-ajax' que es el que tenés en tu Java
+            const res = await fetch('/cart/remove-ajax/' + productId);
+
+            if (res.ok) {
+                const row = document.getElementById('main-row-' + productId);
+                if (row) {
+                    row.style.opacity = '0';
+                    row.style.transform = 'translateX(20px)';
+
+                    setTimeout(() => {
+                        row.remove();
+                        recalculateMainTotal(); // Ahora el total no se multiplica por 100
+
+                        // Si el carrito quedó vacío
+                        if (document.querySelectorAll('.cart-item-row').length === 0) {
+                            location.reload();
+                        }
+                    }, 300);
+                }
+
+                // Sincronizamos el lateral y el badge
+                if (typeof refreshSideCart === "function") await refreshSideCart();
+                if (typeof updateHeaderBadgeCount === "function") updateHeaderBadgeCount();
+            }
+        } catch (e) {
+            console.error("Error al eliminar:", e);
+        }
+    }
+</script>
+</body>
+</html>

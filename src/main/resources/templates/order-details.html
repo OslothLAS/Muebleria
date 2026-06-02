@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Detalle de Orden</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="shortcut icon" type="image/icon" th:href="@{/assets/logo/favicon.png}"/>
+</head>
+<body class="bg-light">
+
+<div class="container mt-5">
+
+    <div class="card shadow">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <h4 class="mb-0">🧾 Orden #<span th:text="${order.id}">001</span></h4>
+            <span class="badge bg-light text-dark" th:text="${order.status}">APPROVED</span>
+        </div>
+
+        <div class="card-body">
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <p class="text-muted">Fecha de compra:</p>
+                    <h5 th:text="${#temporals.format(order.dateCreated, 'dd-MM-yyyy HH:mm')}">Fecha</h5>
+                </div>
+                <div class="col-md-6 text-end">
+                    <p class="text-muted">Total Pagado:</p>
+                    <h3 class="text-success" th:text="${'$' + order.totalAmount}">$1500</h3>
+                </div>
+            </div>
+
+            <hr>
+
+            <h5>🛒 Productos Comprados:</h5>
+            <table class="table table-bordered mt-3">
+                <thead class="table-light">
+                <tr>
+                    <th>Producto (ID)</th>
+                    <th>Precio Unit. (Al momento de compra)</th>
+                    <th>Cantidad</th>
+                    <th>Subtotal</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="item : ${order.orderItems}">
+                    <td>
+                        Producto ID: <span th:text="${item.productId}">123</span>
+                    </td>
+                    <td th:text="${'$' + item.price}">$500</td>
+                    <td th:text="${item.quantity}">2</td>
+                    <td th:text="${'$' + (item.price * item.quantity)}">$1000</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="card-footer text-center">
+            <a href="/my-orders" class="btn btn-secondary">⬅ Volver a mis compras</a>
+            <a href="/" class="btn btn-secondary"> Volver a inicio</a>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

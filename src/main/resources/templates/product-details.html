@@ -1,0 +1,780 @@
+<!doctype html>
+<html class="no-js" lang="es"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"><head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,900&display=swap" rel="stylesheet">
+    <title th:text="${product.name} + ' | El Edén'">Detalle</title>
+
+    <link rel="shortcut icon" type="image/icon" th:href="@{/assets/logo/favicon.png}"/>
+    <link rel="stylesheet" th:href="@{/assets/css/font-awesome.min.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/bootstrap.min.css}">
+    <th:block th:replace="~{fragments :: head-css}"></th:block>
+    <style>
+        .btn-delete-q {
+            background: none;
+            border: none;
+            color: #ff5252;
+            cursor: pointer;
+            font-size: 16px;
+            transition: 0.2s;
+            padding: 5px;
+        }
+
+        .btn-delete-q:hover {
+            color: #d32f2f;
+            transform: scale(1.2);
+        }
+
+        .reply-input {
+            flex-grow: 1;
+            font-size: 14px;
+            border-radius: 25px;
+            border: 1px solid #dbdbdb;
+            padding: 8px 16px;
+            outline: none;
+            transition: all 0.2s ease-in-out;
+            background-color: #fafafa;
+        }
+
+        .reply-input:focus {
+            border-color: #3483fa;
+            background-color: #fff;
+            box-shadow: 0 0 0 2px rgba(52, 131, 250, 0.1);
+        }
+
+        .btn-reply-send {
+            background: none;
+            border: none;
+            color: #3483fa;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            padding: 0 10px;
+            transition: opacity 0.2s, transform 0.1s;
+        }
+
+        .btn-reply-send:hover {
+            opacity: 0.7;
+        }
+
+        .btn-reply-send:active {
+            transform: scale(0.95);
+        }
+
+        .admin-reply-container {
+            background-color: #f8f9fa;
+            padding: 12px;
+            border-radius: 12px;
+            margin-top: 10px;
+            border: 1px dashed #e0e0e0;
+        }
+
+        body {background-color: #E9ECEF !important; /* Un gris medio-claro, pero notable (antes era #ededed) */
+
+            /* El resto dejalo igual */
+            font-family: 'Roboto', sans-serif;
+            color: #333; }
+
+        .card-container {
+            max-width: 1184px; margin: 0 auto 30px auto; background-color: #F8F9FA;
+            border-radius: 4px; box-shadow: 0 1px 2px 0 rgba(0,0,0,.12); padding: 40px;
+        }
+
+        .top-section {
+            display: flex; flex-wrap: wrap;
+            align-items: flex-start;
+            position: relative;
+        }
+
+        .col-gallery {
+            /* 🚀 CAMBIÁ ESTE 42% POR UN VALOR MÁS ALTO */
+            flex: 0 0 20%;
+            display: flex;
+            padding-right: 10px;
+            position: -webkit-sticky;
+            position: sticky;
+            top: 20px;
+            z-index: 10;
+        }
+
+        .thumbnail-list {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            /* 🚀 CAMBIO 1: Aumentamos el ancho del carril para que entre la foto más grande */
+            width: 100px;
+            margin-right: 20px;
+        }
+
+        .thumbnail {
+            /* 🚀 CAMBIO 2: Aumentamos el tamaño del cuadrado */
+            width: 80px;
+            height: 80px;
+            border: 2px solid #ccc;
+            border-radius: 4px;
+            cursor: pointer;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #fff; /* Recomendado para que resalte */
+        }
+
+        .thumbnail.active { border-color: #e69500; border-width: 1px; }
+        .thumbnail img { width: 100%; height: 100%; object-fit: contain; }
+
+        .main-image-container {
+            flex-grow: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            /* 🚀 CAMBIO AQUÍ: Borramos el height de 550px y ponemos esto: */
+            aspect-ratio: 1 / 2;
+            background-color: #fff;
+            border-radius: 8px;
+            border: 1px solid #eee;
+            overflow: hidden;
+        }
+        .main-image-container img { max-width: 100%; max-height: 100%; object-fit: contain; }
+
+        .col-middle-seller {
+            flex: 1;
+            min-width: 250px;
+            padding: 0 10px;
+        }
+
+        .col-right-wrapper {
+            flex: 0 0 28%;
+            min-width: 300px;
+            display: flex; flex-direction: column;
+        }
+
+        .seller-notes-card {
+            border: 1px solid #eee;
+            border-radius: 8px;
+            padding: 20px;
+            background-color: #fff;
+            margin-bottom: 20px;
+        }
+
+        .seller-notes-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #e69500;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+        }
+
+        .seller-content {
+            font-size: 15px;
+            line-height: 1.6;
+            color: #555;
+        }
+
+        .seller-benefit {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 15px;
+            font-size: 14px;
+            color: #00a650;
+            font-weight: 500;
+        }
+
+        .buy-box-container { border: 1px solid #eee; border-radius: 8px; padding: 24px; margin-bottom: 30px; }
+        .product-title { font-size: 22px; font-weight: 600; margin-bottom: 15px; line-height: 1.2; }
+        .price-main { font-size: 36px; font-weight: 300; }
+        .discount-tag { font-size: 18px; color: #00a650; margin-left: 8px; }
+
+        .btn-action { width: 100%; border: none; border-radius: 6px; padding: 14px 0; font-weight: 600; margin-bottom: 10px; cursor: pointer; transition: 0.3s; }
+        .btn-buy-now { background-color: #e69500; color: #fff; border: 1px solid #e69500; }
+        .btn-buy-now:hover { background-color: #fff; color: #e69500; }
+        .btn-add-cart { background-color: #fff3e0; color: #e69500; border: 1px solid #e69500; }
+
+        .payment-methods-box { margin-top: 30px; padding-top: 30px; border-top: 1px solid #eee; }
+        .payment-icons { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-top: 10px; }
+        .payment-icons img { height: 24px; border: 1px solid #f0f0f0; padding: 2px; background: #fff; }
+
+        .rec-carousel { display: flex; gap: 20px; overflow-x: auto; padding-bottom: 15px; scroll-behavior: smooth; }
+        .rec-card { flex: 0 0 220px; border: 1px solid #eee; border-radius: 6px; background: #fff; cursor: pointer; transition: 0.2s; }
+        .rec-card:hover { transform: translateY(-3px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        .rec-price { font-size: 18px; font-weight: 500; }
+
+        .question-item { margin-bottom: 25px; }
+        .q-text { font-weight: 500; color: #333; display: block; margin-bottom: 5px; }
+        .a-text { color: #666; padding-left: 15px; border-left: 2px solid #e69500; display: block; }
+
+        .specs-table { width: 100%; max-width: 800px; border-collapse: collapse; margin-top: 20px; }
+        .specs-table tr:nth-child(odd) { background-color: #f5f5f5; }
+        .specs-table td { padding: 14px 20px; font-size: 15px; }
+        .specs-table td.label { font-weight: 600; width: 40%; color: #000; }
+
+        .bottom-section-title { font-size: 24px; font-weight: 400; margin-bottom: 25px; padding-bottom: 10px; border-bottom: 1px solid #eee; }
+
+        .questions-wrapper {
+            margin-top: 50px;
+            border-top: 2px solid #f0f0f0;
+            padding-top: 40px;
+        }
+
+        .section-title-custom {
+            font-size: 28px;
+            font-weight: 700;
+            color: #222;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title-custom::after {
+            content: '';
+            flex-grow: 1;
+            height: 1px;
+            background: #eee;
+        }
+
+        .ask-box-container {
+            background: #fff;
+            border: 2px solid #e69500;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 50px;
+            box-shadow: 0 4px 15px rgba(230, 149, 0, 0.05);
+        }
+
+        .ask-box-container textarea {
+            width: 100%;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            padding: 15px;
+            font-size: 16px;
+            resize: none;
+            transition: 0.3s;
+            margin-bottom: 15px;
+        }
+
+        .ask-box-container textarea:focus {
+            border-color: #e69500;
+            box-shadow: 0 0 0 3px rgba(230, 149, 0, 0.1);
+            outline: none;
+        }
+
+        .question-card {
+            background: #fff;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            transition: transform 0.2s;
+            border: 1px solid #f0f0f0;
+        }
+
+        .question-card:hover {
+            border-color: #e69500;
+        }
+
+        .q-user-info {
+            font-size: 14px;
+            color: #777;
+            margin-bottom: 8px;
+        }
+
+        .q-user-name {
+            color: #e69500;
+            font-weight: 700;
+            font-size: 15px;
+        }
+
+        .q-main-text {
+            font-size: 18px;
+            font-weight: 500;
+            color: #111;
+            line-height: 1.5;
+            display: block;
+            margin-bottom: 15px;
+        }
+
+        .shop-answer-box {
+            background: #fffaf2;
+            border-left: 4px solid #e69500;
+            padding: 15px 20px;
+            border-radius: 0 10px 10px 0;
+            margin-top: 10px;
+        }
+
+        .shop-answer-text {
+            font-size: 16px;
+            color: #444;
+        }
+
+        .shop-label {
+            font-weight: 700;
+            color: #333;
+            font-size: 13px;
+            text-transform: uppercase;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .admin-reply-pill {
+            background: #fafafa;
+            border: 1.5px solid #eee;
+            border-radius: 30px;
+            padding: 8px 20px;
+            width: 100%;
+            font-size: 15px;
+            transition: 0.3s;
+        }
+
+        .admin-reply-pill:focus {
+            border-color: #e69500;
+            background: #fff;
+            outline: none;
+        }
+
+
+        /* --- NUEVA DISTRIBUCIÓN DE 3 COLUMNAS --- */
+        /* Asegurate de buscar estas clases en tu bloque <style> y actualizarlas */
+
+        .top-section {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            /* 🚀 CRUCIAL: Cambiar esto de stretch (por defecto) a flex-start */
+            /* Esto permite que la columna de la imagen sea más corta que la del centro, */
+            /* dándole espacio para moverse dentro del contenedor principal. */
+            align-items: flex-start;
+            position: relative;
+        }
+
+        .col-gallery {
+            flex: 0 0 35%; /* 🚀 Foto más pequeña */
+            display: flex;
+            padding-right: 10px;
+            position: -webkit-sticky; position: sticky; top: 20px;
+            z-index: 10;
+        }
+
+        .col-middle-info {
+            flex: 1; /* Centro informativo */
+            min-width: 320px;
+            padding: 0 15px;
+        }
+
+        .col-right-buy-box {
+            flex: 0 0 25%; /* Panel de compra */
+            min-width: 280px;
+        }
+
+        @media (max-width: 1100px) {
+            .col-gallery, .col-middle-info, .col-right-buy-box {
+                flex: 1 1 100%;
+                position: static;
+            }
+        }
+
+        /* Esta clase crea el efecto de tarjeta gris */
+        .col-card-eden {
+            background-color: #f8f9fa !important; /* Fondo gris suave */
+            border: 1px solid #e0e0e0 !important;
+            border-radius: 12px !important;
+            padding: 25px !important;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05) !important;
+            display: flex;
+            flex-direction: column;
+        }
+    </style>
+</head>
+
+<body>
+
+<div th:replace="~{fragments :: header-principal}"></div>
+
+<div class="card-container top-section" style= "top: 20px;">
+
+    <div class="col-gallery col-card-eden" style="position: sticky; top: 80px; display: flex; flex-direction: column;">
+
+        <div class="main-image-container" style="position: relative; aspect-ratio: 1/1; display: flex; align-items: center; justify-content: center; background: #fff; border-radius: 8px; overflow: hidden;">
+        <span th:if="${product.isNewProduct != null and product.isNewProduct}"
+              style="position: absolute; top: 15px; left: 15px; background: #e69500; color: white; padding: 6px 12px; font-weight: 700; border-radius: 4px; z-index: 10;">NUEVO</span>
+            <img id="mainImage" th:src="@{${product.imageUrl}}" th:alt="${product.name}" style="max-width: 100%; max-height: 100%; object-fit: contain;">
+        </div>
+
+        <div class="thumbnail-list" style="display: flex; flex-direction: row; justify-content: center; gap: 10px; margin-top: 15px;">
+            <div class="thumbnail active" onclick="changeImage(this)"><img th:src="@{${product.imageUrl}}"></div>
+            <div class="thumbnail" th:if="${product.extraImage1}" onclick="changeImage(this)"><img th:src="@{${product.extraImage1}}"></div>
+            <div class="thumbnail" th:if="${product.extraImage2}" onclick="changeImage(this)"><img th:src="@{${product.extraImage2}}"></div>
+        </div>
+
+    </div>
+
+    <div class="col-middle-info col-card-eden" style="position: sticky; top: 80px; display: flex; flex-direction: column;" >
+        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px; font-size: 13px;">
+            <div style="color: #e69500;">
+                <i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star-half-o"></i>
+                <span style="color: #666; margin-left: 5px;">(12 opiniones)</span>
+            </div>
+            <span style="color: #ccc;">|</span>
+            <span style="color: #666;">+50 vendidos</span>
+        </div>
+
+        <h1 class="product-title" th:text="${product.name}" style="font-size: 26px; font-weight: 700; margin-bottom: 15px;"></h1>
+
+        <div style="margin-bottom: 20px;">
+            <div class="price-main" th:text="${'$ ' + #numbers.formatDecimal(product.price, 1, 'POINT', 2, 'COMMA')}"></div>
+            <div style="font-size: 14px; color: #999; margin-top: 4px;">
+                Precio sin impuestos nacionales:
+                <span th:text="${'$ ' + #numbers.formatDecimal(product.price / 1.21, 1, 'POINT', 2, 'COMMA')}"></span>
+            </div>
+        </div>
+
+        <div style="margin-bottom: 25px; padding: 15px; background: #f8f9fa; border-radius: 8px;">
+            <div style="color: #00a650; font-weight: 600; font-size: 16px;">
+                <i class="fa fa-credit-card"></i>
+                Mismo precio en <span th:text="${product.installments ?: 6}"></span> cuotas sin interés
+            </div>
+            <a href="#" data-toggle="modal" data-target="#modalMediosPago" style="color: #3483fa; text-decoration: none; font-size: 14px; display: inline-block; margin-top: 8px; font-weight: 500;">
+                Ver medios de pago
+            </a>
+        </div>
+
+        <div class="seller-notes-card" style="border: none; padding: 0; background: none;">
+            <h3 style="font-size: 14px; font-weight: 700; text-transform: uppercase; color: #333; margin-bottom: 10px;"></h3>
+            <div class="seller-content">
+                <div id="notes-display" th:utext="${product.sellerNotes ?: 'Bienvenido a El Edén.'}"></div>
+
+                <div sec:authorize="hasRole('ADMIN')" id="edit-notes-form" style="display: none; margin-top: 15px;">
+                    <form th:action="@{/api/products/{id}/update-notes(id=${product.id})}" method="post">
+                        <textarea id="summernote" name="sellerNotes" th:text="${product.sellerNotes}"></textarea>
+                        <div style="margin-top: 10px; text-align: right;">
+                            <button type="button" class="btn-action" onclick="toggleEdit(false)" style="width:auto; padding:5px 15px; background:#ccc; margin:0;">Cancelar</button>
+                            <button type="submit" class="btn-action" style="width:auto; padding:5px 15px; background:#e69500; color:#fff; margin:0;">Guardar</button>
+                        </div>
+                    </form>
+                </div>
+
+                <button sec:authorize="hasRole('ADMIN')" id="btn-edit-trigger" onclick="toggleEdit(true)"
+                        style="background: none; border: 1px solid #e69500; color: #e69500; padding: 4px 10px; border-radius: 4px; margin-top: 10px; cursor: pointer; font-size: 12px; font-weight: 600;">
+                    <i class="fa fa-pencil"></i> EDITAR NOTAS
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-right-wrapper col-card-eden" style="position: sticky; top: 80px;">
+        <div class="buy-box-container" style="position: sticky; top: 20px;">
+
+            <div style="margin-bottom: 20px;">
+                <div style="display: flex; gap: 10px; align-items: flex-start; margin-bottom: 12px;">
+                    <i class="fa fa-truck" style="color: #00a650; font-size: 18px; margin-top: 3px;"></i>
+                    <div>
+                        <div style="color: #00a650; font-weight: 500; font-size: 15px;">Entrega a acordar con el vendedor</div>
+                        <div style="font-size: 13px; color: #666;">Loma Hermosa, Buenos Aires</div>
+                        <a href="#" style="color: #3483fa; text-decoration: none; font-size: 13px; font-weight: 500;">Ver formas de entrega</a>
+                    </div>
+                </div>
+            </div>
+
+            <hr style="border: 0; border-top: 1px solid #eee; margin: 15px 0;">
+
+            <div style="margin-bottom: 15px;">
+                <div style="font-size: 16px; font-weight: 600; color: #333;">Stock disponible</div>
+            </div>
+
+            <div class="quantity-selector" style="margin-bottom: 20px;">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <span style="font-size: 14px; color: #333;">Cantidad:</span>
+                    <div style="display: flex; align-items: center; border: 1px solid #ddd; border-radius: 4px; padding: 2px;">
+                        <button onclick="updateQty(-1)" style="padding: 2px 10px; border:none; background:none; color:#3483fa; font-weight: bold; cursor:pointer;">-</button>
+                        <input type="text" id="quantityInput" value="1" readonly style="width:30px; text-align:center; border:none; font-weight:600; font-size: 14px;">
+                        <button onclick="updateQty(1)" style="padding: 2px 10px; border:none; background:none; color:#3483fa; font-weight: bold; cursor:pointer;">+</button>
+                    </div>
+                    <span style="font-size: 14px; color: #333;">1 unidad</span>
+                </div>
+                <div style="font-size: 13px; color: #999; margin-top: 8px;">
+                    <span th:text="'(+' + (${product.stock} > 10 ? '10' : ${product.stock}) + ' disponibles)'"></span>
+                </div>
+            </div>
+
+            <button class="btn-action btn-buy-now" th:onclick="'buyNow(' + ${product.id} + ')'" th:disabled="${product.stock <= 0}">Comprar ahora</button>
+            <button class="btn-action btn-add-cart" th:onclick="'addToCart(' + ${product.id} + ')'" th:disabled="${product.stock <= 0}">Agregar al carrito</button>
+
+            <div style="margin-top: 25px; border-top: 1px solid #eee; padding-top: 20px;">
+                <div style="display: flex; gap: 12px; margin-bottom: 15px;">
+                    <i class="fa fa-shield" style="color: #666; font-size: 16px;"></i>
+                    <div style="font-size: 12px; color: #666;">
+                        <span style="color: #3483fa; cursor: pointer;">Compra Protegida</span>. Recibí el producto que esperabas o te devolvemos tu dinero.
+                    </div>
+                </div>
+                <div style="display: flex; gap: 12px;">
+                    <i class="fa fa-trophy" style="color: #666; font-size: 16px;"></i>
+                    <div style="font-size: 12px; color: #666;">
+                        <span style="color: #3483fa; cursor: pointer;">Garantía El Edén</span>. 12 meses de cobertura total.
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<div class="card-container">
+    <h2 class="bottom-section-title" style="border:none; margin-bottom: 20px;">Quienes vieron este producto también compraron</h2>
+    <div class="rec-carousel">
+        <div class="rec-card">
+            <div style="height: 180px; display: flex; align-items: center; justify-content: center; padding: 10px;">
+                <img th:src="@{/assets/images/populer-products/p1.png}" style="max-width: 100%; max-height: 100%; object-fit: contain;">
+            </div>
+            <div style="padding: 15px;">
+                <p style="font-size: 14px; color: #333; margin-bottom: 5px;">Silla Nórdica Escandinava</p>
+                <div class="rec-price">$ 85.400</div>
+                <div style="font-size: 12px; color: #00a650; font-weight: 600;">Envío gratis</div>
+            </div>
+        </div>
+        <div class="rec-card">
+            <div style="height: 180px; display: flex; align-items: center; justify-content: center; padding: 10px;">
+                <img th:src="@{/assets/images/populer-products/p2.png}" style="max-width: 100%; max-height: 100%; object-fit: contain;">
+            </div>
+            <div style="padding: 15px;">
+                <p style="font-size: 14px; color: #333; margin-bottom: 5px;">Mesa de Comedor Roble</p>
+                <div class="rec-price">$ 240.000</div>
+                <div style="font-size: 12px; color: #00a650; font-weight: 600;">6 cuotas sin interés</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card-container">
+    <div style="display: flex; justify-content: space-between; align-items: center;" class="bottom-section-title">
+        <h2 style="margin: 0; border: none;">Características técnicas</h2>
+        <button sec:authorize="hasRole('ADMIN')" id="btn-specs-trigger" onclick="toggleSpecsEdit(true)"
+                style="background: none; border: 2px solid #e69500; color: #e69500; padding: 10px 24px; border-radius: 5px; cursor: pointer; font-size: 20px;">
+            <i class="fa fa-pencil"></i> Editar Ficha
+        </button>
+    </div>
+
+    <div id="specs-display">
+        <table class="specs-table">
+            <tbody>
+            <tr><td class="label">Modelo</td><td th:text="${product.model ?: 'No especificado'}"></td></tr>
+            <tr><td class="label">Material Estructura</td><td th:text="${product.materialStructure ?: 'Madera maciza'}"></td></tr>
+            <tr><td class="label">Material Tapizado</td><td th:text="${product.materialUpholstery ?: 'No especificado'}"></td></tr>
+            <tr><td class="label">Dimensiones (Al x An x Pr)</td><td th:text="${(product.height ?: '-') + ' x ' + (product.width ?: '-') + ' x ' + (product.depth ?: '-')}"></td></tr>
+            <tr><td class="label">Peso Máximo Soportado</td><td th:text="${product.maxWeight ?: '120 kg'}"></td></tr>
+            <tr><td class="label">Garantía</td><td th:text="${product.warranty ?: '12 meses'}"></td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div id="specs-edit-container" style="display: none;">
+        <form th:action="@{/api/products/{id}/update-specs(id=${product.id})}" method="post">
+            <table class="specs-table">
+                <tbody>
+                <tr>
+                    <td class="label">Modelo</td>
+                    <td><input type="text" name="model" th:value="${product.model}" class="admin-reply-pill"></td>
+                </tr>
+                <tr>
+                    <td class="label">Material Estructura</td>
+                    <td><input type="text" name="materialStructure" th:value="${product.materialStructure}" class="admin-reply-pill"></td>
+                </tr>
+                <tr>
+                    <td class="label">Material Tapizado</td>
+                    <td><input type="text" name="materialUpholstery" th:value="${product.materialUpholstery}" class="admin-reply-pill"></td>
+                </tr>
+                <tr>
+                    <td class="label">Dimensiones (Al - An - Pr)</td>
+                    <td style="display: flex; gap: 5px; align-items: center; background: none;">
+                        <input type="text" name="height" th:value="${product.height}" placeholder="Al" style="width: 30%" class="admin-reply-pill">
+                        <span>x</span>
+                        <input type="text" name="width" th:value="${product.width}" placeholder="An" style="width: 30%" class="admin-reply-pill">
+                        <span>x</span>
+                        <input type="text" name="depth" th:value="${product.depth}" placeholder="Pr" style="width: 30%" class="admin-reply-pill">
+                    </td>
+                </tr>
+                <tr>
+                    <td class="label">Peso Máximo</td>
+                    <td><input type="text" name="maxWeight" th:value="${product.maxWeight}" class="admin-reply-pill"></td>
+                </tr>
+                <tr>
+                    <td class="label">Garantía</td>
+                    <td><input type="text" name="warranty" th:value="${product.warranty}" class="admin-reply-pill"></td>
+                </tr>
+                </tbody>
+            </table>
+            <div style="margin-top: 20px; text-align: right;">
+                <button type="button" onclick="toggleSpecsEdit(false)" style="background:#ccc; border:none; padding:8px 20px; border-radius:5px; cursor:pointer;">Cancelar</button>
+                <button type="submit" style="background:#e69500; border:none; color:white; padding:8px 20px; border-radius:5px; cursor:pointer; font-weight:bold;">Guardar Cambios</button>
+            </div>
+        </form>
+    </div>
+
+    <div class="questions-wrapper" id="questions-section">
+        <h2 class="section-title-custom">Preguntas y respuestas</h2>
+
+        <div class="ask-box-container">
+            <h4 style="margin-bottom: 15px; font-weight: 600;">Preguntale a la tienda</h4>
+            <form th:action="@{/api/products/question/save}" method="post">
+                <input type="hidden" name="productId" th:value="${product.id}">
+                <textarea name="text" required placeholder="Escribí tu duda acá..."></textarea>
+                <div style="text-align: right;">
+                    <button type="submit" class="btn-action"
+                            style="width: auto; padding: 12px 40px; background: #e69500; color: white; margin: 0; border-radius: 30px;">
+                        Enviar pregunta
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <div th:if="${not #lists.isEmpty(product.questions)}">
+            <div class="question-card" th:each="q : ${product.questions}" th:if="${q != null}">
+
+                <div class="q-user-info" style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <i class="fa fa-user-circle"></i>
+                        <span class="q-user-name" th:text="${q.userName != 'anonymous' ? q.userName : 'Invitado'}"></span>
+                        <span style="margin: 0 8px;">•</span>
+                        <span th:text="${q.createdAt != null ? #temporals.format(q.createdAt, 'dd/MM/yyyy') : '--/--/----'}"></span>
+                    </div>
+
+                    <div sec:authorize="hasRole('ADMIN')">
+                        <form th:action="@{/api/products/question/{id}/delete(id=${q.id})}" method="post"
+                              th:onsubmit="return confirm('¿Seguro que querés borrar esta pregunta? Esta acción no se puede deshacer.')">
+                            <input type="hidden" name="productId" th:value="${product.id}">
+                            <button type="submit" class="btn-delete-q" title="Eliminar pregunta">
+                                <i class="fa fa-trash"></i>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <span class="q-main-text" th:text="${q.text}">¿Tenés stock de este modelo?</span>
+
+                <div th:if="${q.answer != null}" class="shop-answer-box">
+                    <span class="shop-label">Respuesta de El Edén Muebles</span>
+                    <p class="shop-answer-text" th:text="${q.answer}">¡Hola! Sí, tenemos stock para entrega inmediata.</p>
+                </div>
+
+                <div th:if="${q.answer == null}" style="margin-top: 15px;">
+                    <div sec:authorize="hasRole('ADMIN')" style="background: #fdfdfd; padding: 15px; border-radius: 10px; border: 1px dashed #ddd;">
+                        <form th:action="@{/api/products/question/{id}/answer(id=${q.id})}" method="post" style="display: flex; gap: 10px;">
+                            <input type="hidden" name="productId" th:value="${product.id}">
+                            <input type="text" name="answerText" required class="admin-reply-pill" placeholder="Responder como administrador...">
+                            <button type="submit" style="background: none; border: none; color: #e69500; font-weight: bold; cursor: pointer; min-width: 80px;">
+                                RESPONDER
+                            </button>
+                        </form>
+                    </div>
+
+                    <div sec:authorize="!hasRole('ADMIN')">
+                    <span style="color: #bbb; font-style: italic; font-size: 14px; margin-left: 5px;">
+                        <i class="fa fa-hourglass-start"></i> Pendiente de respuesta...
+                    </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div th:if="${#lists.isEmpty(product.questions)}"
+             style="text-align: center; padding: 40px; color: #999; background: #f9f9f9; border-radius: 10px;">
+            <i class="fa fa-comments-o" style="font-size: 40px; margin-bottom: 10px; display: block;"></i>
+            Aún no hay preguntas.
+        </div>
+    </div>
+</div>
+
+<div th:replace="~{fragments :: sideCartPanel}"></div>
+
+<footer th:replace="~{fragments :: footer-principal}"></footer>
+
+<script th:src="@{/assets/js/jquery.js}"></script>
+
+<script th:src="@{/assets/js/bootstrap.min.js}"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.js"></script>
+
+<script th:inline="javascript">
+    function toggleEdit(show) {
+        const display = document.getElementById('notes-display');
+        const form = document.getElementById('edit-notes-form');
+        const btn = document.getElementById('btn-edit-trigger');
+
+        if (show) {
+            display.style.display = 'none';
+            btn.style.display = 'none';
+            form.style.display = 'block';
+
+            $('#summernote').summernote({
+                placeholder: 'Escribí las notas de la tienda acá...',
+                tabsize: 2,
+                height: 300,
+                lang: 'es-ES',
+                // 🚀 IMPORTANTE: Definir los tamaños permitidos explícitamente
+                fontSizes: ['8', '9', '10', '11', '12', '14', '16', '18', '20', '24', '36', '48'],
+                toolbar: [
+                    ['style', ['style']],
+                    // Agrupamos negrita y tamaño en el mismo bloque 'font'
+                    ['font', ['bold', 'underline', 'clear', 'fontsize']],
+                    ['fontname', ['fontname']],
+                    ['color', ['color']],
+                    ['para', ['ul', 'ol', 'paragraph']],
+                    ['insert', ['link', 'picture', 'video']],
+                    ['view', ['fullscreen', 'codeview']]
+                ]
+            });
+        } else {
+            display.style.display = 'block';
+            btn.style.display = 'inline-block';
+            form.style.display = 'none';
+            $('#summernote').summernote('destroy');
+        }
+    }
+
+
+    function toggleSpecsEdit(show) {
+        const display = document.getElementById('specs-display');
+        const editContainer = document.getElementById('specs-edit-container');
+        const btnTrigger = document.getElementById('btn-specs-trigger');
+
+        if (show) {
+            display.style.display = 'none';
+            btnTrigger.style.display = 'none';
+            editContainer.style.display = 'block';
+        } else {
+            display.style.display = 'block';
+            btnTrigger.style.display = 'inline-block';
+            editContainer.style.display = 'none';
+        }
+    }
+</script>
+
+<script th:inline="javascript">
+    function changeImage(element) {
+        document.querySelectorAll('.thumbnail').forEach(el => el.classList.remove('active'));
+        element.classList.add('active');
+        document.getElementById('mainImage').src = element.querySelector('img').src;
+    }
+
+    function updateQty(change) {
+        const input = document.getElementById('quantityInput');
+        let val = parseInt(input.value) + change;
+        const maxStock = [[${product.stock != null ? product.stock : 1}]];
+        if (val >= 1 && val <= maxStock) input.value = val;
+    }
+
+    function buyNow(id) {
+        window.location.href = '/cart/checkout/fast/' + id + '/' + document.getElementById('quantityInput').value;
+    }
+
+    function addToCart(id) {
+        window.location.href = '/cart/add/' + id + '?qty=' + document.getElementById('quantityInput').value;
+    }
+</script>
+</body>
+</html>

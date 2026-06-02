@@ -1,0 +1,1063 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <th:block th:fragment="head-css">
+        <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,900" rel="stylesheet">
+        <link rel="shortcut icon" type="image/icon" th:href="@{/assets/logo/favicon.png}"/>
+        <link rel="stylesheet" th:href="@{/assets/css/font-awesome.min.css}">
+        <link rel="stylesheet" th:href="@{/assets/css/linearicons.css}">
+        <link rel="stylesheet" th:href="@{/assets/css/animate.css}">
+        <link rel="stylesheet" th:href="@{/assets/css/bootstrap.min.css}">
+        <link rel="stylesheet" th:href="@{/assets/css/bootsnav.css}" >
+        <link rel="stylesheet" th:href="@{/assets/css/style.css}">
+        <link rel="stylesheet" th:href="@{/assets/css/responsive.css}">
+
+
+        <style>
+            /* --- 1. LÓGICA DE BARRA PEGAJOSA Y ICONOS SALTARINES --- */
+
+            /* La barra de navegación se pega al techo */
+            .navbar-bottom {
+                position: -webkit-sticky; /* Safari */
+                position: sticky;
+                top: 0;
+                z-index: 1000;
+                background: #fff;
+                border-bottom: 1px solid #eee;
+                transition: box-shadow 0.3s;
+                width: 100%;
+            }
+
+            /* Sombra suave cuando se activa el scroll */
+            .navbar-bottom.nav-active {
+                box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            }
+
+            /* ESTADO INICIAL: Iconos de la barra inferior OCULTOS */
+            .sticky-icons-hidden {
+                opacity: 0;
+                visibility: hidden;
+                transform: translateY(-20px); /* Empiezan un poco arriba */
+                transition: all 0.4s ease; /* Animación suave */
+                pointer-events: none; /* No clickeables si no se ven */
+                float: right;
+                margin-left: 20px;
+            }
+
+            /* ESTADO ACTIVO: Iconos de la barra inferior VISIBLES (El "Salto") */
+            .navbar-bottom.nav-active .sticky-icons-hidden {
+                opacity: 1;
+                visibility: visible;
+                transform: translateY(0); /* Bajan a su sitio */
+                pointer-events: auto;
+            }
+
+            /* Estilos de la lista de iconos inferiores */
+            .sticky-icons-hidden > ul { list-style: none; display: flex; align-items: center; margin: 0; padding: 0; gap: 15px; }
+            .sticky-icons-hidden > ul > li > a { font-size: 20px; color: #555; padding: 15px 5px; display: block; position: relative; }
+            .sticky-icons-hidden > ul > li > a:hover { color: #e69500; }
+            .sticky-icons-hidden .badge-cart { position: absolute; top: 5px; right: -5px; background: #e69500; color: #fff; font-size: 10px; padding: 2px 5px; border-radius: 50%; }
+
+
+            /* --- TUS ESTILOS ORIGINALES Y MEGA MENU --- */
+
+            nav.navbar.bootsnav ul.nav > li.dropdown { position: static !important; }
+
+            nav.navbar.bootsnav ul.nav > li.dropdown > ul.dropdown-menu {
+                width: 100%; left: 0; right: 0; border: none;
+                border-top: 3px solid #e69500; background: #fff;
+                box-shadow: 0 10px 20px rgba(0,0,0,0.1); border-radius: 0;
+                padding: 30px 0; margin-top: 0; text-align: center;
+            }
+
+            nav.navbar.bootsnav ul.nav > li.dropdown > ul.dropdown-menu > li { display: inline-block; margin: 0 20px; }
+
+            nav.navbar.bootsnav ul.nav > li.dropdown > ul.dropdown-menu > li > a {
+                color: #333; font-size: 16px; font-weight: 600; text-transform: uppercase;
+                letter-spacing: 1px; padding: 10px 15px; border-radius: 4px;
+                transition: all 0.3s; text-decoration: none; display: block;
+            }
+
+            nav.navbar.bootsnav ul.nav > li.dropdown > ul.dropdown-menu > li > a:hover {
+                color: #fff; background-color: #e69500; transform: translateY(-2px);
+            }
+
+            nav.navbar.bootsnav ul.nav > li.dropdown > ul.dropdown-menu > li > a i {
+                display: block; font-size: 24px; margin-bottom: 5px; color: #e69500;
+            }
+            nav.navbar.bootsnav ul.nav > li.dropdown > ul.dropdown-menu > li > a:hover i { color: #fff; }
+
+            @media (min-width: 992px) {
+                nav.navbar.bootsnav ul.nav > li.dropdown:hover > ul.dropdown-menu {
+                    display: block; opacity: 1; visibility: visible;
+                    animation-name: fadeInDown; animation-duration: 0.3s; animation-fill-mode: both;
+                }
+            }
+
+            @keyframes fadeInDown {
+                from { opacity: 0; transform: translate3d(0, -10px, 0); }
+                to { opacity: 1; transform: translate3d(0, 0, 0); }
+            }
+
+            .main-image-container { position: relative; }
+            .label-new-detail { position: absolute; top: 20px; left: 20px; background-color: #e69500; color: #fff; padding: 6px 16px; font-size: 14px; font-weight: 700; text-transform: uppercase; border-radius: 4px; z-index: 50; box-shadow: 0 4px 10px rgba(0,0,0,0.15); pointer-events: none; }
+            .single-new-arrival-bg { position: relative; }
+            .label-new { position: absolute; top: 15px; left: 15px; background-color: #e69500; color: #fff; padding: 4px 12px; font-size: 11px; font-weight: bold; text-transform: uppercase; border-radius: 3px; z-index: 10; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+            html { scroll-behavior: smooth; scroll-padding-top: 60px; }
+            @media (max-width: 991px) { html { scroll-padding-top: 100px; } }
+            body { background-color: #ededed !important; font-family: 'Roboto', sans-serif; }
+            section { padding: 30px 0; background: transparent !important; }
+
+            .white-panel { background-color: #f9f9f9; border-radius: 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); padding: 30px; margin-bottom: 20px; }
+            .section-header h2 { text-transform: none; font-weight: 300; color: #333; margin-bottom: 20px; }
+            .header-top-container { display: flex !important; align-items: center !important; justify-content: space-between !important; width: 100%; padding: 10px 0; }
+            .brand-logo { font-size: 32px !important; font-weight: 800; color: #e69500 !important; text-decoration: none !important; margin: 0; white-space: nowrap; flex-shrink: 0; margin-right: 30px; }
+            .brand-logo span { color: #333; }
+            .search-wrapper { flex-grow: 1; max-width: 700px; position: relative; }
+            .search-form { display: flex; width: 100%; position: relative; }
+            .search-input { width: 100% !important; height: 44px; padding: 10px 50px 10px 25px; border: 1.5px solid #e69500 !important; border-radius: 50px !important; outline: none; font-size: 15px; color: #555; background: #fff; }
+            .search-btn { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); background: transparent; border: none; font-size: 18px; color: #666; cursor: pointer; transition: color 0.3s; }
+            .search-btn:hover { color: #e69500 !important; }
+
+            /* Header Actions (Iconos Superiores) */
+            .header-actions { flex-shrink: 0; margin-left: 30px; }
+            .header-actions ul {
+                list-style: none;
+                display: flex;
+                align-items: center; /* Alinea verticalmente al centro */
+                margin: 0;
+                padding: 0;
+                gap: 25px; /* <--- AUMENTADO: Esto separa el Carrito del Perfil */
+            }
+            .header-actions > ul > li > a { font-size: 24px; color: #333 !important; text-decoration: none; position: relative; display: block; transition: color 0.3s ease; }
+            .header-actions > ul > li > a:hover { color: #e69500 !important; cursor: pointer; }
+            .badge-cart { position: absolute; top: -5px; right: -8px; font-size: 10px; background-color: #e69500; color: white; padding: 2px 5px; border-radius: 50%; min-width: 16px; text-align: center; }
+
+            .header-actions .dropdown-menu {
+                display: none !important;
+                opacity: 0 !important;
+                visibility: hidden !important;
+                position: absolute;
+                top: 100%; right: 0;
+                left: auto;
+                background: #fff;
+                z-index: 9999;
+                box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+                margin-top: 15px !important;
+                border-top: 3px solid #e69500;
+                animation: none !important;
+                transform: none !important;
+                border-radius: 0 0 4px 4px; }
+            .header-actions .dropdown-menu::before {
+                content: "";
+                position: absolute;
+
+                /* Estos valores dependen del margin-top de arriba */
+                top: -25px;       /* Debe ser igual al margin-top pero negativo */
+                height: 25px;     /* Debe ser igual al margin-top */
+
+                left: 0;
+                width: 100%;
+                background: transparent; /* Invisible */
+            }
+            .header-actions li:hover > .dropdown-menu { display: block !important; opacity: 1 !important; visibility: visible !important; margin-top: 0; }
+
+            .profile-menu { min-width: 200px !important; padding: 10px 0 !important; }
+            .profile-menu li { display: block; width: 100%; border-bottom: 1px solid #f5f5f5; }
+            .profile-menu li:last-child { border-bottom: none; }
+            .profile-menu li a { display: block; padding: 10px 20px; font-size: 14px; color: #555; text-decoration: none; transition: all 0.2s; }
+            .profile-menu li a:hover { background-color: #fff8e1; color: #e69500 !important; padding-left: 25px; }
+            .profile-menu li a i { margin-right: 10px; width: 15px; text-align: center; }
+
+            .navbar-bottom { border-bottom: 1px solid #ddd; background: #fff; }
+            nav.navbar.bootsnav ul.nav > li > a { color: #555 !important; font-weight: 500; padding: 20px 20px !important; transition: color 0.3s ease; }
+            nav.navbar.bootsnav ul.nav > li > a:hover, nav.navbar.bootsnav ul.nav > li.active > a { color: #e69500 !important; background-color: transparent !important; }
+            .nav-btn.shop-item > a { color: #444 !important; font-weight: 700 !important; display: flex; align-items: center; gap: 8px; }
+            .nav-btn.shop-item > a i { font-size: 18px; color: #666; transition: color 0.3s; }
+            .nav-btn.shop-item > a:hover, .nav-btn.shop-item > a:hover i { color: #e69500 !important; }
+            @media (max-width: 991px) { .header-top-container { flex-direction: column; gap: 15px; } .search-wrapper { width: 100%; margin: 0; } .header-actions { margin: 0; } }
+
+            /* 1. Mantenemos el fondo oscuro y unificamos tipografía (como en tu head) */
+            body {
+                background-color: #E9ECEF !important; /* Gris oscuro general */
+                font-family: 'Roboto', sans-serif;
+                color: #333;
+            }
+
+            /* 2. 🚀 REDEFINIMOS EL SLIDE COMO UNA TARJETA FLOATING 🚀 */
+            .single-slide-item {
+                /* 🚀 RECORTAR POR LOS COSTADOS */
+                width: 79% !important; /* No ocupa el 100%, deja "aire" a los lados */
+                max-width: 1200px;    /* Clavamos un ancho máximo para pantallas grandes */
+                margin: 20px auto !important; /* Centrado horizontal y separa un poco arriba/abajo */
+
+                /* 🚀 BORDES REDONDEADOS (Mismo formato que las secciones) */
+                border-radius: 15px !important; /* Mismo radio de las cards */
+
+                /* 🚀 ALTURA FIJA Y ESTABILIDAD */
+                height: 380px !important; /* Un poco más alto para acomodar el recorte */
+                padding: 0 !important;
+                display: flex;
+                align-items: center; /* Centrado vertical perfecto */
+                overflow: hidden; /* Mantiene todo adentro */
+
+                /* Recuperamos el fondo con diseño que te gustaba */
+                background-color: #f4f4f4;
+                background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'%3E%3Cpath d='M20 20L0 40h40L20 20zm0 0L40 0H0l20 20z' fill='%23e0e0e0' fill-opacity='0.4'/%3E%3C/svg%3E");
+                background-repeat: repeat;
+                background-position: center;
+
+                /* Sombra para que flote sobre el body oscuro */
+                box-shadow: 0 10px 25px rgba(0,0,0,0.15) !important;
+            }
+
+            /* 3. Contenedor de la imagen (Flex para centrar) */
+            .welcome-hero-img {
+                height: 380px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                padding-right: 30px; /* Un poco de aire */
+            }
+
+            /* 4. La imagen propiamente dicha (Vuelve a object-fit: contain) */
+            .welcome-hero-img img {
+                max-height: 320px !important; /* Respeta la altura fija del banner */
+                width: auto !important;
+
+                /* ⚠️ IMPORTANTE: No se recorta, se acomoda ⚠️ */
+                object-fit: contain; /* El mueble se ve entero */
+                mix-blend-mode: multiply;
+            }
+
+            /* 5. Ajuste para que el texto respire dentro del contenedor angosto */
+            .welcome-hero-txt {
+                padding-left: 50px;margin: 30px 0 !important;
+            }
+            .welcome-hero-txt h2 { font-size: 34px !important; margin: 20px 0 !important; }
+            .welcome-hero-txt p { font-size: 20px !important; }
+            #header-carousel .carousel-control { background: none !important; background-image: none !important; width: 15% !important; opacity: 1 !important; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+            #header-carousel .carousel-control span.lnr { color: #e69500 !important; font-size: 50px !important; font-weight: 900 !important; text-shadow: 1px 0 0 #e69500, -1px 0 0 #e69500; background: none !important; box-shadow: none !important; opacity: 0.5; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+            #header-carousel .carousel-control:hover span.lnr { opacity: 1 !important; transform: scale(1.4); background: none !important; }
+            #sofa-collection { display: none !important; }
+            section { padding: 20px 0 !important; }
+            .white-panel { margin-bottom: 15px !important; }
+            #all-products { min-height: auto !important; padding-top: 10px !important; }
+            .single-new-arrival-bg-overlay { pointer-events: none !important; }
+            .new-arrival-cart { pointer-events: auto !important; }
+            /* Busca .sticky-icons-hidden > ul y actualízalo */
+            /* --- ESTILOS UNIFICADOS PARA ICONOS (ARRIBA Y ABAJO) --- */
+
+            /* 1. Contenedor de la lista (ul) */
+            .header-actions ul,
+            .sticky-icons-hidden > ul {
+                list-style: none;
+                display: flex;
+                align-items: center;
+                margin: 0;
+                padding: 0;
+                gap: 40px !important; /* Mismo espacio grande en ambos lados */
+            }
+
+            /* 2. Enlace del Perfil (El contenedor de "Hola..." + Icono) */
+            .profile-link {
+                display: flex !important; /* Importante para alinear texto e icono */
+                align-items: center;
+                gap: 12px; /* Espacio entre el nombre y el muñequito */
+                text-decoration: none !important;
+                color: #555 !important;
+                padding: 15px 0; /* Ajuste vertical seguro */
+            }
+
+            .profile-link:hover {
+                color: #e69500 !important;
+            }
+
+            /* 3. Estilo del Texto "Hola, Ceci" */
+            .user-greeting {
+                font-size: 13px;
+                font-weight: 600;
+                gap: 5px;
+                color: black;
+                text-transform: capitalize;
+                white-space: nowrap; /* Evita que el nombre se parta en dos líneas */
+            }
+
+            /* 4. Ajuste del tamaño de iconos para que sean gemelos */
+            .header-actions .lnr,
+            .sticky-icons-hidden .lnr {
+                font-size: 20px; /* Mismo tamaño exacto arriba y abajo */
+            }
+            /* --- CORRECCIÓN FINA PARA LA PELOTA EN LA BARRA DE ABAJO --- */
+
+            /* 1. Aseguramos que el enlace tenga la referencia relativa */
+            .sticky-icons-hidden > ul > li > a {
+                position: relative !important;
+            }
+
+            /* 2. Bajamos la pelota SOLO en la barra sticky */
+            .sticky-icons-hidden .badge-cart {
+                top: 30px !important;  /* Bajamos 10px porque hay padding en la barra */
+                right: -7px !important; /* Ajuste lateral fino */
+            }
+
+            /* --- ESTILOS UNIFICADOS PARA EL MENÚ DE PERFIL (ARRIBA Y ABAJO) --- */
+
+            /* Actualiza este bloque en tu <style> */
+
+            .header-actions .dropdown-menu,
+            .sticky-icons-hidden .dropdown-menu {
+                display: none !important;
+                opacity: 0 !important;
+                visibility: hidden !important;
+
+                position: absolute;
+                top: 100%;
+                right: 0 !important;
+                left: auto !important;
+
+                background: #fff;
+                z-index: 9999;
+                box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+
+                /* --- AQUÍ ESTÁ EL CAMBIO --- */
+                border: none !important; /* Quitamos bordes grises feos */
+                border-top: 3px solid #e69500 !important; /* FORZAMOS EL NARANJA ARRIBA */
+                /* -------------------------- */
+
+                border-radius: 0 0 4px 4px;
+                margin-top: 0;
+                min-width: 200px;
+                transform: none !important;
+                animation: none !important;
+            }
+
+            /* 2. La Magia: Mostrar al pasar el mouse (Hover) */
+            .header-actions li:hover > .dropdown-menu,
+            .sticky-icons-hidden li:hover > .dropdown-menu {
+                display: block !important;
+                opacity: 1 !important;
+                visibility: visible !important;
+                margin-top: 0;                  /* Evita saltos */
+            }
+
+            /* 3. Aseguramos que el botón padre sea la referencia para "right: 0" */
+            .header-actions li,
+            .sticky-icons-hidden li {
+                position: relative !important;
+            }
+            /* --- EFECTO GRIS PARA ITEMS NO DISPONIBLES --- */
+            .item-desactivado {
+                opacity: 0.5;               /* Lo vuelve tenue */
+                filter: grayscale(1);        /* Quita los colores */
+                background-color: #fcfcfc;   /* Un fondo apenas distinto */
+            }
+
+            /* Bloqueo total de la fila */
+            .item-desactivado {
+                opacity: 0.5;
+                filter: grayscale(1);
+                background-color: #f8f8f8 !important;
+                pointer-events: none; /* <--- Esto mata TODOS los clicks en la fila */
+                user-select: none;    /* Evita que seleccionen el texto */
+            }
+
+            /* LA EXCEPCIÓN: Queremos que el tacho de basura siga vivo */
+            .item-desactivado .sc-trash,
+            .item-desactivado .btn-trash-active {
+                pointer-events: auto !important; /* <--- Esto "revive" solo el botón de borrar */
+                opacity: 1 !important;
+                filter: none !important;
+                cursor: pointer;
+                color: #d9534f;
+            }
+
+            .badge-desactivado {
+                background-color: #666; /* Gris oscuro para el badge */
+                color: white;
+                font-size: 10px;
+                padding: 2px 6px;
+                border-radius: 3px;
+                font-weight: bold;
+                text-transform: uppercase;
+                margin-top: 5px;
+                display: inline-block;
+            }
+
+            /* --- 🚀 MEJORAS DE ESCALADO Y ANCLAJE --- */
+
+            /* Contenedor principal de la slide */
+            .single-slide-item {
+                display: flex !important;
+                align-items: stretch; /* Permite que el contenido use todo el alto */
+                height: 380px !important;
+            }
+
+            /* El contenedor interno debe ocupar todo el alto para permitir el anclaje */
+            .welcome-hero-content, .welcome-hero-content > .row {
+                height: 100%;
+                width: 100%;
+                margin: 0;
+            }
+
+            /* 🎯 ANCLAJE ABAJO A LA IZQUIERDA */
+            .welcome-hero-txt {
+                height: 100%;
+                display: flex;
+                flex-direction: column;
+                justify-content: flex-end; /* 👈 Esto lo ancla abajo */
+                align-items: flex-start;   /* 👈 Esto lo ancla a la izquierda */
+                padding: 40px 50px !important; /* Espacio interno */
+                text-align: left;
+            }
+
+            /* Ajuste de los textos para que no se separen mucho */
+            .welcome-hero-txt h2 {
+                font-size: 38px;
+                line-height: 1.1;
+                margin: 10px 0 15px 0 !important;
+            }
+            .welcome-hero-txt p {
+                margin-bottom: 25px !important;
+                max-width: 450px;
+            }
+
+            /* 📱 AJUSTES PARA MOBILE (Pantallas menores a 768px) */
+            @media (max-width: 767px) {
+                .single-slide-item {
+                    width: 95% !important; /* Más ancho en mobile */
+                    height: auto !important; /* Altura dinámica */
+                    min-height: 450px;
+                }
+
+                .welcome-hero-img {
+                    display: none; /* Ocultamos la imagen lateral para dar espacio al texto */
+                }
+
+                .welcome-hero-txt {
+                    width: 100% !important;
+                    padding: 30px 20px !important; /* Menos padding en mobile */
+                    justify-content: flex-end; /* Mantiene el anclaje abajo */
+                }
+
+                .welcome-hero-txt h2 {
+                    font-size: 28px !important; /* Texto más chico en mobile */
+                }
+
+                .welcome-hero-txt p {
+                    font-size: 16px !important;
+                    line-height: 1.4;
+                }
+
+                /* Los botones se apilan si no entran */
+                .welcome-hero-txt div {
+                    flex-direction: column;
+                    width: 100%;
+                    gap: 10px !important;
+                }
+
+                .btn-cart.welcome-add-cart {
+                    width: 100%; /* Botones de ancho completo en celular */
+                    justify-content: flex-start;
+                    padding: 10px 15px;
+                }
+
+                /* Ajuste de las flechas en mobile para que no tapen el texto */
+                .home-banner-slider-container {
+                    padding: 0 10px;
+                }
+                .slick-prev-eden, .slick-next-eden {
+                    display: none !important; /* En mobile es mejor usar el arrastre (drag) */
+                }
+            }
+        </style>
+    </th:block>
+</head>
+<body>
+
+<th:block th:fragment="header-principal">
+
+    <header id="home">
+        <div class="header-top" style="background:#fff; padding: 15px 0;">
+            <div class="container">
+                <div class="header-top-container">
+                    <a class="brand-logo" href="/">Silvero<span>.</span></a>
+                    <div class="search-wrapper">
+                        <form action="/products" method="get" class="search-form">
+                            <input type="text" name="keyword" class="search-input" placeholder="Buscar productos, marcas y más...">
+                            <button type="submit" class="search-btn"><i class="fa fa-search"></i></button>
+                        </form>
+                    </div>
+
+                    <div class="header-actions">
+                        <ul>
+                            <li>
+                                <a href="javascript:void(0);" onclick="toggleCart()">
+                                    <span class="lnr lnr-cart"></span>
+                                    <span class="badge-cart" th:text="${cartCount}">0</span>
+                                </a>
+                            </li>
+
+                            <li sec:authorize="!isAuthenticated()">
+                                <a th:href="@{/oauth2/authorization/auth0}" style="display: flex; align-items: center; gap: 8px;">
+                                    <span style="font-size: 13px; font-weight: 500; color: #555;">Iniciar Sesión</span>
+                                    <span class="lnr lnr-user" style="font-size: 20px;"></span>
+                                </a>
+                            </li>
+
+                            <li class="dropdown" sec:authorize="isAuthenticated()">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown"
+                                   style="display: flex; align-items: center; gap: 10px;">
+                                    <span th:text="${#authentication.principal.attributes['given_name']}"
+                                          style="font-size: 13px; font-weight: 600; text-transform: capitalize; color: #555;">Usuario</span>
+                                    <span class="lnr lnr-user" style="font-size: 20px;"></span>
+                                </a>
+
+                                <ul class="dropdown-menu profile-menu">
+                                    <li sec:authorize="hasRole('ADMIN')">
+                                        <a href="/admin/products" style="color: #e69500; font-weight: bold;">
+                                            <i class="fa fa-cogs"></i> Panel de Administrador
+                                        </a>
+                                    </li>
+                                    <li role="separator" class="divider" sec:authorize="hasRole('ADMIN')"></li>
+
+                                    <!--<li><a href="/profile"><i class="fa fa-user"></i> Mi Perfil</a></li>-->
+
+                                    <li><a href="/my-orders"><i class="fa fa-shopping-bag"></i> Mis Compras</a></li>
+                                    <li><a href="/wishlist"><i class="fa fa-heart"></i> Favoritos</a></li>
+                                    <li role="separator" class="divider" style="margin: 5px 0; border-top: 1px solid #eee;"></li>
+                                    <li><a th:href="@{/logout}" style="color: #d9534f;"><i class="fa fa-sign-out"></i> Cerrar Sesión</a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </header> <div class="navbar-bottom">
+    <div class="container">
+        <nav class="navbar navbar-default bootsnav navbar-scrollspy" data-minus-value-desktop="70" data-minus-value-mobile="55" data-speed="1000">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar-menu"><i class="fa fa-bars"></i></button>
+            </div>
+
+            <div class="attr-nav sticky-icons-hidden">
+                <ul>
+                    <li>
+                        <a href="javascript:void(0);" onclick="toggleCart()">
+                            <span class="lnr lnr-cart"></span>
+                            <span class="badge badge-cart" th:text="${cartCount}">0</span>
+                        </a>
+                    </li>
+
+                    <li class="dropdown" sec:authorize="isAuthenticated()">
+                        <a href="#" class="dropdown-toggle profile-link" data-toggle="dropdown">
+                            <span th:text="${#authentication.principal.attributes['given_name']}"
+                                  style="font-size: 13px; font-weight: 600; text-transform: capitalize; color: #555;">Usuario</span>
+                            <span class="lnr lnr-user"></span>
+                        </a>
+                        <ul class="dropdown-menu profile-menu">
+                            <li sec:authorize="hasRole('ADMIN')">
+                                <a href="/admin/products" style="color: #e69500; font-weight: bold;">
+                                    <i class="fa fa-cogs"></i> Panel de Administrador
+                                </a>
+                            </li>
+                            <li role="separator" class="divider" sec:authorize="hasRole('ADMIN')"></li>
+
+                            <!--<li><a href="/profile"><i class="fa fa-user"></i> Mi Perfil</a></li>-->
+
+                            <li><a href="/my-orders"><i class="fa fa-shopping-bag"></i> Mis Compras</a></li>
+                            <li><a href="/wishlist"><i class="fa fa-shopping-bag"></i> Favoritos</a></li>
+                            <li role="separator" class="divider"></li>
+                            <li><a th:href="@{/logout}"><i class="fa fa-sign-out"></i> Salir</a></li>
+                        </ul>
+                    </li>
+
+                    <li sec:authorize="!isAuthenticated()">
+                        <a th:href="@{/oauth2/authorization/auth0}"><span class="lnr lnr-user"></span></a>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="collapse navbar-collapse menu-ui-design" id="navbar-menu">
+                <ul class="nav navbar-nav navbar-center">
+                    <li><a href="/">Inicio</a></li>
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Colecciones</a>
+                        <ul class="dropdown-menu animated fadeIn">
+                            <li><a href="/#new-arrivals"><i class="lnr lnr-rocket"></i> Nuevos Productos</a></li>
+                            <li><a href="/#feature"><i class="lnr lnr-star"></i> Destacados</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="/products">Tienda</a></li>
+                    <li><a href="/about">Quienes Somos</a></li>
+                    <li><a href="/contact">Contacto</a></li>
+                </ul>
+            </div>
+        </nav>
+    </div>
+</div>
+</th:block>
+
+<header th:fragment="header-simple" style="background:#fff; padding: 20px 0; border-bottom: 1px solid #eee;">
+    <div class="container">
+        <div style="display: flex; justify-content: center; align-items: center;">
+
+            <a class="brand-logo" href="/" style="font-size: 32px; font-weight: 800; color: #e69500; text-decoration: none;">
+                Silvero<span style="color: #333;">.</span>
+            </a>
+
+        </div>
+    </div>
+</header>
+
+<!-- Busca th:fragment="banner-home" y reemplazalo por esto -->
+<div th:fragment="banner-home" class="home-banner-slider-container">
+
+    <div class="home-banner-slider">
+        <!-- 🚀 Bucle dinámico sin clases de Bootstrap -->
+        <div th:each="product : ${productsNew}">
+            <div class="single-slide-item">
+                <div class="container" style="height: 100%;">
+                    <div class="welcome-hero-content">
+                        <div class="row" style="display: flex; align-items: center;">
+
+                            <!-- El texto ahora tiene un ancho dinámico -->
+                            <div class="col-md-7 col-sm-12">
+                                <div class="welcome-hero-txt">
+                                    <h4>Lanzamiento exclusivo</h4>
+                                    <h2 th:text="${product.name}">Nombre del Producto</h2>
+                                    <p>Descubrí la nueva pieza de diseño que llegó a El Edén. Calidad superior y estilo único.</p>
+
+                                    <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+                                        <button class="btn-cart welcome-add-cart"
+                                                th:onclick="|window.location.href='/product/${product.id}'|">
+                                            <span class="lnr lnr-magnifier"></span> ver detalle
+                                        </button>
+                                        <button class="btn-cart welcome-add-cart"
+                                                style="background: #e69500;"
+                                                th:onclick="'agregarConAjax(' + ${product.id} + ')'">
+                                            <span class="lnr lnr-plus-circle"></span> agregar al carrito
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- La imagen se acomoda al lado en desktop -->
+                            <div class="col-md-5 hidden-xs">
+                                <div class="welcome-hero-img">
+                                    <img th:src="@{${product.imageUrl}}" th:alt="${product.name}">
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer th:fragment="footer-principal" id="footer" class="footer" style="background: #fff; border-top: 1px solid #ddd; padding-top: 40px;">
+    <div class="container">
+        <div class="hm-footer-copyright text-center">
+            <p>&copy; 2025 El Edén. Todos los derechos reservados.</p>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function(){
+            // --- Slider de Colecciones ---
+            $('.collections-slider').slick({
+                infinite: true,
+                slidesToShow: 2,
+                slidesToScroll: 1,
+                autoplay: true,
+                dots: true,
+                prevArrow: '<button type="button" class="slick-prev-eden"><span class="lnr lnr-chevron-left"></span></button>',
+                nextArrow: '<button type="button" class="slick-next-eden"><span class="lnr lnr-chevron-right"></span></button>',
+                responsive: [{ breakpoint: 768, settings: { slidesToShow: 1 } }]
+            });
+
+            // --- Slider del Banner Principal ---
+            $('.home-banner-slider').slick({
+                infinite: true,
+                slidesToShow: 1,
+                slidesToScroll: 1,
+                autoplay: true,
+                autoplaySpeed: 6000,
+                fade: true,
+                cssEase: 'linear',
+                dots: true,
+                draggable: true,
+                prevArrow: '<button type="button" class="slick-prev-eden"><span class="lnr lnr-chevron-left"></span></button>',
+                nextArrow: '<button type="button" class="slick-next-eden"><span class="lnr lnr-chevron-right"></span></button>'
+            });
+        });
+    </script>
+    <script th:src="@{/assets/js/jquery.js}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js"></script>
+    <script th:src="@{/assets/js/bootstrap.min.js}"></script>
+    <script th:src="@{/assets/js/bootsnav.js}"></script>
+    <script th:src="@{/assets/js/owl.carousel.min.js}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.min.js"></script>
+    <script th:src="@{/assets/js/custom.js}"></script>
+    <script th:src="@{/assets/js/cart-logic.js?v=100}"></script>
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+
+    <script>
+        window.addEventListener("scroll", function() {
+            var navbar = document.querySelector(".navbar-bottom");
+            var scrollPos = window.scrollY;
+
+            // Al pasar 120px (altura aprox del header-top), activamos los iconos de abajo
+            if (scrollPos > 120) {
+                navbar.classList.add("nav-active");
+            } else {
+                navbar.classList.remove("nav-active");
+            }
+        });
+    </script>
+</footer>
+
+<div th:fragment="sideCartPanel">
+
+    <div class="cart-overlay" onclick="toggleCart()"></div>
+
+    <div th:fragment="sideCartPanel" id="sideCartPanel" class="side-cart">
+        <div class="side-cart-header">
+            <h3><i class="fa fa-shopping-bag"></i> Mi Carrito</h3>
+            <button class="btn-close-cart" onclick="toggleCart()">
+                <span class="lnr lnr-cross"></span>
+            </button>
+        </div>
+
+        <div class="side-cart-body">
+
+            <div th:if="${myCart != null}" th:each="item : ${myCart.items}"
+                 class="sc-item"
+                 th:id="'sc-row-' + ${item.productDetail.id}"
+                 th:classappend="${item.productDetail.activo == false} ? 'item-desactivado' : ''">
+
+                <div class="sc-img">
+                    <a th:if="${item.productDetail.activo != false}"
+                       th:href="@{/product/{id}(id=${item.productDetail.id})}">
+                        <img th:src="@{${item.productDetail.imageUrl}}" alt="img">
+                    </a>
+
+                    <img th:if="${item.productDetail.activo == false}"
+                         th:src="@{${item.productDetail.imageUrl}}" alt="img">
+                </div>
+
+                <div class="sc-info">
+                    <a th:href="@{/product/{id}(id=${item.productDetail.id})}"
+                       class="sc-name"
+                       th:text="${item.productDetail.name}">Producto</a>
+
+                    <span class="sc-price item-price-side"
+                          th:id="'price-side-' + ${item.productDetail.id}"
+                          th:data-price="${item.productDetail.price * item.quantity}"
+                          th:text="${'$' + #numbers.formatDecimal(item.productDetail.price * item.quantity, 1, 'POINT', 2, 'COMMA')}"></span>
+
+                    <div th:if="${item.productDetail.activo == false}">
+                        <span class="badge-desactivado">No disponible</span>
+                    </div>
+
+                    <div class="sc-qty-box">
+                        <button type="button" class="sc-qty-btn"
+                                th:onclick="'updateSideQty(' + ${item.productDetail.id} + ', -1, this)'"
+                                th:disabled="${item.quantity == 1 || item.productDetail.activo == false}"> -
+                        </button>
+
+                        <input type="text" class="sc-qty-input"
+                               th:id="'sc-input-qty-' + ${item.productDetail.id}"
+                               th:value="${item.quantity}" readonly>
+
+                        <button type="button" class="sc-qty-btn"
+                                th:onclick="'updateSideQty(' + ${item.productDetail.id} + ', 1, this)'"
+                                th:disabled="${item.productDetail.activo == false}">+</button>
+                    </div>
+                </div>
+
+                <button class="sc-trash"
+                        th:onclick="'removeSideItem(' + ${item.productDetail.id} + ')'"
+                        title="Eliminar">
+                    <i class="fa fa-trash-o"></i>
+                </button>
+            </div>
+        </div>
+
+        <div class="side-cart-footer" th:if="${myCart != null and !myCart.items.empty}">
+            <div class="sc-total-row">
+                <span>Total:</span>
+                <span id="side-cart-total">$0.00</span>
+            </div>
+
+            <form th:action="@{/cart/checkout}" method="get">
+                <button type="submit" class="btn-checkout-side">
+                    Continuar compra
+                </button>
+            </form>
+            <div style="text-align: center; margin-top: 10px;">
+                <a href="/cart" style="font-size: 13px; color: #666; text-decoration: underline;">Ver Carrito Completo</a>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        /* Animación del Spinner */
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        .cart-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9998; visibility: hidden; opacity: 0; }
+        .cart-overlay.active { visibility: visible; opacity: 1; }
+
+        .side-cart { position: fixed; top: 0; right: -420px; width: 400px; height: 100vh; background: #fff; z-index: 9999; transition: right 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); display: flex; flex-direction: column; box-shadow: -5px 0 15px rgba(0,0,0,0.1); font-family: 'Roboto', sans-serif; }
+        .side-cart.active { right: 0; }
+
+        .side-cart-header { padding: 20px; background: #e69500; color: #fff; display: flex; justify-content: space-between; align-items: center; }
+        .side-cart-header h3 { margin: 0; font-size: 18px; font-weight: 500; }
+        .btn-close-cart { background: none; border: none; color: #fff; font-size: 24px; cursor: pointer; }
+
+        .side-cart-body { flex: 1; overflow-y: auto; padding: 20px; }
+
+        /* Item Styles */
+        .sc-item { display: flex; margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid #eee; position: relative; }
+        .sc-img { width: 70px; height: 70px; margin-right: 15px; border: 1px solid #f0f0f0; border-radius: 4px; flex-shrink: 0; }
+        .sc-img img { width: 100%; height: 100%; object-fit: contain; }
+
+        .sc-info { flex-grow: 1; }
+        .sc-name { font-weight: 500; font-size: 14px; color: #333; display: block; margin-bottom: 4px; text-decoration: none; line-height: 1.2; }
+        .sc-price { color: #333; font-weight: 600; font-size: 16px; display: block; margin-bottom: 8px; }
+
+        /* Mini Controls */
+        .sc-qty-box { display: flex; align-items: center; }
+        .sc-qty-btn { width: 24px; height: 24px; background: #fff; border: 1px solid #ddd; color: #e69500; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; border-radius: 3px; }
+        .sc-qty-btn:hover { background: #f9f9f9; }
+        .sc-qty-input { width: 30px; height: 24px; border: none; text-align: center; font-size: 13px; font-weight: 600; color: #333; }
+
+        /* Trash Icon */
+        .sc-trash { position: absolute; right: 0; bottom: 20px; background: none; border: none; color: #999; font-size: 18px; cursor: pointer; transition: color 0.2s; }
+        .sc-trash:hover { color: #d9534f; }
+
+        /* Footer */
+        .side-cart-footer { padding: 20px; background: #f9f9f9; border-top: 1px solid #eee; }
+        .sc-total-row { display: flex; justify-content: space-between; font-size: 18px; font-weight: 700; margin-bottom: 15px; color: #333; }
+
+        .btn-checkout-side { width: 100%; background-color: #3483fa; color: white; padding: 12px; border: none; border-radius: 6px; font-size: 16px; font-weight: 600; cursor: pointer; transition: background 0.2s; box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
+        .btn-checkout-side:hover { background-color: #2968c8; }
+
+        @media (max-width: 480px) { .side-cart { width: 85%; right: -85%; } }
+    </style>
+
+</div>
+
+
+
+<!-- En fragments.html -->
+
+<th:block th:fragment="css-tarjetas">
+    <style>
+        /* --- ESTILOS DE TARJETA --- */
+        .single-new-arrival {
+            background: #F8F9FA;
+            border-radius: 13px;
+            padding: 12px;
+            margin-bottom: 30px;
+            transition: all 0.3s ease;
+            text-align: left;
+            border: 2px solid #eee;
+            height: 320px;
+            max-width: 280px;
+            margin-left: auto; margin-right: auto;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            position: relative;
+        }
+        .single-new-arrival:hover { transform: translateY(-5px); box-shadow: 0 15px 35px rgba(0,0,0,0.1); }
+
+        .single-new-arrival-bg {
+            background-color: #f4f4f4;
+            border-radius: 13px;
+            height: 205px !important;
+            min-height: 0 !important;
+            width: 100%;
+            margin-bottom: 1px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            position: relative;
+        }
+        .single-new-arrival-bg img {
+            max-height: 100%; max-width: 100%;
+            object-fit: contain; mix-blend-mode: multiply;
+            transition: transform 0.3s;
+        }
+        .single-new-arrival:hover .single-new-arrival-bg img { transform: scale(1.05); }
+
+        .single-new-arrival-caption { padding: 0 5px; margin-bottom: 2px; }
+
+        .single-new-arrival h4 a {
+            color: #333; font-weight: 700; font-size: 15px;
+            margin-top: 5px; margin-bottom: 2px;
+            text-decoration: none; display: block;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        }
+        .arrival-product-price { color: #666; font-weight: 500; font-size: 14px; margin: 0; }
+
+        /* --- BOTONES Y ACCIONES --- */
+        .mis-acciones-producto {
+            width: 100%;
+            margin-top: auto;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .mi-btn-agregar, .mi-control-cantidad { flex-grow: 1; }
+
+        .mi-btn-agregar {
+            background-color: #e69500; color: white !important;
+            border-radius: 50px;
+            display: flex; align-items: center; justify-content: center;
+            width: 100%; height: 35px;
+            font-size: 12px; font-weight: 650;
+            text-decoration: none; transition: 0.2s; cursor: pointer; border: none;
+            box-shadow: 0 4px 6px rgba(230, 149, 0, 0.15);
+        }
+        .mi-btn-agregar:hover { background-color: #cc8400; color: white !important; }
+
+        .mi-control-cantidad { display: flex; align-items: center; width: 100%; height: 40px; }
+
+        .mi-btn-circulo {
+            width: 35px; height: 35px; border-radius: 50%;
+            background: #e69500; color: #fff; border: none;
+            font-size: 18px; font-weight: bold; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            padding: 0; line-height: 1; margin-right: 8px; transition: 0.2s;
+        }
+        .mi-btn-circulo:hover { background: #cc8400; transform: scale(1.05); }
+
+        .mi-numero-cantidad {
+            font-size: 16px; font-weight: 800; color: #333;
+            border: 1px solid #e0e0e0; border-radius: 8px;
+            background-color: #fff; padding: 6px 12px;
+            min-width: 48px; text-align: center;
+        }
+
+        /* --- BOTÓN DE FAVORITOS --- */
+        .mi-btn-fav {
+            width: 40px; height: 40px; border-radius: 50%;
+            background-color: #fff; border: 1px solid transparent; color: #ccc;
+            display: flex !important; align-items: center; justify-content: center;
+            font-size: 20px; cursor: pointer; transition: all 0.3s ease; text-decoration: none !important;
+            flex-shrink: 0;
+        }
+        .mi-btn-fav i { font-size: 20px !important; transition: transform 0.3s; }
+        .mi-btn-fav:hover { color: #e69500; transform: scale(1.05); }
+        .mi-btn-fav.activo { border: 2px solid transparent; color: #e69500; box-shadow: 0 2px 8px rgba(230, 149, 0, 0.2); }
+        .mi-btn-fav.activo i { transform: scale(1.1); }
+
+        /* --- CONFIGURACIÓN PARA EL BANNER PRINCIPAL --- */
+
+        .home-banner-slider-container {
+            position: relative;
+            width: 100%;
+            /* 🚀 CRUCIAL: Permite que las flechas se vean afuera */
+            overflow: visible !important;
+            /* Damos espacio lateral para que las flechas no se peguen al borde de la pantalla */
+            padding: 0 100px;
+            margin-bottom: 40px;
+        }
+
+        /* Alineamos las flechas específicamente para el tamaño del banner */
+        .home-banner-slider .slick-prev-eden {
+            left: -80px; /* Sacamos la flecha a la izquierda */
+        }
+
+        .home-banner-slider .slick-next-eden {
+            right: -80px; /* Sacamos la flecha a la derecha */
+        }
+
+        /* Ajuste de los puntos (dots) para que floten centrados abajo */
+        .home-banner-slider .slick-dots {
+            bottom: -30px;
+        }
+
+        /* Evitamos que se vea una lista vertical antes de que cargue el JS */
+        .home-banner-slider:not(.slick-initialized) {
+            display: flex;
+            overflow: hidden;
+        }
+        .home-banner-slider:not(.slick-initialized) > div {
+            width: 100%;
+        }
+    </style>
+</th:block>
+
+<!-- FRAGMENTO DE TARJETA ESTILO SILVERO -->
+<div th:fragment="cardProducto(product)" class="col-md-3 col-sm-4">
+    <div class="single-new-arrival" th:id="'card-producto-' + ${product.id}">
+
+        <!-- 🖼️ IMAGEN (Altura 205px según tu CSS) -->
+        <div class="single-new-arrival-bg">
+            <a th:href="@{/product/{id}(id=${product.id})}">
+                <img th:src="@{${product.imageUrl}}" th:alt="${product.name}">
+            </a>
+        </div>
+
+        <!-- 📝 CAPTION (Nombre y Precio) -->
+        <div class="single-new-arrival-caption">
+            <h4>
+                <a th:href="@{/product/{id}(id=${product.id})}"
+                   th:text="${product.name}">Nombre</a>
+            </h4>
+            <p class="arrival-product-price" th:text="${'$ ' + product.price}">$0.00</p>
+        </div>
+
+        <!-- ⚡ ACCIONES (Carrito y Favoritos) -->
+        <div class="mis-acciones-producto">
+
+            <!-- Lógica de Cantidad/Carrito -->
+            <div style="flex-grow: 1;"
+                 th:with="safeId=${product.id},
+                          qtyInCart=${(productQuantities != null and productQuantities.containsKey(safeId)) ? productQuantities.get(safeId) : 0}"
+                 th:id="'acciones-cart-' + ${safeId}">
+
+                <!-- Botón Agregar -->
+                <a href="javascript:void(0);"
+                   class="mi-btn-agregar"
+                   th:if="${qtyInCart == 0}"
+                   th:onclick="'agregarConAjax(' + ${safeId} + ')'">
+                    Agregar al carrito
+                </a>
+
+                <!-- Control de Cantidad -->
+                <div class="mi-control-cantidad" th:if="${qtyInCart > 0}">
+                    <button class="mi-btn-circulo" th:onclick="'updateCardQty(' + ${safeId} + ', -1)'">-</button>
+                    <button class="mi-btn-circulo" th:onclick="'updateCardQty(' + ${safeId} + ', 1)'">+</button>
+                    <span class="mi-numero-cantidad"
+                          th:id="'card-qty-val-' + ${safeId}"
+                          th:text="${qtyInCart}">1</span>
+                </div>
+            </div>
+
+            <!-- Botón Favoritos (Corazón) -->
+            <a href="javascript:void(0);"
+               th:with="currentFav=${#lists.contains(favoritesIds ?: {}, product.id)}"
+               th:id="'btn-fav-' + ${product.id}"
+               class="mi-btn-fav"
+               th:classappend="${currentFav} ? 'activo' : ''"
+               th:onclick="'toggleFavorite(' + ${product.id} + ')'"
+               title="Añadir a favoritos">
+                <i class="fa" th:classappend="${currentFav} ? 'fa-heart' : 'fa-heart-o'"></i>
+            </a>
+
+        </div>
+    </div>
+
+</div>
+</body>
+</html>

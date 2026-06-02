@@ -1,0 +1,169 @@
+<!doctype html>
+<html class="no-js" lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Silvero | Quiénes Somos</title>
+
+    <th:block th:replace="fragments :: head-css"></th:block>
+
+    <style>
+        /* =========================================
+           ESTILOS ESPECÍFICOS DE "QUIENES SOMOS"
+           ========================================= */
+
+        /* Panel Blanco */
+        .white-panel-about {
+            background-color: #fff;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.08);
+            padding: 60px 50px;
+            margin-top: 30px;
+            margin-bottom: 50px;
+        }
+
+        /* Título / Breadcrumb */
+        .about-breadcrumb {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 30px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .about-breadcrumb strong { color: #333; font-weight: 700; }
+
+        /* Texto Principal */
+        .about-content p {
+            font-size: 16px;
+            line-height: 1.8;
+            color: #444;
+            margin-bottom: 25px;
+            font-weight: 300; /* Letra fina y elegante */
+        }
+
+        /* BARRA DE BENEFICIOS (Iconos abajo) */
+        .benefits-bar {
+            border-top: 1px solid #eee;
+            padding-top: 50px;
+            margin-top: 50px;
+        }
+
+        .benefit-item {
+            display: flex;
+            align-items: center; /* Centrado vertical */
+            justify-content: center;
+            padding: 0 20px;
+            border-right: 1px solid #ddd; /* Línea separadora */
+        }
+
+        /* Quitamos el borde al último */
+        .benefit-item:last-child { border-right: none; }
+
+        /* Iconos */
+        .benefit-icon {
+            font-size: 32px;
+            color: #666;
+            margin-right: 15px;
+        }
+
+        .benefit-text h5 {
+            font-size: 13px;
+            font-weight: 700;
+            color: #555;
+            margin: 0 0 5px 0;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .benefit-text p {
+            font-size: 13px;
+            color: #777;
+            margin: 0;
+            font-weight: 300;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .benefit-item {
+                flex-direction: column;
+                text-align: center;
+                border-right: none;
+                margin-bottom: 30px;
+            }
+            .benefit-icon { margin-right: 0; margin-bottom: 10px; }
+            .white-panel-about { padding: 40px 20px; }
+        }
+        body {background-color: #E9ECEF !important; /* Un gris medio-claro, pero notable (antes era #ededed) */
+
+            /* El resto dejalo igual */
+            font-family: 'Roboto', sans-serif;
+            color: #333; }
+
+        .card-container {
+            max-width: 1184px; margin: 0 auto 30px auto; background-color: #F8F9FA;
+            border-radius: 4px; box-shadow: 0 1px 2px 0 rgba(0,0,0,.12); padding: 40px;
+        }
+
+    </style>
+</head>
+
+<body>
+
+<div th:replace="fragments :: header-principal"></div>
+
+<div class="container">
+    <div class="white-panel-about">
+
+        <div class="about-breadcrumb">
+            Inicio / <strong>Quiénes Somos</strong>
+        </div>
+
+        <div class="about-content">
+            <p>
+                Hola! Este es un emprendimiento familiar entre mi papá que es carpintero con más de 30 años de experiencia en el rubro y yo Jessi, que soy arquitecta. Nos asociamos para poder fabricar muebles de calidad, tanto para el hogar como para la construcción, ya que tenemos nuestro propio taller de carpintería.
+            </p>
+            <p>
+                Queremos brindarles lo mejor de nuestras experiencias con muebles modernos, para que puedas transformar tu hogar en un lugar confortable, cálido y amigable.
+            </p>
+            <p style="margin-top: 40px; font-weight: 400;">
+                Gracias por estar del otro lado, estamos a disposición!
+            </p>
+        </div>
+
+        <div class="benefits-bar">
+            <div class="row">
+
+                <div class="col-md-4 benefit-item">
+                    <div class="benefit-icon"><span class="lnr lnr-bus"></span></div> <div class="benefit-text">
+                    <h5>ENVIAMOS TU COMPRA</h5>
+                    <p>Entregas a todo el país</p>
+                </div>
+                </div>
+
+                <div class="col-md-4 benefit-item">
+                    <div class="benefit-icon"><span class="lnr lnr-license"></span></div> <div class="benefit-text">
+                    <h5>PAGÁ COMO QUIERAS</h5>
+                    <p>Tarjetas de crédito o efectivo</p>
+                </div>
+                </div>
+
+                <div class="col-md-4 benefit-item">
+                    <div class="benefit-icon"><span class="lnr lnr-lock"></span></div>
+                    <div class="benefit-text">
+                        <h5>COMPRÁ CON SEGURIDAD</h5>
+                        <p>Tus datos siempre protegidos</p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div th:replace="fragments :: footer-principal"></div>
+
+</body>
+</html>

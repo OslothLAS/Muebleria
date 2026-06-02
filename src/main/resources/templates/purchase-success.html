@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>¡Compra Exitosa! | El Edén</title>
+
+    <link rel="shortcut icon" type="image/icon" th:href="@{/assets/logo/favicon.png}"/>
+    <link rel="stylesheet" th:href="@{/assets/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/font-awesome.min.css}">
+    <style>
+        body { background-color: #ededed; font-family: sans-serif; }
+        .success-card {
+            background: #fff;
+            max-width: 600px;
+            margin: 80px auto;
+            padding: 50px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .icon-circle {
+            width: 80px; height: 80px;
+            background: #4caf50; /* Verde éxito */
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center; justify-content: center;
+            margin-bottom: 20px;
+        }
+        .icon-circle i { color: #fff; font-size: 40px; }
+        h1 { color: #333; margin-bottom: 10px; }
+        p { color: #666; font-size: 16px; margin-bottom: 30px; }
+        .btn-home {
+            background-color: #e69500; color: #fff;
+            padding: 12px 30px; border-radius: 4px; text-decoration: none;
+            font-weight: bold;
+        }
+        .btn-home:hover { background-color: #d68500; color: #fff; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="success-card">
+        <div class="icon-circle">
+            <i class="fa fa-check"></i>
+        </div>
+        <h1>¡Gracias por tu compra!</h1>
+        <p>Tu orden ha sido procesada exitosamente. <br>
+            En breve recibirás un correo con los detalles del envío.</p>
+
+        <a href="/" class="btn-home">Volver al Inicio</a>
+    </div>
+</div>
+
+</body>
+</html>

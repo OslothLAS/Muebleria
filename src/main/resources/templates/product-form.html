@@ -1,0 +1,245 @@
+<!doctype html>
+<html class="no-js" lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Crear Producto | El Edén</title>
+
+    <div th:replace="~{fragments :: head-css}"></div>
+
+    <style>
+        /* AJUSTES VISUALES ESPECÍFICOS */
+        body { background-color: #f4f6f8; }
+
+        .form-container {
+            background: #fff; border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            padding: 30px; margin-top: 30px; margin-bottom: 50px;
+        }
+
+        .form-title {
+            font-size: 24px; font-weight: 700; color: #333;
+            margin-bottom: 25px; padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .form-label { font-weight: 600; font-size: 14px; color: #555; margin-bottom: 8px; display: block;}
+
+        .form-control-custom {
+            width: 100%; height: 45px; border: 1px solid #ddd;
+            border-radius: 6px; padding: 10px 15px; transition: 0.2s;
+        }
+        .form-control-custom:focus { border-color: #e69500; outline: none; box-shadow: 0 0 0 3px rgba(230, 149, 0, 0.1); }
+
+        textarea.form-control-custom { height: auto; min-height: 150px; resize: vertical; }
+
+        /* ZONA DE CARGA DE FOTOS */
+        .upload-zone { text-align: center; margin-bottom: 20px; }
+        .main-upload-box {
+            width: 100%; max-width: 350px; aspect-ratio: 1/1;
+            margin: 0 auto 15px auto; border: 2px dashed #ccc; border-radius: 10px;
+            background: #fafafa; cursor: pointer; display: flex; align-items: center; justify-content: center;
+            overflow: hidden; position: relative; transition: 0.2s;
+        }
+        .main-upload-box:hover { border-color: #e69500; background: #fffdf5; }
+        .thumb-upload-row { display: flex; gap: 10px; justify-content: center; }
+        .thumb-box {
+            width: 80px; height: 80px; border: 2px dashed #ccc; border-radius: 6px;
+            background: #fafafa; cursor: pointer; display: flex; align-items: center; justify-content: center;
+            overflow: hidden; position: relative;
+        }
+        .preview-img { width: 100%; height: 100%; object-fit: contain; display: none; }
+        .upload-icon { font-size: 24px; color: #ccc; }
+
+        /* TABLA TÉCNICA */
+        .specs-table { width: 100%; border: 1px solid #eee; }
+        .specs-table td { padding: 8px 12px; border-bottom: 1px solid #eee; }
+        .specs-table tr:nth-child(odd) { background: #f9f9f9; }
+        .input-table { width: 100%; border: 1px solid #ddd; padding: 5px; border-radius: 4px; }
+
+        /* BOTONES */
+        .btn-save {
+            background-color: #e69500; color: #fff; padding: 12px 40px;
+            border: none; border-radius: 50px; font-weight: 700; cursor: pointer;
+            transition: 0.3s; width: 100%; display: block; margin-top: 20px;
+        }
+        .btn-save:hover { background-color: #cc8400; }
+
+        /* Switch para producto nuevo */
+        .switch-container { display: flex; align-items: center; gap: 10px; margin-bottom: 15px; }
+    </style>
+</head>
+<body>
+
+<div th:replace="~{fragments :: header-principal}"></div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-10 col-md-offset-1">
+            <form method="post" th:action="@{/admin/products/save}" enctype="multipart/form-data" th:object="${product}">
+
+                <input type="hidden" th:field="*{id}">
+
+                <input type="hidden" th:field="*{imageUrl}">
+                <input type="hidden" th:field="*{extraImage1}">
+                <input type="hidden" th:field="*{extraImage2}">
+                <input type="hidden" th:field="*{extraImage3}">
+                <div class="form-container">
+                    <h2 class="form-title" th:text="${product.id != null ? 'Editar Producto' : 'Crear Nuevo Producto'}"></h2>
+
+                    <div class="row">
+                        <div class="col-md-5 col-sm-12">
+                            <label class="form-label text-center">Imágenes del Producto</label>
+
+                            <div class="upload-zone">
+                                <input type="file" id="fileMain" name="imageFile" accept="image/*" style="display:none;" onchange="previewImage(this, 'previewMain', 'phMain')">
+                                <label for="fileMain" class="main-upload-box">
+                                    <div id="phMain">
+                                        <i class="fa fa-camera upload-icon"></i>
+                                        <div class="upload-text">FOTO PRINCIPAL</div>
+                                    </div>
+                                    <img id="previewMain" class="preview-img" src="">
+                                </label>
+                            </div>
+
+                            <div class="thumb-upload-row">
+                                <input type="file" id="extra1" name="extraImages" accept="image/*" style="display:none;" onchange="previewImage(this, 'prev1', 'ph1')">
+                                <label for="extra1" class="thumb-box">
+                                    <div id="ph1"><i class="fa fa-plus upload-icon" style="font-size:16px;"></i></div>
+                                    <img id="prev1" class="preview-img" src="">
+                                </label>
+
+                                <input type="file" id="extra2" name="extraImages" accept="image/*" style="display:none;" onchange="previewImage(this, 'prev2', 'ph2')">
+                                <label for="extra2" class="thumb-box">
+                                    <div id="ph2"><i class="fa fa-plus upload-icon" style="font-size:16px;"></i></div>
+                                    <img id="prev2" class="preview-img" src="">
+                                </label>
+
+                                <input type="file" id="extra3" name="extraImages" accept="image/*" style="display:none;" onchange="previewImage(this, 'prev3', 'ph3')">
+                                <label for="extra3" class="thumb-box">
+                                    <div id="ph3"><i class="fa fa-plus upload-icon" style="font-size:16px;"></i></div>
+                                    <img id="prev3" class="preview-img" src="">
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="col-md-7 col-sm-12">
+
+                            <div class="switch-container">
+                                <input type="checkbox" th:field="*{isNewProduct}" id="isNew">
+                                <label for="isNew" class="form-label" style="margin-bottom:0">¿Es un producto nuevo/novedad?</label>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Nombre del Producto</label>
+                                <input type="text" class="form-control-custom" th:field="*{name}" placeholder="Ej: Silla Eames Blanca" required>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label class="form-label">Precio ($)</label>
+                                        <input type="number" step="0.01" class="form-control-custom" th:field="*{price}" placeholder="0.00" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label class="form-label">Stock</label>
+                                        <input type="number" class="form-control-custom" th:field="*{stock}" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label class="form-label">Descuento (%)</label>
+                                        <input type="number" class="form-control-custom" th:field="*{discountPercentage}" placeholder="0">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group" style="margin-top: 20px;">
+                                <label class="form-label">Descripción</label>
+                                <textarea class="form-control-custom" th:field="*{description}" rows="5" placeholder="Describe los detalles del producto..."></textarea>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <hr style="margin: 30px 0; border-top: 1px solid #eee;">
+
+                    <h4 style="font-size: 18px; font-weight: 600; margin-bottom: 20px;">Ficha Técnica (Detalles)</h4>
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <table class="specs-table">
+                                <tr>
+                                    <td width="30%"><strong>Modelo</strong></td>
+                                    <td><input type="text" class="input-table" th:field="*{model}"></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Color</strong></td>
+                                    <td><input type="text" class="input-table" th:field="*{color}" placeholder="Ej: Roble Natural"></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Material Estructura</strong></td>
+                                    <td><input type="text" class="input-table" th:field="*{materialStructure}"></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Material Tapizado</strong></td>
+                                    <td><input type="text" class="input-table" th:field="*{materialUpholstery}"></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Altura Total</strong></td>
+                                    <td><input type="text" class="input-table" th:field="*{height}"></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Ancho</strong></td>
+                                    <td><input type="text" class="input-table" th:field="*{width}"></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Profundidad</strong></td>
+                                    <td><input type="text" class="input-table" th:field="*{depth}"></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Peso Máximo</strong></td>
+                                    <td><input type="text" class="input-table" th:field="*{maxWeight}"></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Garantía</strong></td>
+                                    <td><input type="text" class="input-table" th:field="*{warranty}"></td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div style="max-width: 300px; margin: 0 auto;">
+                        <button type="submit" class="btn-save"
+                                th:text="${product.id != null ? 'ACTUALIZAR PRODUCTO' : 'PUBLICAR PRODUCTO'}">
+                        </button>
+                        <a href="/admin/products" class="btn-cancel">Cancelar</a>
+                    </div>
+
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div th:replace="~{fragments :: footer-principal}"></div>
+
+<script>
+    function previewImage(input, imgId, placeholderId) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                var img = document.getElementById(imgId);
+                img.src = e.target.result;
+                img.style.display = 'block';
+                document.getElementById(placeholderId).style.display = 'none';
+            }
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+</script>
+
+</body>
+</html>

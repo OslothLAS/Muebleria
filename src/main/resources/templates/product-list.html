@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <div th:replace="~{fragments :: head-css}"></div>
+    <title>Silvero | Dashboard de Administración</title>
+
+    <style>
+        /* --- ESTILOS DE CABECERA Y BOTONES --- */
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f4f4f4;
+        }
+
+        .admin-header h2 { margin: 0; color: #333; font-weight: 700; font-size: 22px; }
+
+        .header-actions-admin { display: flex; gap: 12px; }
+
+        .btn-crear {
+            padding: 10px 20px; border-radius: 6px; text-decoration: none;
+            font-weight: 600; transition: 0.3s; display: inline-flex; align-items: center; gap: 8px;
+            border: none;
+        }
+
+        .btn-crear:hover {
+            padding: 10px 20px; border-radius: 6px; text-decoration: none;
+            font-weight: 600; transition: 0.3s; display: inline-flex; align-items: center; gap: 8px;
+            border: none;
+        }
+        /* --- ESTILOS DE TABLAS --- */
+        .table-admin thead th {
+            background-color: #f9f9f9; border-bottom: 2px solid #e69500;
+            color: #555; font-weight: 600; text-transform: uppercase; font-size: 12px;
+        }
+        .table-admin td { vertical-align: middle !important; }
+
+        .img-admin {
+            width: 50px; height: 50px; object-fit: contain;
+            border: 1px solid #eee; border-radius: 4px; background: #fff;
+        }
+
+        /* --- ACCIONES --- */
+        .btn-action {
+            width: 34px; height: 34px; display: inline-flex; align-items: center;
+            justify-content: center; border-radius: 50%; margin: 0 2px;
+            color: white; transition: 0.2s; border: none;
+        }
+        .btn-edit { background-color: #ffc107; color: #333; }
+        .btn-edit:hover { background-color: #e0a800; }
+        .btn-delete { background-color: #dc3545; }
+        .btn-delete:hover { background-color: #c82333; }
+
+        .section-divider { margin: 40px 0; border-top: 2px dashed #ddd; }
+        .opacity-50 { opacity: 0.5; filter: grayscale(0.5); }
+
+        /* Botón Productos (Verde) */
+        .btn-product {
+            background-color: #28a745;
+            color: white !important;
+            transition: background-color 0.3s ease; /* Transición suave de color */
+        }
+
+        .btn-product:hover {
+            background-color: #218838;
+            color: white !important;
+            transition: background-color 0.3s ease; /* Transición suave de color */
+        }
+
+        /* Botón Colecciones (Naranja Silvero) */
+        .btn-collection {
+            background-color: #e69500;
+            color: white !important;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn-collection:hover {
+            background-color: #cc8400;
+            color: white !important;
+            transition: background-color 0.3s ease;
+        }
+    </style>
+</head>
+<body style="background-color: #f8f9fa;">
+
+<div th:replace="~{fragments :: header-principal}"></div>
+
+<section id="admin-dashboard" style="padding: 40px 0;">
+    <div class="container">
+
+        <!-- 🚀 BLOQUE 1: GESTIÓN DE COLECCIONES -->
+        <div class="white-panel" style="margin-bottom: 30px; border-top: 4px solid #e69500;">
+            <div class="admin-header">
+                <h2><i class="fa fa-folder-open" style="color: #e69500;"></i> Gestión de Colecciones</h2>
+                <div class="header-actions-admin">
+                    <a th:href="@{/admin/collections/new}" class="btn-crear btn-collection">
+                        <i class="fa fa-plus-circle"></i> Nueva Colección
+                    </a>
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-hover table-admin">
+                    <thead>
+                    <tr>
+                        <th style="width: 8%;">ID</th>
+                        <th style="width: 10%;">Vista</th>
+                        <th style="width: 20%;">Colección</th>
+                        <th style="width: 47%;">Descripción</th>
+                        <th style="width: 15%; text-align: center;">Acciones</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:if="${collections == null or collections.empty}">
+                        <td colspan="5" class="text-center" style="padding: 30px; color: #999;">
+                            <i class="fa fa-info-circle"></i> No hay colecciones registradas.
+                        </td>
+                    </tr>
+                    <tr th:each="col : ${collections}">
+                        <td th:text="${col.id}"></td>
+                        <td>
+                            <img th:src="${col.imageUrl}" class="img-admin">
+                        </td>
+                        <td><strong th:text="${col.name}" style="color: #333;"></strong></td>
+                        <td th:text="${col.description}" style="font-size: 13px; color: #777;"></td>
+                        <td style="text-align: center;">
+                            <a th:href="@{/admin/collections/edit/{id}(id=${col.id})}" class="btn-action btn-edit" title="Editar Colección">
+                                <i class="fa fa-pencil"></i>
+                            </a>
+                            <form th:action="@{/admin/collections/delete/{id}(id=${col.id})}" method="post" style="display:inline;">
+                                <button type="submit" class="btn-action btn-delete" onclick="return confirm('¿Eliminar esta colección y desvincular sus productos?')">
+                                    <i class="fa fa-trash"></i>
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="section-divider"></div>
+
+        <!-- 🚀 BLOQUE 2: GESTIÓN DE PRODUCTOS (TU TABLA ORIGINAL) -->
+        <div class="white-panel" style="border-top: 4px solid #28a745;">
+            <div class="admin-header">
+                <h2><i class="fa fa-tag" style="color: #28a745;"></i> Gestión de Productos</h2>
+                <div class="header-actions-admin">
+                    <a th:href="@{/admin/products/new}" class="btn-crear btn-product">
+                        <i class="fa fa-plus-circle"></i> Crear Nuevo Producto
+                    </a>
+                </div>
+            </div>
+
+            <!-- Alertas de sistema -->
+            <div th:if="${mensaje}" th:class="${'alert alert-' + clase + ' alert-dismissible'}" role="alert">
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <span th:text="${mensaje}"></span>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-hover table-admin">
+                    <thead>
+                    <tr>
+                        <th style="width: 5%;">ID</th>
+                        <th style="width: 10%;">Imagen</th>
+                        <th style="width: 35%;">Nombre del Producto</th>
+                        <th style="width: 15%;">Precio</th>
+                        <th style="width: 15%;">Stock</th>
+                        <th style="width: 20%; text-align: center;">Acciones</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:if="${products.empty}">
+                        <td colspan="6" class="text-center" style="padding: 30px; color: #999;">No hay productos cargados.</td>
+                    </tr>
+                    <tr th:each="product : ${products}" th:classappend="${!product.activo} ? 'opacity-50' : ''">
+                        <td th:text="${product.id}"></td>
+                        <td>
+                            <img th:src="@{${product.imageUrl}}" class="img-admin">
+                        </td>
+                        <td>
+                            <strong th:text="${product.name}" th:style="${product.activo} ? 'color: #333;' : ''"></strong>
+                            <span th:if="${!product.activo}" class="label label-default" style="font-size: 10px; margin-left: 5px;">DESACTIVADO</span>
+                        </td>
+                        <td th:text="${'$ ' + product.price}"></td>
+                        <td>
+                                <span th:if="${product.activo}" class="label"
+                                      th:classappend="${product.stock < 5} ? 'label-danger' : 'label-success'"
+                                      th:text="${product.stock + ' u.'}"></span>
+                            <span th:unless="${product.activo}" class="text-muted">--</span>
+                        </td>
+                        <td style="text-align: center;">
+                            <a th:if="${product.activo}" th:href="@{/admin/products/edit/{id}(id=${product.id})}" class="btn-action btn-edit">
+                                <i class="fa fa-pencil"></i>
+                            </a>
+                            <form th:if="${product.activo}" th:action="@{/admin/products/delete/{id}(id=${product.id})}" method="post" style="display:inline;">
+                                <button type="submit" class="btn-action btn-delete"><i class="fa fa-trash"></i></button>
+                            </form>
+                            <form th:unless="${product.activo}" th:action="@{/admin/products/restore/{id}(id=${product.id})}" method="post" style="display:inline;">
+                                <button type="submit" class="btn-action" style="background-color: #2ecc71;"><i class="fa fa-undo"></i></button>
+                            </form>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div th:replace="~{fragments :: footer-principal}"></div>
+</body>
+</html>

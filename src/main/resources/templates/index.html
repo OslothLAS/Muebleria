@@ -1,0 +1,710 @@
+<!doctype html>
+<html class="no-js" lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Silvero | Inicio</title>
+
+	<div th:replace="~{fragments :: head-css}"></div>
+
+	<!-- En el head, debajo de tu head-css -->
+	<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css"/>
+	<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick-theme.css"/>
+
+	<style>
+		.nav-btn.shop-item > a,
+		.nav-btn.shop-item > a i { color: #e69500 !important; }
+
+		/* --- ESTILOS DE TARJETA --- */
+		.single-new-arrival {
+			background: #F8F9FA;
+			border-radius: 13px;
+			padding: 12px;
+			margin-bottom: 30px;
+			transition: all 0.3s ease;
+			text-align: left;
+			border: 2px solid #eee;
+			height: 320px;
+			max-width: 280px;
+			margin-left: auto; margin-right: auto;
+			display: flex;
+			flex-direction: column;
+			justify-content: flex-start;
+			position: relative;
+		}
+		.single-new-arrival:hover { transform: translateY(-5px); box-shadow: 0 15px 35px rgba(0,0,0,0.1); }
+
+		.single-new-arrival-bg {
+			background-color: #f4f4f4;
+			border-radius: 13px;
+			height: 205px !important;
+			min-height: 0 !important;
+			width: 100%;
+			margin-bottom: 1px;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			flex-shrink: 0;
+			position: relative;
+		}
+		.single-new-arrival-bg img {
+			max-height: 100%; max-width: 100%;
+			object-fit: contain; mix-blend-mode: multiply;
+			transition: transform 0.3s;
+		}
+		.single-new-arrival:hover .single-new-arrival-bg img { transform: scale(1.05); }
+
+		.single-new-arrival-caption { padding: 0 5px; margin-bottom: 2px; }
+
+		/* Ajuste para que el nombre no rompa el diseño */
+		.single-new-arrival h4 a {
+			color: #333; font-weight: 700; font-size: 15px;
+			margin-top: 5px; margin-bottom: 2px;
+			text-decoration: none; display: block;
+			white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+		}
+		.arrival-product-price { color: #666; font-weight: 500; font-size: 14px; margin: 0; }
+
+		/* --- BOTONES Y ACCIONES --- */
+		.mis-acciones-producto {
+			width: 100%;
+			margin-top: auto;
+			display: flex; /* Flex para alinear carrito y corazón */
+			align-items: center;
+			gap: 10px;
+		}
+
+		.mi-btn-agregar, .mi-control-cantidad {
+			flex-grow: 1; /* El carrito ocupa el espacio sobrante */
+		}
+
+		.mi-btn-agregar {
+			background-color: #e69500; color: white !important;
+			border-radius: 50px;
+			display: flex; align-items: center; justify-content: center;
+			width: 100%; height: 35px;
+			font-size: 12px; font-weight: 650;
+			text-decoration: none; transition: 0.2s; cursor: pointer; border: none;
+			box-shadow: 0 4px 6px rgba(230, 149, 0, 0.15);
+		}
+		.mi-btn-agregar:hover {
+			background-color: #cc8400;
+			color: white !important;
+			border-radius: 50px;
+			display: flex; align-items: center; justify-content: center;
+			width: 100%; height: 35px;
+			font-size: 12px; font-weight: 650;
+			text-decoration: none; transition: 0.2s; cursor: pointer; border: none;
+			box-shadow: 0 4px 6px rgba(230, 149, 0, 0.15);
+		}
+
+		.mi-control-cantidad { display: flex; align-items: center; width: 100%; height: 40px; }
+
+		.mi-btn-circulo {
+			width: 35px; height: 35px; border-radius: 50%;
+			background: #e69500; color: #fff; border: none;
+			font-size: 18px; font-weight: bold; cursor: pointer;
+			display: flex; align-items: center; justify-content: center;
+			padding: 0; line-height: 1; margin-right: 8px; transition: 0.2s;
+		}
+		.mi-btn-circulo:hover { background: #cc8400; transform: scale(1.05); }
+
+		.mi-numero-cantidad {
+			font-size: 16px; font-weight: 800; color: #333;
+			border: 1px solid #e0e0e0; border-radius: 8px;
+			background-color: #fff; padding: 6px 12px;
+			min-width: 48px; text-align: center;
+		}
+
+		/* --- HTMX & SCROLL --- */
+		.fade-in-scroll { opacity: 0; transform: translateY(20px); animation: fadeInUp 0.6s ease-out forwards; }
+		@keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
+
+		.htmx-indicator {
+			position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+			z-index: 9999; background: rgba(255,255,255,0.9); padding: 10px 20px;
+			border-radius: 50px; box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+			opacity: 0; transition: opacity 200ms ease-in-out; pointer-events: none;
+		}
+		.htmx-request .htmx-indicator, .htmx-request.htmx-indicator { opacity: 1; }
+
+		#all-products { min-height: 800px; }
+
+		.cart-overlay {
+			position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+			background: rgba(0,0,0,0.5); z-index: 9998;
+			visibility: hidden; opacity: 0; transition: 0.3s;
+		}
+		.cart-overlay.active { visibility: visible; opacity: 1; }
+
+		/* =========================================
+           BOTÓN DE FAVORITOS (CORAZÓN) - REFINADO
+        ========================================= */
+		.mi-btn-fav {
+			width: 40px;
+			height: 40px;
+			border-radius: 50%;
+			background-color: #fff;
+			border: 1px solid transparent; /* Borde sutil por defecto */
+			color: #ccc;
+			display: flex !important;
+			align-items: center;
+			justify-content: center;
+			padding: 0;
+			line-height: 1;
+			font-size: 20px; /* Tamaño base del icono */
+			cursor: pointer;
+			transition: all 0.3s ease;
+			text-decoration: none !important;
+			flex-shrink: 0;
+		}
+
+		.mi-btn-fav i {
+			font-size: 20px !important;
+			margin: 0; padding: 0;
+			transition: transform 0.3s;
+		}
+
+		.mi-btn-fav:hover {
+			border-color: transparent;
+			color: #e69500;
+			transform: scale(1.05);
+		}
+
+		/* ESTADO ACTIVO */
+		.mi-btn-fav.activo {
+			background-color: #fff;
+			border: 2px solid transparent; /* CORREGIDO: 2px se ve mejor que 10px */
+			color: #e69500;
+			box-shadow: 0 2px 8px rgba(230, 149, 0, 0.2);
+		}
+
+		.mi-btn-fav.activo i {
+			transform: scale(1.1);
+		}
+		body {background-color: #E9ECEF !important; /* Un gris medio-claro, pero notable (antes era #ededed) */
+
+			/* El resto dejalo igual */
+			font-family: 'Roboto', sans-serif;
+			color: #333; }
+
+		/* --- ESTILOS DE COLECCIONES --- */
+		.single-collection {
+			position: relative;
+			overflow: hidden;
+			border-radius: 15px;
+			height: 400px; /* Altura imponente para la colección */
+			margin-bottom: 30px;
+			transition: all 0.4s ease;
+			cursor: pointer;
+			box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+		}
+
+		.single-collection:hover { transform: translateY(-10px); }
+
+
+		.single-collection:hover .collection-img { transform: scale(1.1); }
+
+		.collection-overlay {
+			position: absolute;
+			bottom: 0;
+			left: 0;
+			width: 100%;
+			height: 60%; /* Sombra que sube desde abajo */
+			background: linear-gradient(transparent, rgba(0,0,0,0.8));
+			display: flex;
+			flex-direction: column;
+			justify-content: flex-end;
+			padding: 30px;
+			color: #fff;
+		}
+
+		.collection-overlay h3 {
+			font-family: 'Montserrat', sans-serif;
+			font-weight: 700;
+			font-size: 24px;
+			margin-bottom: 5px;
+			color: #fff;
+			text-transform: uppercase;
+			letter-spacing: 1px;
+		}
+
+		.collection-overlay p {
+			font-size: 14px;
+			color: rgba(255,255,255,0.9);
+			margin-bottom: 15px;
+			font-weight: 300;
+		}
+
+		.btn-collection {
+			background-color: var(--gold, #e69500);
+			color: #fff !important;
+			border: none;
+			padding: 8px 25px;
+			border-radius: 50px;
+			font-size: 12px;
+			font-weight: 700;
+			width: fit-content;
+			text-transform: uppercase;
+			transition: 0.3s;
+		}
+
+		.btn-collection:hover { background-color: #cc8400; letter-spacing: 1px; }
+
+		.single-collection { position: relative; overflow: hidden; border-radius: 8px; }
+		.collection-overlay {
+			position: absolute;
+			top: 0; left: 0;
+			width: 100%; height: 100%;
+			background: rgba(0,0,0,0.4); /* Oscurece la imagen para que el texto resalte */
+			display: flex;
+			flex-direction: column;
+			justify-content: center;
+			align-items: center;
+			color: #fff;
+			opacity: 0.9;
+			transition: 0.3s;
+			padding: 20px;
+			text-align: center;
+		}
+		.single-collection:hover .collection-overlay { background: rgba(0,0,0,0.6); }
+		/* 1. Contenedor de la colección con la sombra que te gustaba */
+		.single-collection {
+			position: relative;
+			overflow: hidden;
+			border-radius: 12px;
+			background: #fff;
+
+			/* 🚀 AGREGÁ ESTO PARA BAJAR EL CONTENEDOR DE LA IMAGEN Y NO SE CORTE */
+			margin-top: 60px; /* Ajustá este valor (20px, 40px, etc.) según cuánto quieras bajarla */
+			width: 100%;
+			/* 1. AGREGÁ ESTO: Controla el alto total de la tarjeta */
+			height: 370px; /* 👈 Ajustá este valor (200px, 250px, etc.) hasta que te guste */
+
+			box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15) !important;
+
+			transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+			box-shadow 0.4s ease;
+		}
+
+		/* 2. Efecto al pasar el mouse (Hover) */
+		.single-collection:hover {
+			transform: translateY(-10px); /* La tarjeta "salta" un poquito */
+			box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25) !important; /* Sombra más fuerte al subir */
+		}
+
+		/* 3. Aseguramos que la imagen no tape los bordes redondeados */
+		.collection-img {
+			width: 100%;
+			height: 450px; /* Altura fija para que todas las cards sean iguales */
+			object-fit: cover;
+			transition: transform 0.5s ease;
+		}
+
+		/* 4. Zoom suave en la imagen al hacer hover */
+		.single-collection:hover .collection-img {
+			transform: scale(1.1);
+		}
+
+		/* 5. Estilo del texto sobre la sombra */
+		.collection-overlay {
+			background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0) 100%);
+			display: flex;
+			flex-direction: column;
+			justify-content: flex-end; /* Texto abajo para no tapar el mueble */
+			padding: 30px;
+		}
+
+		/* Espaciado entre las tarjetas del slider */
+		.collections-slider .slick-slide {
+			padding: 20px 0; /* Espacio para que la sombra no se corte */
+		}
+
+		/* Color de los puntitos de navegación */
+		.slick-dots li button:before {
+			color: #e69500 !important;
+			font-size: 12px;
+		}
+
+		/* Estilo de las flechas */
+		.slick-prev:before, .slick-next:before {
+			color: #e69500 !important;
+			font-size: 30px;
+		}
+
+		/* Evitar que el slider se rompa mientras carga */
+		.collections-slider:not(.slick-initialized) {
+			display: flex;
+			overflow: hidden;
+		}
+		.collections-slider:not(.slick-initialized) > div {
+			width: 50%;
+			padding: 15px;
+		}
+
+		/* --- FLECHAS ESTILO EL EDÉN --- */
+		.slick-prev-eden, .slick-next-eden {
+			position: absolute;
+			top: 50%;
+			transform: translateY(-50%);
+			z-index: 10;
+			background: transparent; /* Sin fondo circular */
+			border: none;
+			outline: none;
+			cursor: pointer;
+			color: #e3a033; /* El dorado de la imagen */
+			transition: all 0.3s ease;
+			padding: 0;
+
+			font-size: 60px;
+			font-weight: 900;
+			-webkit-text-stroke: 1.5px #e3a033;
+		}
+
+		/* Tamaño de la flecha */
+		.slick-prev-eden span, .slick-next-eden span {
+			color: #e3a033;
+			font-size: 45px; /* Bien grandes como en la foto */
+			font-weight: 400; /* Finas y elegantes */
+			-webkit-text-stroke: 4px #e3a033;
+		}
+
+		/* Posicionamiento fuera del contenedor */
+		.slick-prev-eden { left: -100px; }
+		.slick-next-eden { right: -100px; }
+
+		/* Efecto Hover */
+		.slick-prev-eden:hover, .slick-next-eden:hover {
+			color: #cc8400;
+			transform: translateY(-50%) scale(1.4);
+		}
+
+		/* --- ESPACIADO SOLICITADO --- */
+		/* Bajamos el contenedor de las imágenes para que respire */
+		.collections-content {
+			padding-top: 60px; /* Esto empuja las tarjetas con bordes redondeados hacia abajo */
+			padding-left: 80px; /* Espacio para que las flechas no se encimen */
+			padding-right: 80px;
+		}
+
+		/* Aseguramos que los puntitos (dots) también sean dorados */
+		.slick-dots li button:before {
+			color: #e3a033 !important;
+			font-size: 10px;
+		}
+		.slick-dots li.slick-active button:before {
+			color: #e3a033 !important;
+			opacity: 1;
+			font-size: 14px; /* El puntito activo más grande */
+		}
+
+		/* --- FLECHAS COMPARTIDAS (Banner y Colecciones) --- */
+		.slick-prev-eden, .slick-next-eden {
+			position: absolute;
+			top: 50%;
+			transform: translateY(-50%);
+			z-index: 999; /* Para que floten sobre las imágenes */
+			background: transparent;
+			border: none;
+			outline: none;
+			cursor: pointer;
+			color: #e3a033; /* El dorado de Silvero */
+			transition: all 0.3s ease;
+			padding: 0;
+		}
+
+		/* Grosor y tamaño de los iconos Linearicons */
+		.slick-prev-eden span, .slick-next-eden span {
+			font-size: 60px;
+			font-weight: 400;
+			-webkit-text-stroke: 1.5px #e3a033; /* 🚀 Control de grosor */
+		}
+
+		/* Hover compartido */
+		.slick-prev-eden:hover, .slick-next-eden:hover {
+			color: #cc8400;
+			transform: translateY(-50%) scale(1.2);
+		}
+
+		/* Posición de las flechas en el Banner (un poco más cerradas que en colecciones) */
+		.home-banner-slider .slick-prev-eden { left: 80px; }
+		.home-banner-slider .slick-next-eden { right: 80px; }
+
+		/* Posición de las flechas en Colecciones (más abiertas) */
+		.collections-slider .slick-prev-eden { left: -100px; }
+		.collections-slider .slick-next-eden { right: -100px; }
+
+
+		/* --- ALINEACIÓN INFERIOR IZQUIERDA --- */
+
+		.welcome-hero-content {
+			height: 100%; /* Asegura que el contenido use todo el alto del banner */
+		}
+
+		.welcome-hero-txt {
+			height: 380px !important; /* Debe coincidir con el alto de .single-slide-item */
+			display: flex;
+			flex-direction: column;
+			justify-content: flex-end; /* 🚀 Empuja todo hacia el fondo */
+			align-items: flex-start;   /* 🚀 Alinea todo a la izquierda */
+			padding-bottom: 50px !important; /* Espacio respecto al borde inferior */
+			padding-left: 60px !important;   /* Espacio respecto al borde izquierdo */
+			text-align: left;
+		}
+
+		/* Ajuste de márgenes para que no haya huecos entre textos */
+		.welcome-hero-txt h4 { margin-bottom: 5px !important; }
+		.welcome-hero-txt h2 { margin: 10px 0 !important; line-height: 1.2; }
+		.welcome-hero-txt p { margin-bottom: 25px !important; max-width: 90%; }
+
+		/* --- ADAPTACIÓN DE BOTONES --- */
+		.welcome-hero-txt div {
+			display: flex;
+			gap: 15px;
+			width: 100%; /* Los botones se adaptan al ancho disponible */
+		}
+
+		.btn-cart.welcome-add-cart {
+			flex: 0 1 auto; /* Los botones crecen según su contenido pero no se deforman */
+			white-space: nowrap; /* Evita que el texto del botón se parta */
+			padding: 12px 25px;
+			font-size: 14px;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			gap: 8px;
+			border-radius: 4px; /* Consistente con el estilo de muebles */
+		}
+	</style>
+</head>
+
+<body>
+
+<div th:replace="fragments :: header-principal"></div>
+<div th:replace="fragments :: banner-home"></div>
+
+<section id="collections-eden">
+	<div class="container white-panel">
+		<div class="section-header">
+			<h2>Nuestras Colecciones</h2>
+		</div>
+
+		<!-- 🚀 CONTENEDOR DEL SLIDER -->
+		<div class="collections-slider">
+
+			<!-- BUCLE DINÁMICO (Sin las columnas de Bootstrap) -->
+			<div th:each="col : ${activeCollections}" style="padding: 0 15px;">
+				<div class="single-collection">
+					<a th:href="@{/collection-view/{id}(id=${col.id})}" class="collection-link">
+						<img th:src="${col.imageUrl}" th:alt="${col.name}" class="collection-img">
+						<div class="collection-overlay">
+							<div class="overlay-text">
+								<h3 th:text="${col.name}">Nombre</h3>
+								<p th:text="${col.description}">Descripción breve...</p>
+								<span class="btn-explore">Explorar Selección</span>
+							</div>
+						</div>
+					</a>
+				</div>
+			</div>
+
+		</div>
+	</div>
+</section>
+<section id="new-arrivals">
+	<div class="container white-panel">
+		<div class="section-header"><h2>Nuevos Ingresos</h2></div>
+		<div class="new-arrivals-content">
+			<div class="row">
+				<div class="col-md-3 col-sm-4" th:each="product : ${productsNew}">
+
+					<div class="single-new-arrival"
+						 th:fragment="cardProducto"
+						 th:id="'card-producto-' + ${product.id}">
+
+						<div class="single-new-arrival-bg">
+							<a th:href="@{/product/{id}(id=${product.id})}">
+								<img th:src="@{${product.imageUrl}}" alt="img">
+							</a>
+						</div>
+						<div class="single-new-arrival-caption">
+							<h4><a th:href="@{/product/{id}(id=${product.id})}" th:text="${product.name}">Nombre</a></h4>
+							<p class="arrival-product-price" th:text="${'$ ' + product.price}">$0.00</p>
+						</div>
+
+						<div class="mis-acciones-producto">
+
+							<div style="flex-grow: 1;"
+								 th:with="safeId=${T(java.lang.Long).valueOf(product['id'].toString())},
+              					  qtyInCart=${(productQuantities != null and productQuantities.containsKey(safeId)) ? productQuantities.get(safeId) : 0}"
+								 th:id="'acciones-cart-' + ${safeId}"
+								 th:fragment="cartActionsFragment">
+
+								<a href="javascript:void(0);"
+								   class="mi-btn-agregar"
+								   th:if="${qtyInCart == 0}"
+								   th:onclick="'agregarConAjax(' + ${safeId} + ')'">
+									Agregar al carrito
+								</a>
+
+
+								<div class="mi-control-cantidad" th:if="${qtyInCart != null && qtyInCart > 0}">
+									<button class="mi-btn-circulo" th:onclick="'updateCardQty(' + ${safeId} + ', -1)'">-</button>
+									<button class="mi-btn-circulo" th:onclick="'updateCardQty(' + ${safeId} + ', 1)'">+</button>
+									<span class="mi-numero-cantidad"
+										  th:id="'card-qty-val-' + ${safeId}"
+										  th:text="${qtyInCart}">1</span>
+								</div>
+							</div>
+
+							<a href="javascript:void(0);"
+							   th:fragment="btnFavorito"
+							   th:with="
+                                   currentId=${product != null ? T(java.lang.Long).valueOf(product['id'].toString()) : productId},
+                                   currentFav=${isFavorite != null ? isFavorite : #lists.contains(favoritesIds ?: {}, currentId)}"
+							   th:id="'btn-fav-' + ${currentId}"
+							   class="mi-btn-fav"
+							   th:classappend="${currentFav} ? 'activo' : ''"
+							   th:onclick="'toggleFavorite(' + ${currentId} + ')'"
+							   title="Añadir a favoritos">
+
+								<i class="fa" th:classappend="${currentFav} ? 'fa-heart' : 'fa-heart-o'"></i>
+							</a>
+
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</section>
+<section id="feature">
+	<div class="container white-panel">
+		<div class="section-header"><h2>Productos Destacados</h2></div>
+		<div class="feature-content">
+			<div class="row">
+				<div class="col-md-3 col-sm-4" th:each="product : ${featuredProducts}">
+
+					<div class="single-new-arrival"
+						 th:id="'card-producto-' + ${product.id}">
+
+						<div class="single-new-arrival-bg">
+							<a th:href="@{/product/{id}(id=${product.id})}">
+								<img th:src="@{${product.imageUrl}}" alt="img">
+							</a>
+						</div>
+
+						<div class="single-new-arrival-caption">
+							<h4><a th:href="@{/product/{id}(id=${product.id})}" th:text="${product.name}">Nombre</a></h4>
+							<p class="arrival-product-price" th:text="${'$ ' + product.price}">$0.00</p>
+						</div>
+
+						<div class="mis-acciones-producto">
+
+							<div style="flex-grow: 1;"
+								 th:with="safeId=${T(java.lang.Long).valueOf(product['id'].toString())},
+              					  qtyInCart=${(productQuantities != null and productQuantities.containsKey(safeId)) ? productQuantities.get(safeId) : 0}"
+								 th:id="'acciones-cart-' + ${safeId}"
+								 th:fragment="cartActionsFragment">
+
+								<a href="javascript:void(0);"
+								   class="mi-btn-agregar"
+								   th:if="${qtyInCart == 0}"
+								   th:onclick="'agregarConAjax(' + ${safeId} + ')'">
+									Agregar al carrito
+								</a>
+
+
+								<div class="mi-control-cantidad" th:if="${qtyInCart != null && qtyInCart > 0}">
+									<button class="mi-btn-circulo" th:onclick="'updateCardQty(' + ${safeId} + ', -1)'">-</button>
+									<button class="mi-btn-circulo" th:onclick="'updateCardQty(' + ${safeId} + ', 1)'">+</button>
+									<span class="mi-numero-cantidad"
+										  th:id="'card-qty-val-' + ${safeId}"
+										  th:text="${qtyInCart}">1</span>
+								</div>
+							</div>
+
+							<a href="javascript:void(0);"
+							   th:fragment="btnFavorito"
+							   th:with="
+                                   currentId=${product != null ? T(java.lang.Long).valueOf(product['id'].toString()) : productId},
+                                   currentFav=${isFavorite != null ? isFavorite : #lists.contains(favoritesIds ?: {}, currentId)}"
+							   th:id="'btn-fav-' + ${currentId}"
+							   class="mi-btn-fav"
+							   th:classappend="${currentFav} ? 'activo' : ''"
+							   th:onclick="'toggleFavorite(' + ${currentId} + ')'"
+							   title="Añadir a favoritos">
+
+								<i class="fa" th:classappend="${currentFav} ? 'fa-heart' : 'fa-heart-o'"></i>
+							</a>
+
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</section>
+
+
+
+<div th:replace="fragments :: footer-principal"></div>
+
+<div class="cart-overlay" onclick="toggleCart()"></div>
+
+<div th:replace="fragments :: sideCartPanel"></div>
+<script th:src="@{/assets/js/cart-logic.js}" ></script>
+<script th:src="@{/assets/js/sliders.js}"></script>
+<script th:src="@{/assets/js/jquery.js}"></script>
+
+<!-- 1. JQUERY (Base fundamental para Slick y Bootstrap) -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<!-- 2. SLICK JS (Librería de los sliders) -->
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
+
+<!-- 3. BOOTSTRAP (Para menús y otros componentes de UI) -->
+<script th:src="@{/assets/js/bootstrap.min.js}"></script>
+
+<!-- 4. TU LÓGICA DE INICIALIZACIÓN -->
+<script>
+	$(document).ready(function(){
+		// Banner Principal (Draggable + Arrows)
+		$('.home-banner-slider').slick({
+			infinite: true,
+			slidesToShow: 1,
+			slidesToScroll: 1,
+			autoplay: true,
+			autoplaySpeed: 6000,
+			fade: true,
+			cssEase: 'linear',
+			dots: true,
+			draggable: true,
+			prevArrow: '<button type="button" class="slick-prev-eden"><span class="lnr lnr-chevron-left"></span></button>',
+			nextArrow: '<button type="button" class="slick-next-eden"><span class="lnr lnr-chevron-right"></span></button>'
+		});
+
+		// Slider de Colecciones (2 por pantalla)
+		$('.collections-slider').slick({
+			infinite: true,
+			slidesToShow: 2,
+			slidesToScroll: 1,
+			autoplay: true,
+			dots: true,
+			prevArrow: '<button type="button" class="slick-prev-eden"><span class="lnr lnr-chevron-left"></span></button>',
+			nextArrow: '<button type="button" class="slick-next-eden"><span class="lnr lnr-chevron-right"></span></button>',
+			responsive: [{
+				breakpoint: 768,
+				settings: { slidesToShow: 1 }
+			}]
+		});
+	});
+</script>
+
+<!-- 5. ARCHIVOS JS EXTERNOS (Si sliders.js ya tiene el código de arriba, no necesitas el tag <script> anterior) -->
+<script th:src="@{/assets/js/sliders.js}"></script>
+
+</body>
+</html>

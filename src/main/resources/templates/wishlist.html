@@ -1,0 +1,258 @@
+<!doctype html>
+<html class="no-js" lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title>Silvero | Mis Favoritos</title>
+    <th:block th:replace="~{fragments :: head-css}"></th:block>
+
+    <style>
+        .nav-btn.shop-item > a,
+        .nav-btn.shop-item > a i { color: #e69500 !important; }
+
+        /* --- ESTILOS DE TARJETA --- */
+        .single-new-arrival {
+            background: #fff;
+            border-radius: 13px;
+            padding: 12px;
+            margin-bottom: 30px;
+            transition: all 0.3s ease;
+            text-align: left;
+            border: 2px solid #f9f9f9;
+            height: 320px;
+            max-width: 280px;
+            margin-left: auto; margin-right: auto;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            position: relative;
+        }
+        .single-new-arrival:hover { transform: translateY(-5px); box-shadow: 0 15px 35px rgba(0,0,0,0.1); }
+
+        .single-new-arrival-bg {
+            background-color: #f4f4f4;
+            border-radius: 13px;
+            height: 205px !important;
+            min-height: 0 !important;
+            width: 100%;
+            margin-bottom: 1px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            position: relative;
+        }
+        .single-new-arrival-bg img {
+            max-height: 150%; max-width: 150%;
+            object-fit: contain; mix-blend-mode: multiply;
+            transition: transform 0.3s;
+        }
+        .single-new-arrival:hover .single-new-arrival-bg img { transform: scale(1.05); }
+
+        .single-new-arrival-caption { padding: 0 5px; margin-bottom: 2px; }
+
+        /* Ajuste para que el nombre no rompa el diseño */
+        .single-new-arrival h4 a {
+            color: #333; font-weight: 700; font-size: 15px;
+            margin-top: 5px; margin-bottom: 2px;
+            text-decoration: none; display: block;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        }
+        .arrival-product-price { color: #666; font-weight: 500; font-size: 14px; margin: 0; }
+
+        /* --- BOTONES Y ACCIONES --- */
+        .mis-acciones-producto {
+            width: 100%;
+            margin-top: auto;
+            display: flex; /* Flex para alinear carrito y corazón */
+            align-items: center;
+            gap: 10px;
+        }
+
+        .mi-btn-agregar, .mi-control-cantidad {
+            flex-grow: 1; /* El carrito ocupa el espacio sobrante */
+        }
+
+        .mi-btn-agregar {
+            background-color: #e69500; color: white !important;
+            border-radius: 50px;
+            display: flex; align-items: center; justify-content: center;
+            width: 100%; height: 35px;
+            font-size: 12px; font-weight: 650;
+            text-decoration: none; transition: 0.2s; cursor: pointer; border: none;
+            box-shadow: 0 4px 6px rgba(230, 149, 0, 0.15);
+        }
+        .mi-btn-agregar:hover {
+            background-color: #cc8400;
+            color: white !important;
+            border-radius: 50px;
+            display: flex; align-items: center; justify-content: center;
+            width: 100%; height: 35px;
+            font-size: 12px; font-weight: 650;
+            text-decoration: none; transition: 0.2s; cursor: pointer; border: none;
+            box-shadow: 0 4px 6px rgba(230, 149, 0, 0.15);
+        }
+
+        .mi-control-cantidad { display: flex; align-items: center; width: 100%; height: 40px; }
+
+        .mi-btn-circulo {
+            width: 35px; height: 35px; border-radius: 50%;
+            background: #e69500; color: #fff; border: none;
+            font-size: 18px; font-weight: bold; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            padding: 0; line-height: 1; margin-right: 8px; transition: 0.2s;
+        }
+        .mi-btn-circulo:hover { background: #cc8400; transform: scale(1.05); }
+
+        .mi-numero-cantidad {
+            font-size: 16px; font-weight: 800; color: #333;
+            border: 1px solid #e0e0e0; border-radius: 8px;
+            background-color: #fff; padding: 6px 12px;
+            min-width: 48px; text-align: center;
+        }
+
+        /* --- HTMX & SCROLL --- */
+        .fade-in-scroll { opacity: 0; transform: translateY(20px); animation: fadeInUp 0.6s ease-out forwards; }
+        @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
+
+        .htmx-indicator {
+            position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+            z-index: 9999; background: rgba(255,255,255,0.9); padding: 10px 20px;
+            border-radius: 50px; box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+            opacity: 0; transition: opacity 200ms ease-in-out; pointer-events: none;
+        }
+        .htmx-request .htmx-indicator, .htmx-request.htmx-indicator { opacity: 1; }
+
+        #all-products { min-height: 800px; }
+
+        .cart-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5); z-index: 9998;
+            visibility: hidden; opacity: 0; transition: 0.3s;
+        }
+        .cart-overlay.active { visibility: visible; opacity: 1; }
+
+        /* =========================================
+           BOTÓN DE FAVORITOS (CORAZÓN) - REFINADO
+        ========================================= */
+        .mi-btn-fav {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #fff;
+            border: 1px solid transparent; /* Borde sutil por defecto */
+            color: #ccc;
+            display: flex !important;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+            line-height: 1;
+            font-size: 20px; /* Tamaño base del icono */
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none !important;
+            flex-shrink: 0;
+        }
+
+        .mi-btn-fav i {
+            font-size: 20px !important;
+            margin: 0; padding: 0;
+            transition: transform 0.3s;
+        }
+
+        .mi-btn-fav:hover {
+            border-color: transparent;
+            color: #e69500;
+            transform: scale(1.05);
+        }
+
+        /* ESTADO ACTIVO */
+        .mi-btn-fav.activo {
+            background-color: #fff;
+            border: 2px solid transparent; /* CORREGIDO: 2px se ve mejor que 10px */
+            color: #e69500;
+            box-shadow: 0 2px 8px rgba(230, 149, 0, 0.2);
+        }
+
+        .mi-btn-fav.activo i {
+            transform: scale(1.1);
+        }
+
+    </style>
+</head>
+
+<body>
+<div th:replace="~{fragments :: header-principal}"></div>
+
+<section id="wishlist-container">
+    <div class="container white-panel">
+        <div class="section-header">
+            <h2>Mis Favoritos</h2>
+        </div>
+
+        <div th:if="${#lists.isEmpty(favoriteProducts)}" class="empty-wishlist">
+            <i class="fa fa-heart-o"></i>
+            <h3>Aún no tienes productos favoritos</h3>
+            <p>Explora nuestra tienda y guarda lo que más te guste.</p>
+            <br>
+            <a href="/products" class="mi-btn-agregar" style="width: 200px; margin: 0 auto;">Ir a la tienda</a>
+        </div>
+
+        <div class="row" th:if="${not #lists.isEmpty(favoriteProducts)}">
+            <div class="col-md-3 col-sm-4" th:each="product : ${favoriteProducts}">
+
+                <div class="single-new-arrival" th:id="'card-producto-' + ${product.id}">
+                    <div class="single-new-arrival-bg">
+                        <a th:href="@{/product/{id}(id=${product.id})}">
+                            <img th:src="@{${product.imageUrl}}" alt="img">
+                        </a>
+                    </div>
+                    <div class="single-new-arrival-caption">
+                        <h4><a th:href="@{/product/{id}(id=${product.id})}" th:text="${product.name}">Nombre</a></h4>
+                        <p class="arrival-product-price" th:text="${'$ ' + product.price}">$0.00</p>
+                    </div>
+
+                    <div class="mis-acciones-producto">
+
+                        <div style="flex-grow: 1;"
+                             th:id="'acciones-cart-' + ${product.id}"
+                             th:fragment="cartActionsFragment"
+                             th:with="safeId=${idDirecto != null ? idDirecto : product.id},
+                  qtyKey=${safeId + ''},
+                  mapQty=${productQuantities != null ? productQuantities.get(qtyKey) : null},
+                  finalQty=${cantidadDirecta != null ? cantidadDirecta : mapQty}">
+
+                            <a href="javascript:void(0);"
+                               class="mi-btn-agregar"
+                               th:if="${finalQty == null || finalQty == 0}"
+                               th:onclick="'agregarConAjax(' + ${safeId} + ')'">
+                                Agregar al carrito
+                            </a>
+
+                            <div class="mi-control-cantidad" th:if="${finalQty != null && finalQty > 0}">
+                                <button class="mi-btn-circulo" th:onclick="'updateCardQty(' + ${safeId} + ', -1)'">-</button>
+                                <button class="mi-btn-circulo" th:onclick="'updateCardQty(' + ${safeId} + ', 1)'">+</button>
+                                <span class="mi-numero-cantidad" th:id="'card-qty-val-' + ${safeId}" th:text="${finalQty}">1</span>
+                            </div>
+                        </div>
+
+                        <a href="javascript:void(0);"
+                           class="mi-btn-fav activo"
+                           th:id="'btn-fav-' + ${product.id}"
+                           th:onclick="'toggleFavorite(' + ${product.id} + ')'">
+                            <i class="fa fa-heart"></i>
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</section>
+
+<div th:replace="~{fragments :: footer-principal}"></div>
+
+<div class="cart-overlay" onclick="toggleCart()"></div>
+<div th:replace="~{fragments :: sideCartPanel}"></div>
+<script th:src="@{/assets/js/cart-logic.js}"></script>
+</body>
+</html>

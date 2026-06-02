@@ -1,0 +1,330 @@
+<!doctype html>
+<html class="no-js" lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Silvero | Tienda</title>
+
+    <th:block th:replace="~{fragments :: head-css}"></th:block>
+
+    <style>
+        .nav-btn.shop-item > a,
+        .nav-btn.shop-item > a i { color: #e69500 !important; }
+
+        /* --- ESTILOS DE TARJETA --- */
+        .single-new-arrival {
+            background: #F8F9FA;
+            border-radius: 13px;
+            padding: 12px;
+            margin-bottom: 30px;
+            transition: all 0.3s ease;
+            text-align: left;
+            border: 2px solid #eee;
+            height: 320px;
+            max-width: 280px;
+            margin-left: auto; margin-right: auto;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            position: relative;
+        }
+        .single-new-arrival:hover { transform: translateY(-5px); box-shadow: 0 15px 35px rgba(0,0,0,0.1); }
+
+        .single-new-arrival-bg {
+            background-color: #fff;
+            border-radius: 13px;
+            height: 205px !important;
+            min-height: 0 !important;
+            width: 100%;
+            margin-bottom: 1px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            position: relative;
+        }
+        .single-new-arrival-bg img {
+            max-height: 100%; max-width: 100%;
+            object-fit: contain; mix-blend-mode: multiply;
+            transition: transform 0.3s;
+        }
+        .single-new-arrival:hover .single-new-arrival-bg img { transform: scale(1.05); }
+
+        .single-new-arrival-caption { padding: 0 5px; margin-bottom: 2px; }
+
+        /* Ajuste para que el nombre no rompa el diseño */
+        .single-new-arrival h4 a {
+            color: #333; font-weight: 700; font-size: 15px;
+            margin-top: 5px; margin-bottom: 2px;
+            text-decoration: none; display: block;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        }
+        .arrival-product-price { color: #666; font-weight: 500; font-size: 14px; margin: 0; }
+
+        /* --- BOTONES Y ACCIONES --- */
+        .mis-acciones-producto {
+            width: 100%;
+            margin-top: auto;
+            display: flex; /* Flex para alinear carrito y corazón */
+            align-items: center;
+            gap: 10px;
+        }
+
+        .mi-btn-agregar, .mi-control-cantidad {
+            flex-grow: 1; /* El carrito ocupa el espacio sobrante */
+        }
+
+        .mi-btn-agregar {
+            background-color: #e69500; color: white !important;
+            border-radius: 50px;
+            display: flex; align-items: center; justify-content: center;
+            width: 100%; height: 35px;
+            font-size: 12px; font-weight: 650;
+            text-decoration: none; transition: 0.2s; cursor: pointer; border: none;
+            box-shadow: 0 4px 6px rgba(230, 149, 0, 0.15);
+        }
+        .mi-btn-agregar:hover {
+            background-color: #cc8400;
+            color: white !important;
+            border-radius: 50px;
+            display: flex; align-items: center; justify-content: center;
+            width: 100%; height: 35px;
+            font-size: 12px; font-weight: 650;
+            text-decoration: none; transition: 0.2s; cursor: pointer; border: none;
+            box-shadow: 0 4px 6px rgba(230, 149, 0, 0.15);
+        }
+
+        .mi-control-cantidad { display: flex; align-items: center; width: 100%; height: 40px; }
+
+        .mi-btn-circulo {
+            width: 35px; height: 35px; border-radius: 50%;
+            background: #e69500; color: #fff; border: none;
+            font-size: 18px; font-weight: bold; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            padding: 0; line-height: 1; margin-right: 8px; transition: 0.2s;
+        }
+        .mi-btn-circulo:hover { background: #cc8400; transform: scale(1.05); }
+
+        .mi-numero-cantidad {
+            font-size: 16px; font-weight: 800; color: #333;
+            border: 1px solid #e0e0e0; border-radius: 8px;
+            background-color: #fff; padding: 6px 12px;
+            min-width: 48px; text-align: center;
+        }
+
+        /* --- HTMX & SCROLL --- */
+        .fade-in-scroll { opacity: 0; transform: translateY(20px); animation: fadeInUp 0.6s ease-out forwards; }
+        @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
+
+        .htmx-indicator {
+            position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+            z-index: 9999; background: rgba(255,255,255,0.9); padding: 10px 20px;
+            border-radius: 50px; box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+            opacity: 0; transition: opacity 200ms ease-in-out; pointer-events: none;
+        }
+        .htmx-request .htmx-indicator, .htmx-request.htmx-indicator { opacity: 1; }
+
+        #all-products { min-height: 800px; }
+
+        .cart-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5); z-index: 9998;
+            visibility: hidden; opacity: 0; transition: 0.3s;
+        }
+        .cart-overlay.active { visibility: visible; opacity: 1; }
+
+        /* =========================================
+           BOTÓN DE FAVORITOS (CORAZÓN) - REFINADO
+        ========================================= */
+        .mi-btn-fav {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #fff;
+            border: 1px solid transparent; /* Borde sutil por defecto */
+            color: #ccc;
+            display: flex !important;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+            line-height: 1;
+            font-size: 20px; /* Tamaño base del icono */
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none !important;
+            flex-shrink: 0;
+        }
+
+        .mi-btn-fav i {
+            font-size: 20px !important;
+            margin: 0; padding: 0;
+            transition: transform 0.3s;
+        }
+
+        .mi-btn-fav:hover {
+            border-color: transparent;
+            color: #e69500;
+            transform: scale(1.05);
+        }
+
+        /* ESTADO ACTIVO */
+        .mi-btn-fav.activo {
+            background-color: #fff;
+            border: 2px solid transparent; /* CORREGIDO: 2px se ve mejor que 10px */
+            color: #e69500;
+            box-shadow: 0 2px 8px rgba(230, 149, 0, 0.2);
+        }
+
+        .mi-btn-fav.activo i {
+            transform: scale(1.1);
+        }
+        body {background-color: #E9ECEF !important; /* Un gris medio-claro, pero notable (antes era #ededed) */
+
+            /* El resto dejalo igual */
+            font-family: 'Roboto', sans-serif;
+            color: #333; }
+
+        .card-container {
+            max-width: 1184px; margin: 0 auto 30px auto; background-color: #F8F9FA;
+            border-radius: 4px; box-shadow: 0 1px 2px 0 rgba(0,0,0,.12); padding: 40px;
+        }
+    </style>
+</head>
+
+<body>
+
+<div th:replace="~{fragments :: header-principal}"></div>
+
+<section id="all-products">
+    <div class="container white-panel">
+        <div class="section-header">
+            <h2>Catálogo Completo</h2>
+        </div>
+
+        <div class="row" style="margin-bottom: 20px;">
+            <div class="col-md-12">
+                <div style="display: flex; justify-content: flex-end; align-items: center;">
+                    <label style="margin-right: 10px; color: #666; font-weight: 400;">Ordenar por:</label>
+                    <form action="/products" method="get" style="margin: 0;">
+                        <input type="hidden" name="keyword" th:value="${keyword}">
+                        <select name="sort" class="form-control" onchange="this.form.submit()"
+                                style="width: 180px; border-radius: 4px; border: 1px solid #ddd; color: #555;">
+                            <option value="new" th:selected="${sort == 'new'}">Más Nuevos</option>
+                            <option value="price_asc" th:selected="${sort == 'price_asc'}">Menor precio</option>
+                            <option value="price_desc" th:selected="${sort == 'price_desc'}">Mayor precio</option>
+                        </select>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div id="contenedor-dinamico" th:fragment="lista-productos">
+            <div class="htmx-indicator">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <div class="spinner-border text-warning" role="status" style="width: 2rem; height: 2rem; color: #e69500; border-width: 3px;"></div>
+                    <span style="color: #666; font-weight: 500; font-size: 14px;">Cargando más...</span>
+                </div>
+            </div>
+
+            <div class="new-arrivals-content">
+                <div class="row">
+                    <div class="col-md-12 text-center" th:if="${allProducts.empty}">
+                        <h3 style="color: #999; margin-top: 50px; font-weight: 300;">No se encontraron productos.</h3>
+                    </div>
+
+                    <div class="col-md-3 col-sm-4 product-card fade-in-scroll"
+                         th:each="product, iterStat : ${allProducts}"
+                         th:if="${product['activo'] != false}"
+                         th:fragment="items-scroll">
+
+                        <div th:if="${iterStat.last and currentPage < totalPages - 1}"
+                             th:attr="hx-get=@{/products(page=${currentPage + 1}, keyword=${keyword}, sort=${sort})}"
+                             hx-trigger="revealed"
+                             hx-swap="afterend"
+                             hx-target="closest .product-card"
+                             hx-indicator=".htmx-indicator">
+                        </div>
+
+                        <div class="single-new-arrival" th:id="'card-producto-' + ${product['id']}"
+                             th:fragment="cardProducto">
+
+                            <div class="single-new-arrival-bg">
+                                <span class="label-new" th:if="${product['new']}"
+                                      style="position: absolute; top: 15px; left: 15px; background: #e69500; color: #fff; padding: 4px 12px; font-size: 11px; border-radius: 3px; z-index: 10;">
+                                    Nuevo
+                                </span>
+                                <a th:href="@{/product/{id}(id=${product['id']})}">
+                                    <img th:src="@{${product['imageUrl']}}" alt="image">
+                                </a>
+                            </div>
+
+                            <div class="single-new-arrival-caption">
+                                <h4><a th:href="@{/product/{id}(id=${product['id']})}" th:text="${product['name']}">Nombre</a></h4>
+                                <p class="arrival-product-price" th:text="${'$ ' + product['price']}">$0.00</p>
+                            </div>
+
+                            <div class="mis-acciones-producto">
+
+                                <div style="flex-grow: 1;"
+                                     th:with="safeId=${T(java.lang.Long).valueOf(product['id'].toString())},
+                                      qtyInCart=${(productQuantities != null and productQuantities.containsKey(safeId)) ? productQuantities.get(safeId) : 0}"
+                                     th:id="'acciones-cart-' + ${safeId}"
+                                     th:fragment="cartActionsFragment">
+
+                                    <a href="javascript:void(0);"
+                                       class="mi-btn-agregar"
+                                       th:if="${qtyInCart == 0}"
+                                       th:onclick="'agregarConAjax(' + ${safeId} + ')'">
+                                        Agregar al carrito
+                                    </a>
+
+                                    <div class="mi-control-cantidad" th:if="${qtyInCart != null && qtyInCart > 0}">
+                                        <button class="mi-btn-circulo" th:onclick="'updateCardQty(' + ${safeId} + ', -1)'">-</button>
+                                        <button class="mi-btn-circulo" th:onclick="'updateCardQty(' + ${safeId} + ', 1)'">+</button>
+                                        <span class="mi-numero-cantidad" th:id="'card-qty-val-' + ${safeId}" th:text="${qtyInCart}">1</span>
+                                    </div>
+                                </div>
+                                <a href="javascript:void(0);"
+                                   th:fragment="btnFavorito"
+                                   th:with="
+                                   currentId=${product != null ? T(java.lang.Long).valueOf(product['id'].toString()) : productId},
+                                   currentFav=${isFavorite != null ? isFavorite : #lists.contains(favoritesIds ?: {}, currentId)}"
+                                   th:id="'btn-fav-' + ${currentId}"
+                                   class="mi-btn-fav"
+                                   th:classappend="${currentFav} ? 'activo' : ''"
+                                   th:onclick="'toggleFavorite(' + ${currentId} + ')'"
+                                   title="Añadir a favoritos">
+
+                                    <i class="fa" th:classappend="${currentFav} ? 'fa-heart' : 'fa-heart-o'"></i>
+                                </a>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row" th:if="${currentPage == totalPages - 1 and totalPages > 0}">
+                    <div class="col-md-12 text-center" style="margin-top: 60px; margin-bottom: 20px; opacity: 0.5;">
+                        <p style="font-size: 13px; letter-spacing: 1px; text-transform: uppercase; color: #999;">
+                            <i class="fa fa-circle" style="font-size: 6px; vertical-align: middle; margin-right: 10px; color: #e69500;"></i>
+                            Has llegado al final
+                            <i class="fa fa-circle" style="font-size: 6px; vertical-align: middle; margin-left: 10px; color: #e69500;"></i>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div th:replace="~{fragments :: footer-principal}"></div>
+
+<div class="cart-overlay" onclick="toggleCart()"></div>
+<div th:replace="~{fragments :: sideCartPanel}"></div>
+
+<script th:src="@{/assets/js/cart-logic.js}"></script>
+
+</body>
+</html>

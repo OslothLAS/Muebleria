@@ -1,0 +1,188 @@
+<!doctype html>
+<html class="no-js" lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Silvero | Contacto</title>
+
+    <th:block th:replace="fragments :: head-css"></th:block>
+
+    <style>
+        /* Panel Blanco */
+        .white-panel-contact {
+            background-color: #fff;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05); /* Sombra sutil */
+            padding: 50px 30px;
+            margin-top: 30px;
+            margin-bottom: 50px;
+        }
+
+        /* Iconos y textos de la izquierda */
+        .contact-list-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            color: #333;
+            font-size: 14px;
+        }
+
+        .contact-list-item i {
+            font-size: 18px;
+            color: #333;
+            margin-right: 10px;
+            width: 25px;
+            text-align: center;
+        }
+
+        .contact-list-item span, .contact-list-item a {
+            color: #333;
+            text-decoration: none;
+        }
+
+        /* FORMULARIO ESTILO IMAGEN */
+        .contact-form-label {
+            display: block;
+            font-size: 11px;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+
+        .contact-form-input {
+            width: 100%;
+            height: 45px;
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin-bottom: 25px;
+            color: #555;
+            font-size: 14px;
+        }
+
+        .contact-form-textarea {
+            width: 100%;
+            height: 120px;
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin-bottom: 25px;
+            resize: none;
+            color: #555;
+        }
+
+        .contact-form-input:focus, .contact-form-textarea:focus {
+            outline: none;
+            border-color: #999;
+        }
+
+        /* Captcha */
+        .captcha-container {
+            border: 1px solid #dcdcdc;
+            background: #f9f9f9;
+            width: 250px;
+            padding: 10px 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            border-radius: 2px;
+            float: right;
+        }
+
+        .captcha-checkbox {
+            width: 22px; height: 22px; border: 2px solid #c1c1c1; background: #fff; margin-right: 10px;
+        }
+
+        /* Botón Enviar Gris */
+        .btn-submit-contact {
+            background-color: #e0e0e0;
+            color: #fff;
+            font-size: 16px;
+            font-weight: bold;
+            border: none;
+            padding: 10px 40px;
+            text-transform: uppercase;
+            cursor: pointer;
+            float: right;
+            clear: both;
+            transition: background 0.3s;
+        }
+
+        .btn-submit-contact:hover {
+            background-color: #ccc;
+        }
+
+        /* Utility */
+        .clearfix::after { content: ""; clear: both; display: table; }
+    </style>
+</head>
+
+<body>
+
+<div th:replace="fragments :: header-principal"></div>
+
+<div class="container">
+    <div class="white-panel-contact clearfix">
+
+        <div class="row">
+            <div class="col-md-3 col-sm-6">
+                <div class="contact-list-item">
+                    <i class="fa fa-phone"></i> <span>1162739533</span>
+                </div>
+                <div class="contact-list-item">
+                    <i class="fa fa-envelope"></i> <span>mueblesjsr@gmail.com</span>
+                </div>
+                <div class="contact-list-item" style="align-items: flex-start;">
+                    <i class="fa fa-map-marker" style="margin-top:3px;"></i>
+                    <span>Las Margaritas 5668, San Martín,<br>Buenos Aires</span>
+                </div>
+            </div>
+
+            <div class="col-md-3 col-sm-6">
+                <div class="contact-list-item">
+                    <i class="fa fa-instagram"></i> <a href="#">Siguenos en Instagram</a>
+                </div>
+                <div class="contact-list-item">
+                    <i class="fa fa-facebook"></i> <a href="#">Siguenos en Facebook</a>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-sm-12">
+                <form action="#" method="post">
+
+                    <label class="contact-form-label">NOMBRE</label>
+                    <input type="text" class="contact-form-input">
+
+                    <label class="contact-form-label">EMAIL</label>
+                    <input type="email" class="contact-form-input">
+
+                    <label class="contact-form-label">TELÉFONO (OPCIONAL)</label>
+                    <input type="text" class="contact-form-input">
+
+                    <label class="contact-form-label">MENSAJE (OPCIONAL)</label>
+                    <textarea class="contact-form-textarea"></textarea>
+
+                    <div class="captcha-container">
+                        <div style="display:flex; align-items:center;">
+                            <div class="captcha-checkbox"></div>
+                            <span style="font-size: 13px; color:#555;">I'm not a robot</span>
+                        </div>
+                        <img src="https://www.gstatic.com/recaptcha/api2/logo_48.png" style="width:24px; opacity:0.6;" alt="captcha">
+                    </div>
+
+                    <button type="submit" class="btn-submit-contact">ENVIAR</button>
+
+                </form>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div th:replace="fragments :: footer-principal"></div>
+
+</body>
+</html>

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<footer th:fragment="footer" class="silvero-footer">
+    <div class="footer-content">
+        <p>&copy; Silvero - <span class="silver-text"></span></p>
+        <div class="footer-links">
+            <a href="#">Privacidad</a>
+            <a href="#">Soporte</a>
+        </div>
+    </div>
+
+    <style>
+        .silvero-footer {
+            padding: 2rem;
+            background: #ffffff;
+            border-top: 1px solid #e2e8f0;
+            text-align: center;
+            margin-top: auto;
+        }
+        .footer-content p {
+            color: #64748b;
+            font-size: 0.875rem;
+            margin-bottom: 0.5rem;
+        }
+        .silver-text { color: #94a3b8; font-weight: 500; }
+        .footer-links a {
+            color: #2563eb;
+            text-decoration: none;
+            font-size: 0.8rem;
+            margin: 0 10px;
+        }
+    </style>
+</footer>
+</body>
+</html>

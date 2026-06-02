@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <div th:replace="~{fragments :: head-css}"></div>
+    <th:block th:replace="~{fragments :: css-tarjetas}"></th:block>
+
+    <style>
+        .collection-banner {
+            height: 300px; width: 100%; background-size: cover; background-position: center;
+            display: flex; align-items: center; justify-content: center; color: #fff;
+            position: relative; margin-bottom: 40px; border-radius: 0 0 20px 20px;
+        }
+        .collection-banner::after { content: ''; position: absolute; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.4); border-radius: 0 0 20px 20px; }
+        .collection-info { position: relative; z-index: 2; text-align: center; }
+        .collection-info h1 { font-size: 48px; font-weight: 800; text-transform: uppercase; }
+
+
+        .mi-btn-agregar {
+            background-color: #e69500; color: white !important;
+            border-radius: 50px;
+            display: flex; align-items: center; justify-content: center;
+            width: 100%; height: 35px;
+            font-size: 12px; font-weight: 650;
+            text-decoration: none; transition: 0.2s; cursor: pointer; border: none;
+            box-shadow: 0 4px 6px rgba(230, 149, 0, 0.15);
+        }
+        .mi-btn-agregar:hover {
+            background-color: #cc8400;
+            color: white !important;
+            border-radius: 50px;
+            display: flex; align-items: center; justify-content: center;
+            width: 100%; height: 35px;
+            font-size: 12px; font-weight: 650;
+            text-decoration: none; transition: 0.2s; cursor: pointer; border: none;
+            box-shadow: 0 4px 6px rgba(230, 149, 0, 0.15);
+        }
+    </style>
+</head>
+<body style="background-color: #E9ECEF;">
+<div th:replace="~{fragments :: header-principal}"></div>
+
+<!-- Banner de la Colección -->
+<div class="collection-banner" th:style="'background-image: url(' + ${collection.imageUrl} + ');'">
+    <div class="collection-info">
+        <h1 th:text="${collection.name}">Nombre Colección</h1>
+        <p th:text="${collection.description}" style="font-size: 18px; opacity: 0.9;"></p>
+    </div>
+</div>
+
+<div class="container">
+    <h2 th:text="${collection.name}">Nombre de la Colección</h2>
+    <div class="row">
+        <!-- Iteramos los productos que vienen en el objeto collection -->
+        <div th:each="p : ${activeProducts}">
+            <!-- 🚀 LLAMADA CORRECTA AL FRAGMENTO -->
+            <div th:replace="~{fragments :: cardProducto(product=${p})}"></div>
+        </div>
+    </div>
+</div>
+
+<div th:replace="~{fragments :: footer-principal}"></div>
+
+
+<div class="cart-overlay" onclick="toggleCart()"></div>
+<div th:replace="~{fragments :: sideCartPanel}"></div>
+
+
+<script th:src="@{/assets/js/cart-logic.js}"></script>
+<script src="https://unpkg.com/htmx.org@1.9.10"></script>
+</body>
+</html>
