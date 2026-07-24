@@ -71,7 +71,7 @@ public class DataSeeder implements CommandLineRunner {
     private void crearProducto(String nombre, String desc, String imagen, BigDecimal precio, int diasAntiguedad, boolean esDestacado) {
         Product p = new Product(nombre, desc, imagen, precio);
         p.setCreatedAt(LocalDateTime.now().minusDays(diasAntiguedad));
-        p.setNew(true); // Se marca true inicialmente, el scheduler corrige si es viejo
+        p.setNewProduct(true); // Se marca true inicialmente, el scheduler corrige si es viejo
         p.setEsDestacado(esDestacado);
         productRepository.save(p);
     }

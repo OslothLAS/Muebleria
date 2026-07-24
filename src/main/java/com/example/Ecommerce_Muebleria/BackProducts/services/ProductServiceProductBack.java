@@ -29,7 +29,7 @@ public class ProductServiceProductBack {
     }
 
     public List<Product> findNewProducts() {
-        return productRepository.findByIsNewTrue();
+        return productRepository.findByNewProductTrue();
     }
 
     public Product findProductById(Long id) {

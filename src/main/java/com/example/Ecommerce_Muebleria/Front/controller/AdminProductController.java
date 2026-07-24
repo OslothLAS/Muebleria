@@ -66,8 +66,8 @@ public class AdminProductController {
     @PostMapping("/products/save")
     public String saveProduct(
             @ModelAttribute Product product,
-            @RequestParam("imageFile") MultipartFile mainFile,
-            @RequestParam("extraImages") MultipartFile[] extraFiles
+            @RequestParam(value = "imageFile", required = false) MultipartFile mainFile,
+            @RequestParam(value = "extraImages", required = false) MultipartFile[] extraFiles
     ) {
         try {
             if (mainFile != null && !mainFile.isEmpty()) {
@@ -96,8 +96,12 @@ public class AdminProductController {
             }
 
         } catch (IOException e) {
+            System.err.println("Error al subir la imagen:");
+            e.printStackTrace();
             return "redirect:/admin/products/new?error=upload";
         } catch (Exception e) {
+            System.err.println("Error general al guardar el producto:");
+            e.printStackTrace(); // 👈 Esto nos va a mostrar el error real en la consola
             return "redirect:/admin/products/new?error=backend";
         }
     }

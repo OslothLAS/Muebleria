@@ -43,17 +43,17 @@ public class Product {
     private String extraImage3;
 
     @Column(name = "activo")
-    private Boolean activo;
+    private Boolean activo = true;
 
     @Column(name = "es_destacado")
     private Boolean esDestacado;
 
     @Column(name = "is_new_product")
-    private boolean isNew;
+    private boolean newProduct;
 
     @CreatedDate
     @Column(nullable = false, updatable = false)
-    private LocalDateTime createdAt;
+    private LocalDateTime createdAt = LocalDateTime.now();
 
     private Integer installments = 1; // Cantidad de cuotas sin interés
 
@@ -71,7 +71,7 @@ public class Product {
         this.imageUrl = imageUrl;
         this.price = price;
         this.createdAt = LocalDateTime.now();
-        this.isNew = true;
+        this.newProduct = true;
         this.esDestacado = false;
         this.stock = 1;
         this.activo = true;
@@ -79,9 +79,8 @@ public class Product {
 
     public Product() {}
 
-
-    public boolean isNew() {
+    public boolean isRecentlyCreated() {
+        if (createdAt == null) return false;
         return createdAt.isAfter(LocalDateTime.now().minusDays(30));
     }
-
 }

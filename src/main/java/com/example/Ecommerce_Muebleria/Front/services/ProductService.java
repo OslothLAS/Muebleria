@@ -41,7 +41,7 @@ public class ProductService {
 
     public List<Product> findIsNew() {
 
-        return productRepository.findByIsNewTrueAndActivoTrue();
+        return productRepository.findByNewProductTrueAndActivoTrue();
     }
 
     public Product findProductById(Long id) {
@@ -88,11 +88,11 @@ public class ProductService {
         if (sortParam == null) return Sort.by(Sort.Direction.DESC, "id");
 
         return switch (sortParam) {
-            case "low-price" -> Sort.by(Sort.Direction.ASC, "price");
-            case "high-price" -> Sort.by(Sort.Direction.DESC, "price");
+            case "price_asc" -> Sort.by(Sort.Direction.ASC, "price");   // Corregido
+            case "price_desc" -> Sort.by(Sort.Direction.DESC, "price"); // Corregido
             case "name-asc" -> Sort.by(Sort.Direction.ASC, "name");
             case "name-desc" -> Sort.by(Sort.Direction.DESC, "name");
-            // "new" cae en default: ordenamos por el ID más alto (los últimos creados)
+            // "new" (y cualquier otra cosa) cae en default: ordenamos por el ID más alto
             default -> Sort.by(Sort.Direction.DESC, "id");
         };
     }

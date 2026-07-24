@@ -126,8 +126,9 @@
                         <div class="col-md-7 col-sm-12">
 
                             <div class="switch-container">
-                                <input type="checkbox" th:field="*{isNewProduct}" id="isNew">
-                                <label for="isNew" class="form-label" style="margin-bottom:0">¿Es un producto nuevo/novedad?</label>
+                                <!-- Por esto: -->
+                                <input type="checkbox" th:field="*{newProduct}" id="newProduct">
+                                <label for="newProduct" class="form-label" style="margin-bottom:0">¿Es un producto nuevo/novedad?</label>
                             </div>
 
                             <div class="form-group">

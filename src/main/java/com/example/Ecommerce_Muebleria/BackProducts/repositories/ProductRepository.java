@@ -15,7 +15,7 @@ import java.util.Optional;
 
 public interface ProductRepository extends JpaRepository<Product, Long> {
 
-    List<Product> findByIsNewTrue();
+    List<Product> findByNewProductTrue();
     List<Product> findByEsDestacadoTrue();
     Page<Product> findByNameContainingIgnoreCase(String name, Pageable pageable);
     boolean existsById(long id);
@@ -26,12 +26,12 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     Page<Product> findByActivoTrue(Pageable pageable);
     Page<Product> findByNameContainingIgnoreCaseAndActivoTrue(String name, Pageable pageable);
 
-    List<Product> findByIsNewTrueAndActivoTrue();
+    List<Product> findByNewProductTrueAndActivoTrue();
     List<Product> findByEsDestacadoTrueAndActivoTrue();
     // Si quieres buscar por nombre O descripción:
     List<Product> findByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCase(String name, String description);
 
     @Modifying
-    @Query("UPDATE Product p SET p.isNew = false WHERE p.isNew = true AND p.createdAt < :cutoffDate")
+    @Query("UPDATE Product p SET p.newProduct = false WHERE p.newProduct = true AND p.createdAt < :cutoffDate")
     int removeNewStatusFromOldProducts(@Param("cutoffDate") LocalDateTime cutoffDate);
 }

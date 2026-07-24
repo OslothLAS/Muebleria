@@ -59,19 +59,32 @@ public class ProductApiController {
     @PostMapping("/question/save")
     public String saveQuestion(@RequestParam Long productId,
                                @RequestParam String text,
-                               @AuthenticationPrincipal OidcUser principal, // Ya no será null
+                               @AuthenticationPrincipal OidcUser principal,
                                RedirectAttributes ra) {
 
-        // Spring Security ya redirigió al login si no había principal,
-        // pero por seguridad de código, tiramos error si algo falló.
         if (principal == null) {
-            return "redirect:/oauth2/authorization/auth0"; // Redirección manual por si acaso
+            return "redirect:/oauth2/authorization/auth0";
         }
 
         try {
-            // Armamos el DTO con la data real del usuario de Auth0
+            // 1. Instanciamos la pregunta
             Question question = new Question();
+
+            // 2. ASIGNAMOS TODOS LOS DATOS (¡Esto era lo que faltaba!)
+            question.setText(text);
+
+            // Extraemos los datos del usuario de Auth0 (ajusta los getters si usas otros en tu OidcUser)
+            question.setUserId(principal.getSubject());
+            question.setUserName(principal.getFullName() != null ? principal.getFullName() : principal.getPreferredUsername());
+
+            // 3. Asignamos el producto
+            Product product = new Product();
+            product.setId(productId);
+            question.setProduct(product);
+
+            // 4. Ahora sí, el objeto está lleno y listo para viajar al backend
             productService.saveQuestion(question);
+
             ra.addFlashAttribute("mensaje", "¡Pregunta enviada!");
 
         } catch (Exception e) {
