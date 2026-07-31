@@ -401,7 +401,7 @@
     <div class="col-gallery col-card-eden" style="position: sticky; top: 80px; display: flex; flex-direction: column;">
 
         <div class="main-image-container" style="position: relative; aspect-ratio: 1/1; display: flex; align-items: center; justify-content: center; background: #fff; border-radius: 8px; overflow: hidden;">
-        <span th:if="${product.isNew != null and product.isNew}"
+        <span th:if="${product.newProduct != null and product.newProduct}"
               style="position: absolute; top: 15px; left: 15px; background: #e69500; color: white; padding: 6px 12px; font-weight: 700; border-radius: 4px; z-index: 10;">NUEVO</span>
             <img id="mainImage" th:src="@{${product.imageUrl}}" th:alt="${product.name}" style="max-width: 100%; max-height: 100%; object-fit: contain;">
         </div>
@@ -468,32 +468,23 @@
     </div>
 
     <div class="col-right-wrapper col-card-eden" style="position: sticky; top: 80px;">
-        <div class="buy-box-container" style="position: sticky; top: 20px;">
-
-            <div style="margin-bottom: 20px;">
-                <div style="display: flex; gap: 10px; align-items: flex-start; margin-bottom: 12px;">
-                    <i class="fa fa-truck" style="color: #00a650; font-size: 18px; margin-top: 3px;"></i>
-                    <div>
-                        <div style="color: #00a650; font-weight: 500; font-size: 15px;">Entrega a acordar con el vendedor</div>
-                        <div style="font-size: 13px; color: #666;">Loma Hermosa, Buenos Aires</div>
-                        <a href="#" style="color: #3483fa; text-decoration: none; font-size: 13px; font-weight: 500;">Ver formas de entrega</a>
-                    </div>
-                </div>
-            </div>
-
-            <hr style="border: 0; border-top: 1px solid #eee; margin: 15px 0;">
-
-            <div style="margin-bottom: 15px;">
-                <div style="font-size: 16px; font-weight: 600; color: #333;">Stock disponible</div>
-            </div>
+        <!-- 🚀 REEMPLAZAR DESDE ACÁ -->
+        <form th:action="@{/cart/quick-buy/{id}(id=${product.id})}" method="post">
 
             <div class="quantity-selector" style="margin-bottom: 20px;">
                 <div style="display: flex; align-items: center; gap: 10px;">
                     <span style="font-size: 14px; color: #333;">Cantidad:</span>
                     <div style="display: flex; align-items: center; border: 1px solid #ddd; border-radius: 4px; padding: 2px;">
-                        <button onclick="updateQty(-1)" style="padding: 2px 10px; border:none; background:none; color:#3483fa; font-weight: bold; cursor:pointer;">-</button>
-                        <input type="text" id="quantityInput" value="1" readonly style="width:30px; text-align:center; border:none; font-weight:600; font-size: 14px;">
-                        <button onclick="updateQty(1)" style="padding: 2px 10px; border:none; background:none; color:#3483fa; font-weight: bold; cursor:pointer;">+</button>
+                        <!-- type="button" es clave para que no envíe el form al restar -->
+                        <button type="button" onclick="updateQty(-1)" style="padding: 2px 10px; border:none; background:none; color:#3483fa; font-weight: bold; cursor:pointer;">-</button>
+
+                        <!-- 🚀 name="qty" para que el backend lo reciba -->
+                        <input type="text" name="qty" id="quantityInput" value="1"
+                               th:data-max="${product.stock != null ? product.stock : 1}"
+                               readonly style="width:30px; text-align:center; border:none; font-weight:600; font-size: 14px;">
+
+                        <!-- type="button" clave para que no envíe el form al sumar -->
+                        <button type="button" onclick="updateQty(1)" style="padding: 2px 10px; border:none; background:none; color:#3483fa; font-weight: bold; cursor:pointer;">+</button>
                     </div>
                     <span style="font-size: 14px; color: #333;">1 unidad</span>
                 </div>
@@ -502,25 +493,14 @@
                 </div>
             </div>
 
-            <button class="btn-action btn-buy-now" th:onclick="'buyNow(' + ${product.id} + ')'" th:disabled="${product.stock <= 0}">Comprar ahora</button>
-            <button class="btn-action btn-add-cart" th:onclick="'addToCart(' + ${product.id} + ')'" th:disabled="${product.stock <= 0}">Agregar al carrito</button>
+            <!-- 🚀 type="submit" ejecuta el form de compra rápida -->
+            <button type="submit" class="btn-action btn-buy-now" th:disabled="${product.stock <= 0}">Comprar ahora</button>
 
-            <div style="margin-top: 25px; border-top: 1px solid #eee; padding-top: 20px;">
-                <div style="display: flex; gap: 12px; margin-bottom: 15px;">
-                    <i class="fa fa-shield" style="color: #666; font-size: 16px;"></i>
-                    <div style="font-size: 12px; color: #666;">
-                        <span style="color: #3483fa; cursor: pointer;">Compra Protegida</span>. Recibí el producto que esperabas o te devolvemos tu dinero.
-                    </div>
-                </div>
-                <div style="display: flex; gap: 12px;">
-                    <i class="fa fa-trophy" style="color: #666; font-size: 16px;"></i>
-                    <div style="font-size: 12px; color: #666;">
-                        <span style="color: #3483fa; cursor: pointer;">Garantía El Edén</span>. 12 meses de cobertura total.
-                    </div>
-                </div>
-            </div>
+            <!-- type="button" mantiene la funcionalidad anterior de solo agregar -->
+            <button type="button" class="btn-action btn-add-cart" th:onclick="'addToCart(' + ${product.id} + ')'" th:disabled="${product.stock <= 0}">Agregar al carrito</button>
 
-        </div>
+        </form>
+        <!-- 🚀 HASTA ACÁ -->
     </div>
 </div>
 
@@ -768,12 +748,10 @@
         if (val >= 1 && val <= maxStock) input.value = val;
     }
 
-    function buyNow(id) {
-        window.location.href = '/cart/checkout/fast/' + id + '/' + document.getElementById('quantityInput').value;
-    }
-
     function addToCart(id) {
-        window.location.href = '/cart/add/' + id + '?qty=' + document.getElementById('quantityInput').value;
+        // Esto captura la cantidad actual y la manda por GET a tu ruta original
+        const qty = document.getElementById('quantityInput').value;
+        window.location.href = '/cart/add/' + id + '?qty=' + qty;
     }
 </script>
 </body>

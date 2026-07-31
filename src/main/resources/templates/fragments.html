@@ -587,8 +587,13 @@
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown">Colecciones</a>
                         <ul class="dropdown-menu animated fadeIn">
-                            <li><a href="/#new-arrivals"><i class="lnr lnr-rocket"></i> Nuevos Productos</a></li>
-                            <li><a href="/#feature"><i class="lnr lnr-star"></i> Destacados</a></li>
+                            <li><a href="/#new-arrivals"> Novedades</a></li>
+                            <li><a href="/#feature"> Habitacion</a></li>
+                            <li><a href="/#feature"> Baño</a></li>
+                            <li><a href="/#feature"> Balcon</a></li>
+                            <li><a href="/#feature"> Comedor</a></li>
+                            <li><a href="/#feature"> Living</a></li>
+                            <li><a href="/#feature"> Exterior</a></li>
                         </ul>
                     </li>
                     <li><a href="/products">Tienda</a></li>
@@ -627,7 +632,6 @@
                             <!-- El texto ahora tiene un ancho dinámico -->
                             <div class="col-md-7 col-sm-12">
                                 <div class="welcome-hero-txt">
-                                    <h4>Lanzamiento exclusivo</h4>
                                     <h2 th:text="${product.name}">Nombre del Producto</h2>
                                     <p>Descubrí la nueva pieza de diseño que llegó a El Edén. Calidad superior y estilo único.</p>
 
@@ -736,18 +740,20 @@
 
         <div class="side-cart-body">
 
+            <!-- 🚀 1. Evaluamos disponibilidad (Stock > 0 Y Activo) -->
             <div th:if="${myCart != null}" th:each="item : ${myCart.items}"
                  class="sc-item"
                  th:id="'sc-row-' + ${item.productDetail.id}"
-                 th:classappend="${item.productDetail.activo == false} ? 'item-desactivado' : ''">
+                 th:with="isAvailable=${item.productDetail.stock != null and item.productDetail.stock > 0 and item.productDetail.activo}"
+                 th:classappend="${!isAvailable} ? 'item-desactivado' : ''">
 
                 <div class="sc-img">
-                    <a th:if="${item.productDetail.activo != false}"
+                    <a th:if="${isAvailable}"
                        th:href="@{/product/{id}(id=${item.productDetail.id})}">
                         <img th:src="@{${item.productDetail.imageUrl}}" alt="img">
                     </a>
 
-                    <img th:if="${item.productDetail.activo == false}"
+                    <img th:unless="${isAvailable}"
                          th:src="@{${item.productDetail.imageUrl}}" alt="img">
                 </div>
 
@@ -756,19 +762,24 @@
                        class="sc-name"
                        th:text="${item.productDetail.name}">Producto</a>
 
+                    <!-- 🚀 2. Si está disponible, mostramos el precio y guardamos el valor real -->
                     <span class="sc-price item-price-side"
+                          th:if="${isAvailable}"
                           th:id="'price-side-' + ${item.productDetail.id}"
                           th:data-price="${item.productDetail.price * item.quantity}"
                           th:text="${'$' + #numbers.formatDecimal(item.productDetail.price * item.quantity, 1, 'POINT', 2, 'COMMA')}"></span>
 
-                    <div th:if="${item.productDetail.activo == false}">
-                        <span class="badge-desactivado">No disponible</span>
+                    <!-- 🚀 3. Si NO está disponible, mostramos el badge y forzamos data-price="0" (oculto) para que JS sume cero -->
+                    <div th:unless="${isAvailable}">
+                        <span class="item-price-side" style="display:none;" th:data-price="0"></span>
+                        <span class="badge-desactivado" style="margin-bottom: 8px;">No disponible</span>
                     </div>
 
                     <div class="sc-qty-box">
+                        <!-- 🚀 4. Deshabilitamos los botones si no está disponible -->
                         <button type="button" class="sc-qty-btn"
                                 th:onclick="'updateSideQty(' + ${item.productDetail.id} + ', -1, this)'"
-                                th:disabled="${item.quantity == 1 || item.productDetail.activo == false}"> -
+                                th:disabled="${item.quantity == 1 || !isAvailable}"> -
                         </button>
 
                         <input type="text" class="sc-qty-input"
@@ -777,10 +788,11 @@
 
                         <button type="button" class="sc-qty-btn"
                                 th:onclick="'updateSideQty(' + ${item.productDetail.id} + ', 1, this)'"
-                                th:disabled="${item.productDetail.activo == false}">+</button>
+                                th:disabled="${!isAvailable}">+</button>
                     </div>
                 </div>
 
+                <!-- El botón eliminar queda siempre activo gracias a tu CSS -->
                 <button class="sc-trash"
                         th:onclick="'removeSideItem(' + ${item.productDetail.id} + ')'"
                         title="Eliminar">
@@ -998,13 +1010,20 @@
 </th:block>
 
 <!-- FRAGMENTO DE TARJETA ESTILO SILVERO -->
+<!-- FRAGMENTO DE TARJETA ESTILO SILVERO -->
 <div th:fragment="cardProducto(product)" class="col-md-3 col-sm-4">
-    <div class="single-new-arrival" th:id="'card-producto-' + ${product.id}">
 
-        <!-- 🖼️ IMAGEN (Altura 205px según tu CSS) -->
+    <!-- 🚀 1. Declaramos la variable isAvailable para toda la tarjeta -->
+    <div class="single-new-arrival"
+         th:id="'card-producto-' + ${product.id}"
+         th:with="isAvailable=${product.stock != null and product.stock > 0 and product.activo}">
+
+        <!-- 🖼️ IMAGEN -->
         <div class="single-new-arrival-bg">
             <a th:href="@{/product/{id}(id=${product.id})}">
-                <img th:src="@{${product.imageUrl}}" th:alt="${product.name}">
+                <!-- Si no está disponible, le bajamos un poco la opacidad a la foto para dar efecto de inactivo -->
+                <img th:src="@{${product.imageUrl}}" th:alt="${product.name}"
+                     th:style="${!isAvailable} ? 'opacity: 0.6;' : ''">
             </a>
         </div>
 
@@ -1014,7 +1033,10 @@
                 <a th:href="@{/product/{id}(id=${product.id})}"
                    th:text="${product.name}">Nombre</a>
             </h4>
-            <p class="arrival-product-price" th:text="${'$ ' + product.price}">$0.00</p>
+
+            <!-- 🚀 2. Si está disponible muestra el precio, si no, "No Disponible" en rojo -->
+            <p class="arrival-product-price" th:if="${isAvailable}" th:text="${'$ ' + product.price}">$0.00</p>
+            <p class="arrival-product-price" th:unless="${isAvailable}" style="color: #d9534f; font-weight: bold;">No Disponible</p>
         </div>
 
         <!-- ⚡ ACCIONES (Carrito y Favoritos) -->
@@ -1026,22 +1048,30 @@
                           qtyInCart=${(productQuantities != null and productQuantities.containsKey(safeId)) ? productQuantities.get(safeId) : 0}"
                  th:id="'acciones-cart-' + ${safeId}">
 
-                <!-- Botón Agregar -->
+                <!-- 🚀 3. Botón Agregar (Solo si hay stock y cantidad 0) -->
                 <a href="javascript:void(0);"
                    class="mi-btn-agregar"
-                   th:if="${qtyInCart == 0}"
+                   th:if="${isAvailable and qtyInCart == 0}"
                    th:onclick="'agregarConAjax(' + ${safeId} + ')'">
                     Agregar al carrito
                 </a>
 
-                <!-- Control de Cantidad -->
-                <div class="mi-control-cantidad" th:if="${qtyInCart > 0}">
+                <!-- 🚀 4. Control de Cantidad (Solo si hay stock y ya se agregó al carrito) -->
+                <div class="mi-control-cantidad" th:if="${isAvailable and qtyInCart > 0}">
                     <button class="mi-btn-circulo" th:onclick="'updateCardQty(' + ${safeId} + ', -1)'">-</button>
                     <button class="mi-btn-circulo" th:onclick="'updateCardQty(' + ${safeId} + ', 1)'">+</button>
                     <span class="mi-numero-cantidad"
                           th:id="'card-qty-val-' + ${safeId}"
                           th:text="${qtyInCart}">1</span>
                 </div>
+
+                <!-- 🚀 5. Botón Bloqueado (Si NO hay stock o está inactivo) -->
+                <a href="javascript:void(0);"
+                   class="mi-btn-agregar"
+                   th:unless="${isAvailable}"
+                   style="background-color: #e0e0e0; cursor: not-allowed; color: #888 !important; box-shadow: none;">
+                    Sin stock
+                </a>
             </div>
 
             <!-- Botón Favoritos (Corazón) -->
@@ -1057,7 +1087,6 @@
 
         </div>
     </div>
-
 </div>
 </body>
 </html>
