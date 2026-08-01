@@ -335,4 +335,21 @@ public class CartController {
 
         return "GUEST_" + session.getId();
     }
+
+    // --- COMPRA RÁPIDA (Desde el detalle del producto) ---
+    @PostMapping("/quick-buy/{productId}")
+    public String quickBuy(@PathVariable Long productId,
+                           @RequestParam(name = "qty", defaultValue = "1") Integer qty,
+                           @AuthenticationPrincipal OidcUser oidcUser,
+                           HttpSession session) {
+
+        // 1. Obtenemos el ID del usuario o invitado
+        String cartId = getCartId(oidcUser, session);
+
+        // 2. Agregamos la cantidad seleccionada al carrito
+        cartService.addToCart(productId, qty, cartId);
+
+        // 3. Redirigimos directo al proceso de pago
+        return "redirect:/cart/checkout";
+    }
 }

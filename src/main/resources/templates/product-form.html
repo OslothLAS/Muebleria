@@ -29,7 +29,7 @@
             width: 100%; height: 45px; border: 1px solid #ddd;
             border-radius: 6px; padding: 10px 15px; transition: 0.2s;
         }
-        .form-control-custom:focus { border-color: #e69500; outline: none; box-shadow: 0 0 0 3px rgba(230, 149, 0, 0.1); }
+        .form-control-custom:focus { border-color: #1e2d42; outline: none; box-shadow: 0 0 0 3px rgba(230, 149, 0, 0.1); }
 
         textarea.form-control-custom { height: auto; min-height: 150px; resize: vertical; }
 
@@ -41,7 +41,7 @@
             background: #fafafa; cursor: pointer; display: flex; align-items: center; justify-content: center;
             overflow: hidden; position: relative; transition: 0.2s;
         }
-        .main-upload-box:hover { border-color: #e69500; background: #fffdf5; }
+        .main-upload-box:hover { border-color: #1e2d42; background: #fffdf5; }
         .thumb-upload-row { display: flex; gap: 10px; justify-content: center; }
         .thumb-box {
             width: 80px; height: 80px; border: 2px dashed #ccc; border-radius: 6px;
@@ -59,11 +59,11 @@
 
         /* BOTONES */
         .btn-save {
-            background-color: #e69500; color: #fff; padding: 12px 40px;
+            background-color: #1e2d42; color: #fff; padding: 12px 40px;
             border: none; border-radius: 50px; font-weight: 700; cursor: pointer;
             transition: 0.3s; width: 100%; display: block; margin-top: 20px;
         }
-        .btn-save:hover { background-color: #cc8400; }
+        .btn-save:hover { background-color: #1e2d42; }
 
         /* Switch para producto nuevo */
         .switch-container { display: flex; align-items: center; gap: 10px; margin-bottom: 15px; }
@@ -212,7 +212,7 @@
                         </div>
                     </div>
 
-                    <div style="max-width: 300px; margin: 0 auto;">
+                    <div style="max-width: 300px; margin: 0 auto; display: flex; flex-direction: column; align-items: center; gap: 10px;">
                         <button type="submit" class="btn-save"
                                 th:text="${product.id != null ? 'ACTUALIZAR PRODUCTO' : 'PUBLICAR PRODUCTO'}">
                         </button>

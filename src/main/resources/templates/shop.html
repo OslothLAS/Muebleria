@@ -11,11 +11,11 @@
 
     <style>
         .nav-btn.shop-item > a,
-        .nav-btn.shop-item > a i { color: #e69500 !important; }
+        .nav-btn.shop-item > a i { color: #1e2d42 !important; }
 
         /* --- ESTILOS DE TARJETA --- */
         .single-new-arrival {
-            background: #F8F9FA;
+            background: #F6F4F0;
             border-radius: 13px;
             padding: 12px;
             margin-bottom: 30px;
@@ -33,7 +33,7 @@
         .single-new-arrival:hover { transform: translateY(-5px); box-shadow: 0 15px 35px rgba(0,0,0,0.1); }
 
         .single-new-arrival-bg {
-            background-color: #fff;
+            background-color: #F6F4F0;
             border-radius: 13px;
             height: 205px !important;
             min-height: 0 !important;
@@ -77,7 +77,7 @@
         }
 
         .mi-btn-agregar {
-            background-color: #e69500; color: white !important;
+            background-color: #1e2d42; color: white !important;
             border-radius: 50px;
             display: flex; align-items: center; justify-content: center;
             width: 100%; height: 35px;
@@ -86,7 +86,7 @@
             box-shadow: 0 4px 6px rgba(230, 149, 0, 0.15);
         }
         .mi-btn-agregar:hover {
-            background-color: #cc8400;
+            background-color: #2e4867;
             color: white !important;
             border-radius: 50px;
             display: flex; align-items: center; justify-content: center;
@@ -100,12 +100,12 @@
 
         .mi-btn-circulo {
             width: 35px; height: 35px; border-radius: 50%;
-            background: #e69500; color: #fff; border: none;
+            background: #1e2d42; color: #fff; border: none;
             font-size: 18px; font-weight: bold; cursor: pointer;
             display: flex; align-items: center; justify-content: center;
             padding: 0; line-height: 1; margin-right: 8px; transition: 0.2s;
         }
-        .mi-btn-circulo:hover { background: #cc8400; transform: scale(1.05); }
+        .mi-btn-circulo:hover { background: #334c6e; transform: scale(1.05); }
 
         .mi-numero-cantidad {
             font-size: 16px; font-weight: 800; color: #333;
@@ -142,7 +142,7 @@
             width: 40px;
             height: 40px;
             border-radius: 50%;
-            background-color: #fff;
+            background-color: #F6F4F0;
             border: 1px solid transparent; /* Borde sutil por defecto */
             color: #ccc;
             display: flex !important;
@@ -165,22 +165,22 @@
 
         .mi-btn-fav:hover {
             border-color: transparent;
-            color: #e69500;
+            color: #1e2d42;
             transform: scale(1.05);
         }
 
         /* ESTADO ACTIVO */
         .mi-btn-fav.activo {
-            background-color: #fff;
+            background-color: #F6F4F0;
             border: 2px solid transparent; /* CORREGIDO: 2px se ve mejor que 10px */
-            color: #e69500;
+            color: #1e2d42;
             box-shadow: 0 2px 8px rgba(230, 149, 0, 0.2);
         }
 
         .mi-btn-fav.activo i {
             transform: scale(1.1);
         }
-        body {background-color: #E9ECEF !important; /* Un gris medio-claro, pero notable (antes era #ededed) */
+        body {background-color: #818181 !important; /* Un gris medio-claro, pero notable (antes era #ededed) */
 
             /* El resto dejalo igual */
             font-family: 'Roboto', sans-serif;
@@ -199,9 +199,6 @@
 
 <section id="all-products">
     <div class="container white-panel">
-        <div class="section-header">
-            <h2>Catálogo Completo</h2>
-        </div>
 
         <div class="row" style="margin-bottom: 20px;">
             <div class="col-md-12">
@@ -252,7 +249,7 @@
 
                             <div class="single-new-arrival-bg">
                                 <span class="label-new" th:if="${product['newProduct']}"
-                                      style="position: absolute; top: 15px; left: 15px; background: #e69500; color: #fff; padding: 4px 12px; font-size: 11px; border-radius: 3px; z-index: 10;">
+                                      style="position: absolute; top: 15px; left: 15px; background: #1e2d42; color: #fff; padding: 4px 12px; font-size: 11px; border-radius: 3px; z-index: 10;">
                                     Nuevo
                                 </span>
                                 <a th:href="@{/product/{id}(id=${product['id']})}">
