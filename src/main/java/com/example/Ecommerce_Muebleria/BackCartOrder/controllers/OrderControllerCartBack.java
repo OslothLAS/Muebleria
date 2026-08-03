@@ -56,11 +56,13 @@ public class OrderControllerCartBack {
         Map<String, String> shipping = orderServiceCartBack.getShippingDataFromPayment(paymentId);
 
         // 2. Guardamos la orden en la DB usando el ID híbrido
+        // 2. Guardamos la orden en la DB usando el ID híbrido
         orderServiceCartBack.saveOrderFromCart(
                 cartId,
                 shipping.getOrDefault("address", "Sin dirección"),
                 shipping.getOrDefault("zip", "0000"),
-                shipping.getOrDefault("city", "N/A")
+                shipping.getOrDefault("city", "N/A"),
+                "APPROVED" // 🚀 Acá agregamos el quinto parámetro faltante
         );
 
 

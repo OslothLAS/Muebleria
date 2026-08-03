@@ -468,65 +468,97 @@
     </div>
 
     <div class="col-right-wrapper col-card-eden" style="position: sticky; top: 80px;">
-        <!-- 🚀 REEMPLAZAR DESDE ACÁ -->
-        <form th:action="@{/cart/quick-buy/{id}(id=${product.id})}" method="post">
 
-            <div class="quantity-selector" style="margin-bottom: 20px;">
-                <div style="display: flex; align-items: center; gap: 10px;">
-                    <span style="font-size: 14px; color: #333;">Cantidad:</span>
-                    <div style="display: flex; align-items: center; border: 1px solid #ddd; border-radius: 4px; padding: 2px;">
-                        <!-- type="button" es clave para que no envíe el form al restar -->
-                        <button type="button" onclick="updateQty(-1)" style="padding: 2px 10px; border:none; background:none; color:#3483fa; font-weight: bold; cursor:pointer;">-</button>
-
-                        <!-- 🚀 name="qty" para que el backend lo reciba -->
-                        <input type="text" name="qty" id="quantityInput" value="1"
-                               th:data-max="${product.stock != null ? product.stock : 1}"
-                               readonly style="width:30px; text-align:center; border:none; font-weight:600; font-size: 14px;">
-
-                        <!-- type="button" clave para que no envíe el form al sumar -->
-                        <button type="button" onclick="updateQty(1)" style="padding: 2px 10px; border:none; background:none; color:#3483fa; font-weight: bold; cursor:pointer;">+</button>
-                    </div>
-                    <span style="font-size: 14px; color: #333;">1 unidad</span>
-                </div>
-                <div style="font-size: 13px; color: #999; margin-top: 8px;">
-                    <span th:text="'(+' + (${product.stock} > 10 ? '10' : ${product.stock}) + ' disponibles)'"></span>
-                </div>
+        <!-- 🚀 CONDICIÓN 1: PRODUCTO NO ACTIVO -->
+        <th:block th:if="${!product.activo}">
+            <div style="background-color: #f8d7da; border: 1px solid #f5c6cb; border-radius: 8px; padding: 15px; margin-bottom: 20px; text-align: center;">
+                <i class="fa fa-times-circle" style="color: #721c24; font-size: 24px; margin-bottom: 10px; display: block;"></i>
+                <span style="color: #721c24; font-weight: 700; font-size: 16px;">Este producto no está disponible</span>
             </div>
 
-            <!-- 🚀 type="submit" ejecuta el form de compra rápida -->
-            <button type="submit" class="btn-action btn-buy-now" th:disabled="${product.stock <= 0}">Comprar ahora</button>
+            <!-- Botones apagados y bloqueados (disabled) -->
+            <button type="button" class="btn-action" style="background-color: #ccc; color: #666; cursor: not-allowed;" disabled>Comprar ahora</button>
+            <button type="button" class="btn-action" style="background-color: #eee; color: #999; border: 1px solid #ccc; cursor: not-allowed;" disabled>Agregar al carrito</button>
+        </th:block>
 
-            <!-- type="button" mantiene la funcionalidad anterior de solo agregar -->
-            <button type="button" class="btn-action btn-add-cart" th:onclick="'addToCart(' + ${product.id} + ')'" th:disabled="${product.stock <= 0}">Agregar al carrito</button>
 
-        </form>
-        <!-- 🚀 HASTA ACÁ -->
+        <!-- 🚀 CONDICIÓN 2: ACTIVO PERO SIN STOCK (Pedido por encargo para la mueblería) -->
+        <th:block th:if="${product.activo and (product.stock == null or product.stock <= 0)}">
+            <div style="background-color: #fff3cd; border: 1px solid #ffeeba; border-radius: 8px; padding: 15px; margin-bottom: 20px; text-align: center;">
+                <i class="fa fa-tools" style="color: #856404; font-size: 24px; margin-bottom: 10px; display: block;"></i>
+                <span style="color: #856404; font-weight: 700; font-size: 16px;">Pedir por encargo</span>
+                <p style="color: #856404; font-size: 13px; margin-top: 5px; margin-bottom: 0;">Fabricamos este modelo a medida.</p>
+            </div>
+
+            <a href="#questions-section" class="btn-action btn-buy-now" style="display: block; text-align: center; text-decoration: none; box-sizing: border-box;">
+                Consultar tienda
+            </a>
+        </th:block>
+
+
+        <!-- 🚀 CONDICIÓN 3: ACTIVO Y CON STOCK (Compra normal habilitada) -->
+        <th:block th:if="${product.activo and product.stock != null and product.stock > 0}">
+            <form th:action="@{/cart/quick-buy/{id}(id=${product.id})}" method="post">
+
+                <div class="quantity-selector" style="margin-bottom: 20px;">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <span style="font-size: 14px; color: #333;">Cantidad:</span>
+                        <div style="display: flex; align-items: center; border: 1px solid #ddd; border-radius: 4px; padding: 2px;">
+                            <button type="button" onclick="updateQty(-1)" style="padding: 2px 10px; border:none; background:none; color:#3483fa; font-weight: bold; cursor:pointer;">-</button>
+
+                            <input type="text" name="qty" id="quantityInput" value="1"
+                                   th:data-max="${product.stock}"
+                                   readonly style="width:30px; text-align:center; border:none; font-weight:600; font-size: 14px;">
+
+                            <button type="button" onclick="updateQty(1)" style="padding: 2px 10px; border:none; background:none; color:#3483fa; font-weight: bold; cursor:pointer;">+</button>
+                        </div>
+                        <span style="font-size: 14px; color: #333;">1 unidad</span>
+                    </div>
+                    <div style="font-size: 13px; color: #999; margin-top: 8px;">
+                        <span th:text="'(+' + (${product.stock} > 10 ? '10' : ${product.stock}) + ' disponibles)'"></span>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-action btn-buy-now">Comprar ahora</button>
+                <button type="button" class="btn-action btn-add-cart" th:onclick="'addToCart(' + ${product.id} + ')'">Agregar al carrito</button>
+
+            </form>
+        </th:block>
+
     </div>
 </div>
 
 <div class="card-container">
     <h2 class="bottom-section-title" style="border:none; margin-bottom: 20px;">Quienes vieron este producto también compraron</h2>
+
     <div class="rec-carousel">
-        <div class="rec-card">
+
+        <!-- Iteramos sobre los productos calculados por el algoritmo -->
+        <a th:each="rec : ${recommendedProducts}"
+           th:href="@{/product/{id}(id=${rec.id})}"
+           class="rec-card"
+           style="text-decoration: none; color: inherit;">
+
             <div style="height: 180px; display: flex; align-items: center; justify-content: center; padding: 10px;">
-                <img th:src="@{/assets/images/populer-products/p1.png}" style="max-width: 100%; max-height: 100%; object-fit: contain;">
+                <img th:src="@{${rec.imageUrl}}" th:alt="${rec.name}" style="max-width: 100%; max-height: 100%; object-fit: contain;">
             </div>
+
             <div style="padding: 15px;">
-                <p style="font-size: 14px; color: #333; margin-bottom: 5px;">Silla Nórdica Escandinava</p>
-                <div class="rec-price">$ 85.400</div>
-                <div style="font-size: 12px; color: #00a650; font-weight: 600;">Envío gratis</div>
+                <p style="font-size: 14px; color: #333; margin-bottom: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"
+                   th:text="${rec.name}">Nombre Mueble</p>
+
+                <div class="rec-price" th:text="${'$ ' + #numbers.formatDecimal(rec.price, 1, 'POINT', 2, 'COMMA')}">$ 0.00</div>
+
+                <!-- Si el envío gratis es una regla general o un atributo, lo evaluás acá -->
+                <div th:if="${rec.stock != null and rec.stock > 0}" style="font-size: 12px; color: #00a650; font-weight: 600;">
+                    Disponible
+                </div>
+                <div th:unless="${rec.stock != null and rec.stock > 0}" style="font-size: 12px; color: #856404; font-weight: 600;">
+                    Por encargo
+                </div>
             </div>
-        </div>
-        <div class="rec-card">
-            <div style="height: 180px; display: flex; align-items: center; justify-content: center; padding: 10px;">
-                <img th:src="@{/assets/images/populer-products/p2.png}" style="max-width: 100%; max-height: 100%; object-fit: contain;">
-            </div>
-            <div style="padding: 15px;">
-                <p style="font-size: 14px; color: #333; margin-bottom: 5px;">Mesa de Comedor Roble</p>
-                <div class="rec-price">$ 240.000</div>
-                <div style="font-size: 12px; color: #00a650; font-weight: 600;">6 cuotas sin interés</div>
-            </div>
-        </div>
+        </a>
+
     </div>
 </div>
 

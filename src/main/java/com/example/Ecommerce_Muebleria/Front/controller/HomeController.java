@@ -1,5 +1,6 @@
 package com.example.Ecommerce_Muebleria.Front.controller;
 
+import com.example.Ecommerce_Muebleria.Front.services.OrderService;
 import com.example.Ecommerce_Muebleria.Front.services.ProductService;
 import com.example.Ecommerce_Muebleria.entities.cart.Cart;
 import com.example.Ecommerce_Muebleria.entities.commons.Collection;
@@ -17,10 +18,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 
 @Controller
@@ -37,6 +35,9 @@ public class HomeController {
 
     @Autowired
     private WishlistService wishlistService; // <--- 2. INYECCIÓN DEL SERVICIO
+
+    @Autowired
+    private OrderService orderService;
 
     @GetMapping("/")
     public String index(@RequestParam(defaultValue = "0") int page,
@@ -117,28 +118,51 @@ public class HomeController {
         // 1. Lógica de Favoritos (Local y Optimizada)
         boolean isFav = false;
 
-        // Si el usuario está logueado, chequeamos en BD local
         if (oidcUser != null) {
             try {
-                // 🚀 CAMBIO: Extraemos el ID del usuario de Auth0
                 String auth0UserId = oidcUser.getSubject();
-
-                // 🚀 OPTIMIZACIÓN: Usamos el método directo en vez de traer toda la lista
                 isFav = wishlistService.isFavorite(auth0UserId, id);
-
             } catch (Exception e) {
                 System.err.println("❌ Error al verificar favorito en detalles: " + e.getMessage());
             }
         }
 
-        // 2. Pasar datos al Modelo
+        // 2. Lógica de Recomendaciones (Algoritmo 3 + Plan B)
+        List<Product> recommendedProducts = new ArrayList<>();
+        try {
+            // Pedimos los IDs al microservicio de órdenes (asegurate de tener este método)
+            List<Long> recommendedIds = orderService.getFrequentlyBoughtTogetherIds(id);
+
+            if (recommendedIds != null && !recommendedIds.isEmpty()) {
+                // Si hay historial, hidratamos esos IDs pidiéndolos al micro 8080
+                recommendedProducts = productService.findProductsByIds(recommendedIds);
+            } else {
+                // PLAN B: Fallback a la misma categoría si nadie los compró juntos todavía
+                // Asumiendo que el producto tiene un atributo Category y armás el método en ProductService
+                recommendedProducts = productService.findProductsByCategory(product.getCategory(), 4);
+
+                // Removemos el producto actual para que no se recomiende a sí mismo
+                recommendedProducts.removeIf(p -> p.getId().equals(id));
+            }
+
+            // Filtramos para asegurar que no recomendamos productos dados de baja
+            recommendedProducts.removeIf(p -> p.getActivo() == null || !p.getActivo());
+
+        } catch (Exception e) {
+            System.err.println("⚠️ Error al cargar recomendaciones: " + e.getMessage());
+            // El bloque try-catch asegura que si falla el micro de órdenes, la página del producto sigue cargando bien
+        }
+
+        // 3. Pasar datos al Modelo
         model.addAttribute("isFavorite", isFav);
         model.addAttribute("product", product);
+        model.addAttribute("recommendedProducts", recommendedProducts);
 
         // DEBUG (Opcional, pero útil para verificar)
         System.out.println("======= DEBUG PRODUCTO =======");
         System.out.println("Nombre: " + product.getName());
         System.out.println("Es Favorito: " + isFav);
+        System.out.println("Recomendaciones encontradas: " + recommendedProducts.size());
         System.out.println("==============================");
 
         return "product-details";

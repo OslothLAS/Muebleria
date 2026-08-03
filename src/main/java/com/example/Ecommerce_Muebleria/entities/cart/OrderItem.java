@@ -13,6 +13,9 @@ public class OrderItem {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Transient // 🚀 Clave para que la base de datos no pida esta columna
+    private String productName;
+
     private Long productId;
     private int quantity;
     private BigDecimal price;

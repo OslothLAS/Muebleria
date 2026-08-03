@@ -34,7 +34,7 @@
             <table class="table table-bordered mt-3">
                 <thead class="table-light">
                 <tr>
-                    <th>Producto (ID)</th>
+                    <th>Producto</th> <!-- 🚀 Cambiamos el título de la columna -->
                     <th>Precio Unit. (Al momento de compra)</th>
                     <th>Cantidad</th>
                     <th>Subtotal</th>
@@ -42,9 +42,23 @@
                 </thead>
                 <tbody>
                 <tr th:each="item : ${order.orderItems}">
+
+                    <!-- 🚀 CELDA ACTUALIZADA: Nombre y disponibilidad -->
                     <td>
-                        Producto ID: <span th:text="${item.productId}">123</span>
+                        <!-- Si el producto tiene nombre (está disponible) -->
+                        <a th:if="${item.productName != null and !item.productName.isEmpty()}"
+                           th:href="@{/product/{id}(id=${item.productId})}"
+                           style="text-decoration: none; font-weight: 500; color: #0d6efd;">
+                            <span th:text="${item.productName}">Nombre Mueble</span>
+                        </a>
+
+                        <!-- Si el producto fue borrado o no está disponible -->
+                        <span th:if="${item.productName == null or item.productName.isEmpty()}"
+                              class="text-danger" style="font-style: italic;">
+                            Ya no está disponible (ID: <span th:text="${item.productId}"></span>)
+                        </span>
                     </td>
+
                     <td th:text="${'$' + item.price}">$500</td>
                     <td th:text="${item.quantity}">2</td>
                     <td th:text="${'$' + (item.price * item.quantity)}">$1000</td>

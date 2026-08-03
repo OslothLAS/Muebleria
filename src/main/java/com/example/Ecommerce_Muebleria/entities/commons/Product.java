@@ -41,6 +41,7 @@ public class Product {
     private String extraImage1;
     private String extraImage2;
     private String extraImage3;
+    private String category;
 
     @Column(name = "activo")
     private Boolean activo = true;

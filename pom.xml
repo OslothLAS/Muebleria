@@ -23,7 +23,13 @@
 		<mercadopago.version>2.1.26</mercadopago.version>
 	</properties>
 
+
 	<dependencies>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-amqp</artifactId>
+		</dependency>
 		<!-- Web & UI -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>

@@ -42,11 +42,13 @@ public class OrderService {
 
             Map<String, String> shipping = orderServiceCartBack.getShippingDataFromPayment(paymentId);
 
+            // 2. Guardamos la orden en la DB usando el ID híbrido
             orderServiceCartBack.saveOrderFromCart(
                     cartId,
                     shipping.getOrDefault("address", "Sin dirección"),
                     shipping.getOrDefault("zip", "0000"),
-                    shipping.getOrDefault("city", "N/A")
+                    shipping.getOrDefault("city", "N/A"),
+                    "APPROVED" // 🚀 Acá agregamos el quinto parámetro faltante
             );
 
             System.out.println("✅ Backend notificado del éxito para: " + cartId);
@@ -59,4 +61,15 @@ public class OrderService {
     public String getPaymentLink(String address, String zipCode, String city, String cartId) {
         return orderServiceCartBack.createCheckoutPreference(cartId, address, zipCode, city);
     }
+
+    // --- 2. MOTOR DE RECOMENDACIONES ---
+    public List<Long> getFrequentlyBoughtTogetherIds(Long productId) {
+        try {
+            return orderServiceCartBack.getFrequentlyBoughtTogetherIds(productId);
+        } catch (Exception e) {
+            System.err.println("⚠️ Error obteniendo recomendaciones: " + e.getMessage());
+            return new ArrayList<>();
+        }
+    }
+
 }

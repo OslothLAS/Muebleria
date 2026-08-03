@@ -278,14 +278,6 @@ public class CartController {
         return "purchase-failure"; // Nombre del HTML
     }
 
-    @GetMapping("/pending")
-    public String paymentPending() {
-        System.out.println("⏳ El pago está pendiente (ej: Rapipago o revisión de seguridad).");
-        // Aquí podrías vaciar el carrito o no, depende de tu regla de negocio.
-        // Lo normal es esperar a que se confirme para vaciarlo.
-        return "purchase-pending";
-    }
-
     //8081
     @GetMapping("/checkout")
     public String showCheckout(Model model, @AuthenticationPrincipal OidcUser oidcUser, HttpSession session) {

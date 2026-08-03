@@ -13,10 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -42,6 +39,26 @@ public class ProductService {
     public List<Product> findIsNew() {
 
         return productRepository.findByNewProductTrueAndActivoTrue();
+    }
+
+    // --- BÚSQUEDA DE RECOMENDACIONES (ALGORITMO) ---
+    public List<Product> findProductsByIds(List<Long> ids) {
+        List<Product> recommended = new ArrayList<>();
+
+        for (Long id : ids) {
+            try {
+                // 🚀 Reutilizamos tu método existente que ya sabe cómo ir al 8080
+                Product p = findProductById(id);
+
+                // Solo agregamos productos que existan y estén activos
+                if (p != null && (p.getActivo() == null || p.getActivo())) {
+                    recommended.add(p);
+                }
+            } catch (Exception e) {
+                System.err.println("⚠️ Error obteniendo producto recomendado " + id + ": " + e.getMessage());
+            }
+        }
+        return recommended;
     }
 
     public Product findProductById(Long id) {
@@ -188,5 +205,27 @@ public class ProductService {
         product.setActivo(true);
         productRepository.save(product);
         log.info("♻️ Producto ID {} restaurado", id);
+    }
+
+    // --- PLAN B: FALLBACK POR CATEGORÍA ---
+    // (Ajustá "String category" al tipo de dato real de tu categoría si es un Objeto/Enum)
+
+    // --- PLAN B: FALLBACK POR CATEGORÍA (Filtrado en memoria) ---
+    public List<Product> findProductsByCategory(String category, int limit) {
+        try {
+            // 🚀 Asegurate de que findAllActiveProducts() sea el nombre real
+            // del método que ya usás para traer tu catálogo desde el 8080.
+            List<Product> all = findAllActiveProducts();
+
+            return all.stream()
+                    .filter(p -> p.getCategory() != null && p.getCategory().equalsIgnoreCase(category))
+                    .filter(p -> p.getActivo() == null || p.getActivo())
+                    .limit(limit)
+                    .toList();
+
+        } catch (Exception e) {
+            System.err.println("⚠️ Error en filtrado por categoría: " + e.getMessage());
+            return new ArrayList<>();
+        }
     }
 }
