@@ -267,4 +267,84 @@ public class OrderServiceCartBack {
             return Collections.emptyMap();
         }
     }
+
+    @Transactional
+    public void createTransferOrder(
+            String shippingAddress, String shippingZipCode, String shippingCity, String shippingBetweenStreets, String shippingReferencesInfo,
+            String billingAddress, String billingZipCode, String billingCity, String billingBetweenStreets, String billingReferencesInfo,
+            String userId, String userEmail) {
+
+        Cart cart = cartRepository.findByUserId(userId)
+                .orElseThrow(() -> new RuntimeException("Carrito no encontrado para ID: " + userId));
+
+        // 1. Buscamos los detalles de los productos (tu app se consulta a sí misma en el 8080)
+        for (CartItem item : cart.getItems()) {
+            Product dto = productWebClient.get()
+                    .uri("http://localhost:8080/api/products/" + item.getProductId())
+                    .retrieve()
+                    .bodyToMono(Product.class)
+                    .block();
+            item.setProductDetail(dto);
+        }
+
+        // 2. Armamos la orden
+        Order order = new Order();
+        order.setUserId(userId);
+        order.setStatus("PENDING_TRANSFER"); // 🚀 Estado clave para la transferencia
+        order.setDateCreated(LocalDateTime.now());
+
+        // Datos de Envío
+        order.setShippingAddress(shippingAddress);
+        order.setZipCode(shippingZipCode);
+        order.setCity(shippingCity);
+        order.setReferencesInfo("Entre: " + shippingBetweenStreets + " - Ref: " + shippingReferencesInfo);
+
+        // Datos de Facturación
+        order.setBillingAddress(billingAddress);
+        order.setBillingZipCode(billingZipCode);
+        order.setBillingCity(billingCity);
+        order.setBillingReferencesInfo("Entre: " + billingBetweenStreets + " - Ref: " + billingReferencesInfo);
+
+        Order finalOrder = order;
+        List<OrderItem> orderItems = cart.getItems().stream().map(cartItem -> {
+            OrderItem oi = new OrderItem();
+            oi.setProductId(cartItem.getProductId());
+            oi.setQuantity(cartItem.getQuantity());
+
+            BigDecimal itemPrice = cartItem.getProductDetail() != null ? cartItem.getProductDetail().getPrice() : BigDecimal.ZERO;
+            oi.setPrice(itemPrice);
+
+            String nombre = cartItem.getProductDetail() != null ? cartItem.getProductDetail().getName() : "Mueble sin nombre";
+            oi.setProductName(nombre);
+
+            oi.setOrder(finalOrder);
+            return oi;
+        }).toList();
+
+        order.setOrderItems(orderItems);
+
+        // 🚀 3. Calculamos el total y APLICAMOS EL 10% DE DESCUENTO
+        BigDecimal subtotal = calculateTotal(cart.getItems());
+        BigDecimal totalConDescuento = subtotal.multiply(new BigDecimal("0.90"));
+        order.setTotalAmount(totalConDescuento);
+
+        // 4. Guardamos en DB
+        order = orderRepository.save(order);
+
+        // 🚀 5. Publicamos el evento a RabbitMQ (Para que el cliente reciba el CBU)
+        // NOTA: Reutilizamos tu clase OrderEmailMessage, luego adaptaremos el Listener para que detecte si es transferencia
+        OrderEmailMessage emailMessage = new OrderEmailMessage(
+                order.getId(),
+                userId,
+                userEmail,
+                "Cliente",
+                order.getTotalAmount()
+        );
+        orderMessagePublisher.publishOrderEmailEvent(emailMessage);
+
+        // 6. Vaciamos el carrito
+        cartServiceCartBack.emptyCart(userId);
+    }
+
+
 }

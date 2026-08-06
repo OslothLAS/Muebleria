@@ -299,6 +299,9 @@ public class CartController {
 
     @PostMapping("/process-checkout")
     public String processCheckout(
+            // 💳 Método de Pago
+            @RequestParam String paymentMethod, // 🚀 Atrapamos la nueva opción
+
             // 📦 Datos de Envío
             @RequestParam String shippingAddress,
             @RequestParam String shippingZipCode,
@@ -324,16 +327,29 @@ public class CartController {
                 ? oidcUser.getEmail()
                 : "invitado@ejemplo.com";
 
-        // 🚀 3. Pasamos todos los parámetros al service
-        String mpUrl = orderService.getPaymentLink(
-                shippingAddress, shippingZipCode, shippingCity, shippingBetweenStreets, shippingReferencesInfo,
-                billingAddress, billingZipCode, billingCity, billingBetweenStreets, billingReferencesInfo,
-                cartId, userEmail
-        );
+        // 3. Bifurcamos según el método de pago
+        if ("TRANSFER".equalsIgnoreCase(paymentMethod)) {
+            // 🚀 A. Flujo de Transferencia (Sin Mercado Pago)
+            orderService.processTransferCheckout(
+                    shippingAddress, shippingZipCode, shippingCity, shippingBetweenStreets, shippingReferencesInfo,
+                    billingAddress, billingZipCode, billingCity, billingBetweenStreets, billingReferencesInfo,
+                    cartId, userEmail
+            );
 
-        return "redirect:" + mpUrl;
+            // Redirigimos a una página de éxito con las instrucciones de pago
+            return "redirect:/checkout/transfer-success";
+
+        } else {
+            // 🚀 B. Flujo original de Mercado Pago
+            String mpUrl = orderService.getPaymentLink(
+                    shippingAddress, shippingZipCode, shippingCity, shippingBetweenStreets, shippingReferencesInfo,
+                    billingAddress, billingZipCode, billingCity, billingBetweenStreets, billingReferencesInfo,
+                    cartId, userEmail
+            );
+
+            return "redirect:" + mpUrl;
+        }
     }
-
 
     private String getCartId(OidcUser oidcUser, HttpSession session) {
         if (oidcUser != null) {

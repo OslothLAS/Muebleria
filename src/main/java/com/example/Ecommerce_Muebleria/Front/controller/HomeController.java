@@ -225,4 +225,8 @@ public class HomeController {
         return "GUEST_" + session.getId();
     }
 
+    @GetMapping("/checkout/transfer-success")
+    public String transferSuccess() {
+        return "transfer-success"; // Apunta al archivo transfer-success.html
+    }
 }

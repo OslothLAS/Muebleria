@@ -13,10 +13,21 @@
         .form-group { margin-bottom: 15px; }
         label { font-weight: 500; color: #666; margin-bottom: 5px; font-size: 0.9rem; }
         .form-control { border-radius: 4px; border: 1px solid #ddd; padding: 10px; }
-        .btn-pagar { background-color: #1e2d42; color: white; border: none; width: 100%; padding: 15px; font-weight: 600; border-radius: 6px; margin-top: 20px;}
-        .btn-pagar:hover { background-color: #152030; cursor: pointer; }
+        .btn-pagar { background-color: #1e2d42; color: white; border: none; width: 100%; padding: 15px; font-weight: 600; border-radius: 6px; margin-top: 10px; transition: 0.3s;}
+        .btn-pagar:hover { opacity: 0.9; cursor: pointer; }
         .summary-mini { background: #f9f9f9; padding: 20px; border-radius: 6px; border: 1px solid #eee; position: sticky; top: 20px;}
         .checkbox-container { background-color: #eef2f5; padding: 15px; border-radius: 6px; margin-bottom: 20px; border: 1px solid #d5e0e8; }
+
+        /* Estilos para las cajas de método de pago */
+        .payment-box { border: 1px solid #ddd; border-radius: 6px; padding: 15px; margin-bottom: 10px; cursor: pointer; transition: all 0.3s ease; display: flex; align-items: center; }
+        .payment-box:hover { border-color: #1e2d42; background-color: #f8f9fa; }
+        .payment-box input[type="radio"] { margin-right: 12px; transform: scale(1.3); cursor: pointer;}
+        .payment-box label { margin: 0; font-size: 1rem; color: #333; cursor: pointer; width: 100%; font-weight: 600;}
+        .discount-badge { background-color: #28a745; color: white; padding: 3px 8px; border-radius: 4px; font-size: 0.8rem; margin-left: 10px; }
+
+        /* Cajas de pago más compactas para el recuadro derecho */
+        .payment-box-mini { padding: 10px; margin-bottom: 8px; }
+        .payment-box-mini label { font-size: 0.85rem; }
     </style>
 </head>
 <body>
@@ -104,6 +115,19 @@
                         <textarea name="billingReferencesInfo" id="billingReferencesInfo" class="form-control" rows="2"></textarea>
                     </div>
 
+                    <!-- SECCIÓN 3: MÉTODO DE PAGO (IZQUIERDA) 🚀 -->
+                    <h3 class="section-title mt-5">💳 Método de Pago</h3>
+
+                    <label class="payment-box" for="mp-left">
+                        <input type="radio" name="paymentMethod" id="mp-left" value="MERCADO_PAGO" checked onclick="sincronizarMetodoPago('MERCADO_PAGO')">
+                        <label for="mp-left">Mercado Pago (Tarjetas, Dinero en cuenta)</label>
+                    </label>
+
+                    <label class="payment-box" for="transfer-left">
+                        <input type="radio" name="paymentMethod" id="transfer-left" value="TRANSFER" onclick="sincronizarMetodoPago('TRANSFER')">
+                        <label for="transfer-left">Transferencia Bancaria <span class="discount-badge">-10% OFF</span></label>
+                    </label>
+
                 </div>
 
                 <!-- Columna Derecha: Resumen de Compra -->
@@ -116,12 +140,28 @@
                             <span th:text="${myCart.items.size()}" style="font-weight: 600;"></span>
                         </div>
 
-                        <div class="d-flex justify-content-between mt-3 pt-3" style="border-top: 1px dashed #ccc;">
+                        <div class="d-flex justify-content-between mt-3 pt-3 mb-4" style="border-top: 1px dashed #ccc; align-items: center;">
                             <span style="font-size: 1.2rem; font-weight: 700; color: #333;">Total:</span>
-                            <span th:text="${'$' + totalAmount}" style="font-size: 1.2rem; font-weight: 700; color: #1e2d42;"></span>
+                            <div style="text-align: right;">
+                                <div id="discount-text" style="display: none; color: #28a745; font-size: 0.85rem; font-weight: bold; margin-bottom: -5px;">-10% aplicado</div>
+                                <span id="display-total" th:data-original-total="${totalAmount}" th:text="${'$' + totalAmount}" style="font-size: 1.2rem; font-weight: 700; color: #1e2d42;"></span>
+                            </div>
                         </div>
 
-                        <button type="submit" class="btn-pagar">Ir a pagar a Mercado Pago</button>
+                        <!-- SELECTOR DE PAGO REPETIDO (DERECHA) 🚀 -->
+                        <h5 style="font-size: 0.9rem; font-weight: 700; color: #666; margin-bottom: 10px;">Seleccioná cómo pagar:</h5>
+
+                        <label class="payment-box payment-box-mini" for="mp-right">
+                            <input type="radio" name="paymentMethod_dummy" id="mp-right" value="MERCADO_PAGO" checked onclick="sincronizarMetodoPago('MERCADO_PAGO')">
+                            <label for="mp-right">Mercado Pago</label>
+                        </label>
+
+                        <label class="payment-box payment-box-mini" for="transfer-right">
+                            <input type="radio" name="paymentMethod_dummy" id="transfer-right" value="TRANSFER" onclick="sincronizarMetodoPago('TRANSFER')">
+                            <label for="transfer-right">Transferencia <span style="color:#28a745; font-weight: bold;">(-10%)</span></label>
+                        </label>
+
+                        <button type="submit" id="btn-submit" class="btn-pagar mt-3">Ir a pagar a Mercado Pago</button>
                         <a href="/cart" style="display: block; text-align: center; margin-top: 15px; color: #3483fa; font-size: 0.9rem; text-decoration: none;">← Volver al carrito</a>
                     </div>
                 </div>
@@ -134,14 +174,12 @@
     function clonarDireccion() {
         const isChecked = document.getElementById('sameAddress').checked;
 
-        // Elementos de Envío
         const shipAddr = document.getElementsByName('shippingAddress')[0].value;
         const shipZip = document.getElementsByName('shippingZipCode')[0].value;
         const shipStreets = document.getElementsByName('shippingBetweenStreets')[0].value;
         const shipCity = document.getElementsByName('shippingCity')[0].value;
         const shipRef = document.getElementsByName('shippingReferencesInfo')[0].value;
 
-        // Elementos de Facturación
         const billAddr = document.getElementById('billingAddress');
         const billZip = document.getElementById('billingZipCode');
         const billStreets = document.getElementById('billingBetweenStreets');
@@ -155,14 +193,12 @@
             billCity.value = shipCity;
             billRef.value = shipRef;
 
-            // Opcional: Hacerlos de solo lectura si está tildado
             billAddr.readOnly = true;
             billZip.readOnly = true;
             billStreets.readOnly = true;
             billCity.readOnly = true;
             billRef.readOnly = true;
         } else {
-            // Limpiar campos si destilda y quitar el readOnly
             billAddr.value = "";
             billZip.value = "";
             billStreets.value = "";
@@ -174,6 +210,38 @@
             billStreets.readOnly = false;
             billCity.readOnly = false;
             billRef.readOnly = false;
+        }
+    }
+
+    // 🚀 NUEVA FUNCIÓN: Sincroniza las dos cajas de pago y actualiza el total
+    function sincronizarMetodoPago(method) {
+        // 1. Sincronizamos los radio buttons visualmente
+        document.getElementById('mp-left').checked = (method === 'MERCADO_PAGO');
+        document.getElementById('mp-right').checked = (method === 'MERCADO_PAGO');
+
+        document.getElementById('transfer-left').checked = (method === 'TRANSFER');
+        document.getElementById('transfer-right').checked = (method === 'TRANSFER');
+
+        // 2. Actualizamos el botón y el precio
+        const totalSpan = document.getElementById('display-total');
+        const discountText = document.getElementById('discount-text');
+        const btnSubmit = document.getElementById('btn-submit');
+
+        const originalTotal = parseFloat(totalSpan.getAttribute('data-original-total'));
+
+        if (method === 'TRANSFER') {
+            const discountedTotal = originalTotal * 0.90;
+            totalSpan.innerText = '$' + discountedTotal.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+            discountText.style.display = 'block';
+            btnSubmit.innerText = 'Confirmar pedido (Transferencia)';
+            btnSubmit.style.backgroundColor = '#28a745';
+        } else {
+            totalSpan.innerText = '$' + originalTotal.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+            discountText.style.display = 'none';
+            btnSubmit.innerText = 'Ir a pagar a Mercado Pago';
+            btnSubmit.style.backgroundColor = '#1e2d42';
         }
     }
 </script>

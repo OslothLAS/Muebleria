@@ -86,4 +86,18 @@ public class OrderService {
             return new ArrayList<>();
         }
     }
+
+    // --- 🚀 3. Flujo para Pago por Transferencia ---
+    public void processTransferCheckout(
+            String shippingAddress, String shippingZipCode, String shippingCity, String shippingBetweenStreets, String shippingReferencesInfo,
+            String billingAddress, String billingZipCode, String billingCity, String billingBetweenStreets, String billingReferencesInfo,
+            String cartId, String userEmail) {
+
+        // Se comunica con el microservicio en el backend (Micro 8082) para crear la orden directamente
+        orderServiceCartBack.createTransferOrder(
+                shippingAddress, shippingZipCode, shippingCity, shippingBetweenStreets, shippingReferencesInfo,
+                billingAddress, billingZipCode, billingCity, billingBetweenStreets, billingReferencesInfo,
+                cartId, userEmail
+        );
+    }
 }

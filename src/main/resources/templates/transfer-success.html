@@ -1,0 +1,57 @@
+<!doctype html>
+<html class="no-js" lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title>¡Pedido Registrado! | El Edén</title>
+    <link rel="stylesheet" th:href="@{/assets/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/font-awesome.min.css}">
+    <style>
+        body { background-color: #ededed; font-family: 'Roboto', sans-serif; }
+        .nav-simple { background: #1e2d42; padding: 10px 0; margin-bottom: 20px; }
+        .success-container { background: #fff; padding: 40px; border-radius: 6px; box-shadow: 0 1px 2px rgba(0,0,0,.12); max-width: 600px; margin: auto; margin-top: 40px; text-align: center; }
+        .icon-success { font-size: 60px; color: #e69500; margin-bottom: 20px; }
+        .bank-details { background-color: #f8f9fa; border: 1px dashed #ccc; padding: 20px; border-radius: 8px; text-align: left; margin: 30px 0; }
+        .bank-details p { margin-bottom: 8px; font-size: 1.1rem; color: #333; }
+        .btn-home { background-color: #1e2d42; color: white; border: none; padding: 12px 30px; font-weight: 600; border-radius: 6px; text-decoration: none; display: inline-block; transition: 0.3s; }
+        .btn-home:hover { opacity: 0.9; color: white; text-decoration: none; }
+        .instructions { font-size: 0.95rem; color: #666; margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+
+<nav class="nav-simple">
+    <div class="container"><a href="/" style="color:white; font-weight: bold; text-decoration: none; font-size: 1.5rem;">el edén.</a></div>
+</nav>
+
+<div class="container">
+    <div class="success-container">
+        <!-- Podés usar FontAwesome si lo tenés, o un simple emoji -->
+        <div class="icon-success">🛒✨</div>
+
+        <h2 style="font-weight: 700; color: #1e2d42; margin-bottom: 15px;">¡Tu pedido está casi listo!</h2>
+        <p class="instructions">
+            Hemos registrado tu orden exitosamente con el descuento aplicado. <br>
+            Para que empecemos a preparar tu envío, por favor realizá la transferencia por el total a la siguiente cuenta:
+        </p>
+
+        <div class="bank-details">
+            <p><strong>Banco:</strong> Banco Provincia</p>
+            <p><strong>Titular:</strong> Mueblería El Edén S.R.L.</p>
+            <p><strong>CBU / CVU:</strong> 0140000000000000000000</p>
+            <p><strong>Alias:</strong> EL.EDEN.MUEBLES</p>
+            <!-- Podés agregar CUIT si es necesario -->
+            <p><strong>CUIT:</strong> 30-12345678-9</p>
+        </div>
+
+        <p class="instructions" style="color: #d9534f; font-weight: 600;">
+            ⚠️ Importante: Te acabamos de enviar un mail con el detalle de tu compra. Respondé a ese mismo correo adjuntando el comprobante de transferencia para que validemos tu pago.
+        </p>
+
+        <a href="/" class="btn-home mt-3">Volver al inicio</a>
+        <br>
+        <a href="/my-orders" style="display: inline-block; margin-top: 15px; color: #3483fa; text-decoration: none;">Ver mis pedidos</a>
+    </div>
+</div>
+
+</body>
+</html>

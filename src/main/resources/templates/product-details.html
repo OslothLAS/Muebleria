@@ -75,58 +75,59 @@
             border: 1px dashed #e0e0e0;
         }
 
-        body {background-color: #E9ECEF !important; /* Un gris medio-claro, pero notable (antes era #ededed) */
-
-            /* El resto dejalo igual */
+        body {
+            background-color: #E9ECEF !important;
             font-family: 'Roboto', sans-serif;
-            color: #333; }
+            color: #333;
+        }
 
         .card-container {
             max-width: 1184px; margin: 0 auto 30px auto; background-color: #F8F9FA;
             border-radius: 4px; box-shadow: 0 1px 2px 0 rgba(0,0,0,.12); padding: 40px;
         }
 
-        .top-section {
-            display: flex; flex-wrap: wrap;
-            align-items: flex-start;
-            position: relative;
-        }
-
         .col-gallery {
-            /* 🚀 CAMBIÁ ESTE 42% POR UN VALOR MÁS ALTO */
-            flex: 0 0 20%;
+            flex: 0 0 35%;
             display: flex;
             padding-right: 10px;
-            position: -webkit-sticky;
-            position: sticky;
-            top: 20px;
+            position: -webkit-sticky; position: sticky; top: 20px;
             z-index: 10;
         }
 
+        /* 🚀 ESTILOS ACTUALIZADOS PARA LAS MINIATURAS */
         .thumbnail-list {
             display: flex;
-            flex-direction: column;
-            gap: 20px;
-            /* 🚀 CAMBIO 1: Aumentamos el ancho del carril para que entre la foto más grande */
-            width: 100px;
-            margin-right: 20px;
+            flex-direction: row;
+            justify-content: center;
+            gap: 12px;
+            margin-top: 15px;
+            width: 100%;
         }
 
         .thumbnail {
-            /* 🚀 CAMBIO 2: Aumentamos el tamaño del cuadrado */
             width: 80px;
             height: 80px;
-            border: 2px solid #ccc;
-            border-radius: 4px;
+            flex: 0 0 80px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
             cursor: pointer;
             overflow: hidden;
             display: flex;
             align-items: center;
             justify-content: center;
-            background-color: #fff; /* Recomendado para que resalte */
+            background-color: #fff;
+            transition: border-color 0.2s ease;
         }
 
-        .thumbnail.active { border-color: #e69500; border-width: 1px; }
+        .thumbnail:hover {
+            border-color: #aaa;
+        }
+
+        .thumbnail.active {
+            border-color: #e69500;
+            border-width: 2px;
+        }
+
         .thumbnail img { width: 100%; height: 100%; object-fit: contain; }
 
         .main-image-container {
@@ -134,7 +135,6 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            /* 🚀 CAMBIO AQUÍ: Borramos el height de 550px y ponemos esto: */
             aspect-ratio: 1 / 2;
             background-color: #fff;
             border-radius: 8px;
@@ -143,16 +143,15 @@
         }
         .main-image-container img { max-width: 100%; max-height: 100%; object-fit: contain; }
 
-        .col-middle-seller {
+        .col-middle-info {
             flex: 1;
-            min-width: 250px;
-            padding: 0 10px;
+            min-width: 320px;
+            padding: 0 15px;
         }
 
-        .col-right-wrapper {
-            flex: 0 0 28%;
-            min-width: 300px;
-            display: flex; flex-direction: column;
+        .col-right-buy-box {
+            flex: 0 0 25%;
+            min-width: 280px;
         }
 
         .seller-notes-card {
@@ -163,52 +162,24 @@
             margin-bottom: 20px;
         }
 
-        .seller-notes-title {
-            font-size: 16px;
-            font-weight: 700;
-            color: #e69500;
-            margin-bottom: 12px;
-            text-transform: uppercase;
-        }
-
         .seller-content {
             font-size: 15px;
             line-height: 1.6;
             color: #555;
         }
 
-        .seller-benefit {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-top: 15px;
-            font-size: 14px;
-            color: #00a650;
-            font-weight: 500;
-        }
-
-        .buy-box-container { border: 1px solid #eee; border-radius: 8px; padding: 24px; margin-bottom: 30px; }
         .product-title { font-size: 22px; font-weight: 600; margin-bottom: 15px; line-height: 1.2; }
         .price-main { font-size: 36px; font-weight: 300; }
-        .discount-tag { font-size: 18px; color: #00a650; margin-left: 8px; }
 
         .btn-action { width: 100%; border: none; border-radius: 6px; padding: 14px 0; font-weight: 600; margin-bottom: 10px; cursor: pointer; transition: 0.3s; }
         .btn-buy-now { background-color: #e69500; color: #fff; border: 1px solid #e69500; }
         .btn-buy-now:hover { background-color: #fff; color: #e69500; }
         .btn-add-cart { background-color: #fff3e0; color: #e69500; border: 1px solid #e69500; }
 
-        .payment-methods-box { margin-top: 30px; padding-top: 30px; border-top: 1px solid #eee; }
-        .payment-icons { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-top: 10px; }
-        .payment-icons img { height: 24px; border: 1px solid #f0f0f0; padding: 2px; background: #fff; }
-
         .rec-carousel { display: flex; gap: 20px; overflow-x: auto; padding-bottom: 15px; scroll-behavior: smooth; }
         .rec-card { flex: 0 0 220px; border: 1px solid #eee; border-radius: 6px; background: #fff; cursor: pointer; transition: 0.2s; }
         .rec-card:hover { transform: translateY(-3px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
         .rec-price { font-size: 18px; font-weight: 500; }
-
-        .question-item { margin-bottom: 25px; }
-        .q-text { font-weight: 500; color: #333; display: block; margin-bottom: 5px; }
-        .a-text { color: #666; padding-left: 15px; border-left: 2px solid #e69500; display: block; }
 
         .specs-table { width: 100%; max-width: 800px; border-collapse: collapse; margin-top: 20px; }
         .specs-table tr:nth-child(odd) { background-color: #f5f5f5; }
@@ -338,38 +309,12 @@
             outline: none;
         }
 
-
-        /* --- NUEVA DISTRIBUCIÓN DE 3 COLUMNAS --- */
-        /* Asegurate de buscar estas clases en tu bloque <style> y actualizarlas */
-
         .top-section {
             display: flex;
             flex-wrap: wrap;
             gap: 20px;
-            /* 🚀 CRUCIAL: Cambiar esto de stretch (por defecto) a flex-start */
-            /* Esto permite que la columna de la imagen sea más corta que la del centro, */
-            /* dándole espacio para moverse dentro del contenedor principal. */
             align-items: flex-start;
             position: relative;
-        }
-
-        .col-gallery {
-            flex: 0 0 35%; /* 🚀 Foto más pequeña */
-            display: flex;
-            padding-right: 10px;
-            position: -webkit-sticky; position: sticky; top: 20px;
-            z-index: 10;
-        }
-
-        .col-middle-info {
-            flex: 1; /* Centro informativo */
-            min-width: 320px;
-            padding: 0 15px;
-        }
-
-        .col-right-buy-box {
-            flex: 0 0 25%; /* Panel de compra */
-            min-width: 280px;
         }
 
         @media (max-width: 1100px) {
@@ -379,9 +324,8 @@
             }
         }
 
-        /* Esta clase crea el efecto de tarjeta gris */
         .col-card-eden {
-            background-color: #f8f9fa !important; /* Fondo gris suave */
+            background-color: #f8f9fa !important;
             border: 1px solid #e0e0e0 !important;
             border-radius: 12px !important;
             padding: 25px !important;
@@ -406,10 +350,17 @@
             <img id="mainImage" th:src="@{${product.imageUrl}}" th:alt="${product.name}" style="max-width: 100%; max-height: 100%; object-fit: contain;">
         </div>
 
-        <div class="thumbnail-list" style="display: flex; flex-direction: row; justify-content: center; gap: 10px; margin-top: 15px;">
-            <div class="thumbnail active" onclick="changeImage(this)"><img th:src="@{${product.imageUrl}}"></div>
-            <div class="thumbnail" th:if="${product.extraImage1}" onclick="changeImage(this)"><img th:src="@{${product.extraImage1}}"></div>
-            <div class="thumbnail" th:if="${product.extraImage2}" onclick="changeImage(this)"><img th:src="@{${product.extraImage2}}"></div>
+        <!-- 🚀 HTML ACTUALIZADO PARA LAS MINIATURAS -->
+        <div class="thumbnail-list">
+            <div class="thumbnail active" onclick="changeImage(this)">
+                <img th:src="@{${product.imageUrl}}">
+            </div>
+            <div class="thumbnail" th:if="${product.extraImage1}" onclick="changeImage(this)">
+                <img th:src="@{${product.extraImage1}}">
+            </div>
+            <div class="thumbnail" th:if="${product.extraImage2}" onclick="changeImage(this)">
+                <img th:src="@{${product.extraImage2}}">
+            </div>
         </div>
 
     </div>
@@ -476,11 +427,9 @@
                 <span style="color: #721c24; font-weight: 700; font-size: 16px;">Este producto no está disponible</span>
             </div>
 
-            <!-- Botones apagados y bloqueados (disabled) -->
             <button type="button" class="btn-action" style="background-color: #ccc; color: #666; cursor: not-allowed;" disabled>Comprar ahora</button>
             <button type="button" class="btn-action" style="background-color: #eee; color: #999; border: 1px solid #ccc; cursor: not-allowed;" disabled>Agregar al carrito</button>
         </th:block>
-
 
         <!-- 🚀 CONDICIÓN 2: ACTIVO PERO SIN STOCK (Pedido por encargo para la mueblería) -->
         <th:block th:if="${product.activo and (product.stock == null or product.stock <= 0)}">
@@ -494,7 +443,6 @@
                 Consultar tienda
             </a>
         </th:block>
-
 
         <!-- 🚀 CONDICIÓN 3: ACTIVO Y CON STOCK (Compra normal habilitada) -->
         <th:block th:if="${product.activo and product.stock != null and product.stock > 0}">
@@ -532,8 +480,6 @@
     <h2 class="bottom-section-title" style="border:none; margin-bottom: 20px;">Quienes vieron este producto también compraron</h2>
 
     <div class="rec-carousel">
-
-        <!-- Iteramos sobre los productos calculados por el algoritmo -->
         <a th:each="rec : ${recommendedProducts}"
            th:href="@{/product/{id}(id=${rec.id})}"
            class="rec-card"
@@ -549,7 +495,6 @@
 
                 <div class="rec-price" th:text="${'$ ' + #numbers.formatDecimal(rec.price, 1, 'POINT', 2, 'COMMA')}">$ 0.00</div>
 
-                <!-- Si el envío gratis es una regla general o un atributo, lo evaluás acá -->
                 <div th:if="${rec.stock != null and rec.stock > 0}" style="font-size: 12px; color: #00a650; font-weight: 600;">
                     Disponible
                 </div>
@@ -706,9 +651,7 @@
 <footer th:replace="~{fragments :: footer-principal}"></footer>
 
 <script th:src="@{/assets/js/jquery.js}"></script>
-
 <script th:src="@{/assets/js/bootstrap.min.js}"></script>
-
 <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.js"></script>
 
 <script th:inline="javascript">
@@ -727,11 +670,9 @@
                 tabsize: 2,
                 height: 300,
                 lang: 'es-ES',
-                // 🚀 IMPORTANTE: Definir los tamaños permitidos explícitamente
                 fontSizes: ['8', '9', '10', '11', '12', '14', '16', '18', '20', '24', '36', '48'],
                 toolbar: [
                     ['style', ['style']],
-                    // Agrupamos negrita y tamaño en el mismo bloque 'font'
                     ['font', ['bold', 'underline', 'clear', 'fontsize']],
                     ['fontname', ['fontname']],
                     ['color', ['color']],
@@ -781,7 +722,6 @@
     }
 
     function addToCart(id) {
-        // Esto captura la cantidad actual y la manda por GET a tu ruta original
         const qty = document.getElementById('quantityInput').value;
         window.location.href = '/cart/add/' + id + '?qty=' + qty;
     }
