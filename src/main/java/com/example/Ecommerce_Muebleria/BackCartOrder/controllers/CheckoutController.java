@@ -27,19 +27,13 @@ public class CheckoutController {
         // 1. Reconstruimos el ID del usuario (volvemos a poner la barra de Auth0 si la tenía)
         String userId = safeUserId.replace("_", "|");
 
-        // 2. Vamos a buscar a Mercado Pago los datos de envío que guardaste en la metadata
-        Map<String, String> shipping = orderServiceCartBack.getShippingDataFromPayment(paymentId);
+        // 2. Vamos a buscar a Mercado Pago todos los datos (envío, facturación y email) que guardaste en la metadata
+        Map<String, String> checkoutData = orderServiceCartBack.getShippingDataFromPayment(paymentId);
 
-        // 3. Guardamos la orden en tu base de datos marcándola como PENDIENTE
-        orderServiceCartBack.saveOrderFromCart(
-                userId,
-                shipping.get("address"),
-                shipping.get("zip"),
-                shipping.get("city"),
-                "PENDING" // 🚀 El estado clave para el historial
-        );
+        // 🚀 3. Guardamos la orden en tu base de datos marcándola como PENDIENTE usando el Map completo
+        orderServiceCartBack.saveOrderFromCart(userId, "PENDING", checkoutData);
 
         // 4. Redirigimos al usuario a su historial de compras
-        return "redirect:/my-orders"; // Ajustá esta URL a la ruta real de tu frontend
+        return "redirect:/my-orders";
     }
 }

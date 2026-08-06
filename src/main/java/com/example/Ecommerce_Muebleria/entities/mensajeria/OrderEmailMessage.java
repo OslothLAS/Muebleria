@@ -10,7 +10,8 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 public class OrderEmailMessage {
     private Long orderId;
-    private String userEmail;
-    private String userName;
+    private String userId;
+    private String userEmail; // 🚀 Campo clave agregado
+    private String customerName;
     private BigDecimal totalAmount;
 }

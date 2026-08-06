@@ -57,17 +57,35 @@ public class CartControllerCartBack {
     // 5. Checkout (Crear preferencia de pago)
     @PostMapping("/checkout")
     public ResponseEntity<String> getPaymentLink(
-            @RequestParam String cartId, // 🚀 Ahora el checkout también usa el cartId
-            @RequestParam(required = false) String address,
-            @RequestParam(required = false) String zipCode,
-            @RequestParam(required = false) String city) {
+            @RequestParam String cartId,
+            @RequestParam(required = false, defaultValue = "invitado@ejemplo.com") String userEmail,
 
-        if (address == null || zipCode == null || city == null) {
-            return ResponseEntity.badRequest().body("Error: Faltan datos de envío");
+            // 📦 Datos de Envío
+            @RequestParam(required = false) String shippingAddress,
+            @RequestParam(required = false) String shippingZipCode,
+            @RequestParam(required = false) String shippingCity,
+            @RequestParam(required = false, defaultValue = "") String shippingBetweenStreets,
+            @RequestParam(required = false, defaultValue = "") String shippingReferencesInfo,
+
+            // 🧾 Datos de Facturación
+            @RequestParam(required = false) String billingAddress,
+            @RequestParam(required = false) String billingZipCode,
+            @RequestParam(required = false) String billingCity,
+            @RequestParam(required = false, defaultValue = "") String billingBetweenStreets,
+            @RequestParam(required = false, defaultValue = "") String billingReferencesInfo) {
+
+        // Validación básica para asegurarnos de que llegaron los campos obligatorios
+        if (shippingAddress == null || shippingZipCode == null || shippingCity == null ||
+                billingAddress == null || billingZipCode == null || billingCity == null) {
+            return ResponseEntity.badRequest().body("Error: Faltan datos de envío o facturación obligatorios");
         }
 
-        // Creamos la preferencia de Mercado Pago para este ID (sea invitado o no)
-        String url = orderServiceCartBack.createCheckoutPreference(cartId, address, zipCode, city);
+        // 🚀 Creamos la preferencia de Mercado Pago pasándole TODOS los parámetros a tu service
+        String url = orderServiceCartBack.createCheckoutPreference(
+                shippingAddress, shippingZipCode, shippingCity, shippingBetweenStreets, shippingReferencesInfo,
+                billingAddress, billingZipCode, billingCity, billingBetweenStreets, billingReferencesInfo,
+                cartId, userEmail
+        );
         return ResponseEntity.ok(url);
     }
 

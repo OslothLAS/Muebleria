@@ -13,7 +13,7 @@ public class OrderItem {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Transient // 🚀 Clave para que la base de datos no pida esta columna
+    @Column
     private String productName;
 
     private Long productId;

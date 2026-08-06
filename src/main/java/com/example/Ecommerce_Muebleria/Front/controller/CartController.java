@@ -298,17 +298,38 @@ public class CartController {
     }
 
     @PostMapping("/process-checkout")
-    public String processCheckout(@RequestParam String address,
-                                  @RequestParam String zipCode,
-                                  @RequestParam String city,
-                                  @AuthenticationPrincipal OidcUser oidcUser, // 🚀 Agregamos esto
-                                  HttpSession session) {                      // 🚀 Y esto
+    public String processCheckout(
+            // 📦 Datos de Envío
+            @RequestParam String shippingAddress,
+            @RequestParam String shippingZipCode,
+            @RequestParam String shippingCity,
+            @RequestParam String shippingBetweenStreets,
+            @RequestParam(required = false, defaultValue = "") String shippingReferencesInfo,
 
-        // Obtenemos el ID híbrido
+            // 🧾 Datos de Facturación
+            @RequestParam String billingAddress,
+            @RequestParam String billingZipCode,
+            @RequestParam String billingCity,
+            @RequestParam(required = false, defaultValue = "") String billingBetweenStreets,
+            @RequestParam(required = false, defaultValue = "") String billingReferencesInfo,
+
+            @AuthenticationPrincipal OidcUser oidcUser,
+            HttpSession session) {
+
+        // 1. Obtenemos el ID híbrido (Auth0 o GUEST)
         String cartId = getCartId(oidcUser, session);
 
-        // 🚀 IMPORTANTE: Pasamos el cartId al service
-        String mpUrl = orderService.getPaymentLink(address, zipCode, city, cartId);
+        // 2. Extraemos el email de Auth0 si está logueado, sino usamos un fallback
+        String userEmail = (oidcUser != null && oidcUser.getEmail() != null)
+                ? oidcUser.getEmail()
+                : "invitado@ejemplo.com";
+
+        // 🚀 3. Pasamos todos los parámetros al service
+        String mpUrl = orderService.getPaymentLink(
+                shippingAddress, shippingZipCode, shippingCity, shippingBetweenStreets, shippingReferencesInfo,
+                billingAddress, billingZipCode, billingCity, billingBetweenStreets, billingReferencesInfo,
+                cartId, userEmail
+        );
 
         return "redirect:" + mpUrl;
     }

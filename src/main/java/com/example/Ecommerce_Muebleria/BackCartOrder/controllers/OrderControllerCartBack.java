@@ -1,13 +1,10 @@
 package com.example.Ecommerce_Muebleria.BackCartOrder.controllers;
 
-
-
 import com.example.Ecommerce_Muebleria.entities.cart.Order;
 import com.example.Ecommerce_Muebleria.BackCartOrder.services.CartServiceCartBack;
 import com.example.Ecommerce_Muebleria.BackCartOrder.services.OrderServiceCartBack;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,7 +21,6 @@ public class OrderControllerCartBack {
 
     @Autowired
     private CartServiceCartBack cartServiceCartBack;
-
 
     // En el controlador del Micro 8082
     @GetMapping("/user/{userId}")
@@ -43,30 +39,18 @@ public class OrderControllerCartBack {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-
-// En el Micro 8082 - OrderController.java
-
-    @PostMapping("/confirm") // 🚀 Cambiamos el nombre a uno más descriptivo
+    @PostMapping("/confirm")
     public ResponseEntity<Void> confirmOrder(@RequestParam String paymentId,
-                                             @RequestParam String cartId) { // 🚀 Recibimos cartId (GUEST_ o Auth0)
+                                             @RequestParam String cartId) {
 
         System.out.println("💳 Procesando confirmación de pago: " + paymentId + " para el usuario: " + cartId);
 
-        // 1. Pedimos a Mercado Pago los datos de envío (metadata)
-        Map<String, String> shipping = orderServiceCartBack.getShippingDataFromPayment(paymentId);
+        // 1. Pedimos a Mercado Pago TODOS los datos (envío, facturación y email) rescatando la metadata
+        Map<String, String> checkoutData = orderServiceCartBack.getShippingDataFromPayment(paymentId);
 
-        // 2. Guardamos la orden en la DB usando el ID híbrido
-        // 2. Guardamos la orden en la DB usando el ID híbrido
-        orderServiceCartBack.saveOrderFromCart(
-                cartId,
-                shipping.getOrDefault("address", "Sin dirección"),
-                shipping.getOrDefault("zip", "0000"),
-                shipping.getOrDefault("city", "N/A"),
-                "APPROVED" // 🚀 Acá agregamos el quinto parámetro faltante
-        );
-
+        // 🚀 2. Guardamos la orden en la DB usando el ID híbrido y pasándole el Map completo
+        orderServiceCartBack.saveOrderFromCart(cartId, "APPROVED", checkoutData);
 
         return ResponseEntity.ok().build();
     }
-
 }

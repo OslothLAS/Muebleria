@@ -8,7 +8,6 @@ import com.example.Ecommerce_Muebleria.entities.cart.OrderItem;
 import com.example.Ecommerce_Muebleria.BackCartOrder.repositories.CartRepository;
 import com.example.Ecommerce_Muebleria.BackCartOrder.repositories.OrderRepository;
 import com.example.Ecommerce_Muebleria.entities.commons.Product;
-
 import com.example.Ecommerce_Muebleria.entities.mensajeria.OrderEmailMessage;
 import com.example.Ecommerce_Muebleria.entities.mensajeria.OrderMessagePublisher;
 import com.mercadopago.MercadoPagoConfig;
@@ -33,7 +32,8 @@ import java.util.*;
 @Service
 public class OrderServiceCartBack {
 
-    @Autowired private CartServiceCartBack cartServiceCartBack;
+    @Autowired
+    private CartServiceCartBack cartServiceCartBack;
 
     @Autowired
     private CartRepository cartRepository;
@@ -43,23 +43,29 @@ public class OrderServiceCartBack {
 
     @Autowired
     private OrderItemRepository orderItemRepository;
+
     @Autowired
     private WebClient productWebClient;
 
     @Autowired
     private OrderMessagePublisher orderMessagePublisher;
 
-
     public List<Long> getFrequentlyBoughtTogetherIds(Long productId) {
-        // Ejecutamos la consulta y pedimos solo la primera página con un límite de 4 resultados
         return orderItemRepository.findFrequentlyBoughtTogether(productId, PageRequest.of(0, 4));
     }
 
+    @Value("${mp.access.token}")
+    private String accessToken;
 
-    @Value("${mp.access.token}") private String accessToken;
-    @Value("${app.front.url}") private String frontUrl;
+    @Value("${app.front.url}")
+    private String frontUrl;
 
-    public String createCheckoutPreference(String userId, String address, String zipCode, String city) {
+    // 🚀 1. Recibe todos los parámetros divididos y los guarda en la metadata
+    public String createCheckoutPreference(
+            String shippingAddress, String shippingZipCode, String shippingCity, String shippingBetweenStreets, String shippingReferencesInfo,
+            String billingAddress, String billingZipCode, String billingCity, String billingBetweenStreets, String billingReferencesInfo,
+            String userId, String userEmail) {
+
         MercadoPagoConfig.setAccessToken(accessToken);
 
         Cart cart = cartServiceCartBack.getCartByUserId(userId);
@@ -89,7 +95,6 @@ public class OrderServiceCartBack {
             }
         }
 
-        // Recomendación: Reemplazar el string fijo por la variable frontUrl cuando pases a producción
         String baseUrl = "https://isopachous-echo-unapplauded.ngrok-free.dev";
 
         PreferenceBackUrlsRequest backUrls = PreferenceBackUrlsRequest.builder()
@@ -98,11 +103,20 @@ public class OrderServiceCartBack {
                 .pending(baseUrl + "/cart/pending")
                 .build();
 
+        // 🚀 Agrupamos la info de entrega y facturación en el JSON de Mercado Pago
         Map<String, Object> metadata = new HashMap<>();
-        metadata.put("shipping_address", address);
-        metadata.put("zip_code", zipCode);
-        metadata.put("city", city);
+        metadata.put("shipping_address", shippingAddress);
+        metadata.put("shipping_zip", shippingZipCode);
+        metadata.put("shipping_city", shippingCity);
+        metadata.put("shipping_refs", "Entre: " + shippingBetweenStreets + " - Ref: " + shippingReferencesInfo);
+
+        metadata.put("billing_address", billingAddress);
+        metadata.put("billing_zip", billingZipCode);
+        metadata.put("billing_city", billingCity);
+        metadata.put("billing_refs", "Entre: " + billingBetweenStreets + " - Ref: " + billingReferencesInfo);
+
         metadata.put("user_id", userId);
+        metadata.put("user_email", userEmail);
 
         String safeUserId = userId.replace("|", "_");
 
@@ -123,13 +137,13 @@ public class OrderServiceCartBack {
         }
     }
 
-    public List<Order> findByUserId(String userId){
+    public List<Order> findByUserId(String userId) {
         return orderRepository.findByUserId(userId);
     }
 
     @Transactional
-    // 🚀 Modificación: Agregamos el parámetro 'status'
-    public void saveOrderFromCart(String userId, String address, String zipCode, String city, String status) {
+    // 🚀 2. Ahora recibe el Map limpio directamente
+    public void saveOrderFromCart(String userId, String status, Map<String, String> checkoutData) {
         Cart cart = cartRepository.findByUserId(userId)
                 .orElseThrow(() -> new RuntimeException("Carrito no encontrado para ID: " + userId));
 
@@ -144,11 +158,20 @@ public class OrderServiceCartBack {
 
         Order order = new Order();
         order.setUserId(userId);
-        order.setShippingAddress(address);
-        order.setZipCode(zipCode);
-        order.setCity(city);
+        order.setStatus(status);
         order.setDateCreated(LocalDateTime.now());
-        order.setStatus(status); // 🚀 El estado ahora es dinámico
+
+        // 🚀 Asignamos datos de Envío
+        order.setShippingAddress(checkoutData.getOrDefault("shipping_address", "N/A"));
+        order.setZipCode(checkoutData.getOrDefault("shipping_zip", "0000"));
+        order.setCity(checkoutData.getOrDefault("shipping_city", "N/A"));
+        order.setReferencesInfo(checkoutData.getOrDefault("shipping_refs", ""));
+
+        // 🚀 Asignamos datos de Facturación
+        order.setBillingAddress(checkoutData.getOrDefault("billing_address", "N/A"));
+        order.setBillingZipCode(checkoutData.getOrDefault("billing_zip", "0000"));
+        order.setBillingCity(checkoutData.getOrDefault("billing_city", "N/A"));
+        order.setBillingReferencesInfo(checkoutData.getOrDefault("billing_refs", ""));
 
         Order finalOrder = order;
         List<OrderItem> orderItems = cart.getItems().stream().map(cartItem -> {
@@ -156,11 +179,16 @@ public class OrderServiceCartBack {
             oi.setProductId(cartItem.getProductId());
             oi.setQuantity(cartItem.getQuantity());
 
-            // 🚀 Modificación: Prevención de NullPointerException en el precio
             BigDecimal itemPrice = cartItem.getProductDetail() != null ?
                     cartItem.getProductDetail().getPrice() :
                     BigDecimal.ZERO;
             oi.setPrice(itemPrice);
+
+            // 🚀 ESTA ES LA LÍNEA CLAVE PARA QUE EL MAIL TENGA EL NOMBRE
+            String nombre = cartItem.getProductDetail() != null ? cartItem.getProductDetail().getName() : "Mueble sin nombre";
+            System.out.println("🕵️ DIAGNÓSTICO - ID: " + cartItem.getProductId() + " | Nombre detectado: " + nombre);
+
+            oi.setProductName(nombre);
 
             oi.setOrder(finalOrder);
             return oi;
@@ -171,11 +199,11 @@ public class OrderServiceCartBack {
 
         order = orderRepository.save(order);
 
-        // 🚀 Modificación: Solo mandamos a la cola de correos si el pago está aprobado
         if ("APPROVED".equalsIgnoreCase(status)) {
             OrderEmailMessage emailMessage = new OrderEmailMessage(
                     order.getId(),
                     userId,
+                    checkoutData.getOrDefault("email", "cliente@ejemplo.com"), // Usamos el correo del Map
                     "Cliente",
                     order.getTotalAmount()
             );
@@ -198,30 +226,42 @@ public class OrderServiceCartBack {
         return orderRepository.findById(id);
     }
 
+    // 🚀 3. Rescata toda la metadata de Mercado Pago y la pasa a un Map
     public Map<String, String> getShippingDataFromPayment(String paymentId) {
         try {
             PaymentClient client = new PaymentClient();
             Payment payment = client.get(Long.parseLong(paymentId));
             Map<String, Object> metadata = payment.getMetadata();
 
-            Map<String, String> shippingData = new HashMap<>();
+            Map<String, String> data = new HashMap<>();
 
-            // 🚀 Modificación: Prevención de NullPointerException al leer la metadata
             if (metadata != null) {
-                Object addressObj = metadata.get("shipping_address");
-                Object zipObj = metadata.get("zip_code");
-                Object cityObj = metadata.get("city");
+                data.put("shipping_address", metadata.getOrDefault("shipping_address", "Sin dirección").toString());
+                data.put("shipping_zip", metadata.getOrDefault("shipping_zip", "Sin CP").toString());
+                data.put("shipping_city", metadata.getOrDefault("shipping_city", "Sin Ciudad").toString());
+                data.put("shipping_refs", metadata.getOrDefault("shipping_refs", "").toString());
 
-                shippingData.put("address", addressObj != null ? addressObj.toString() : "Sin dirección");
-                shippingData.put("zip", zipObj != null ? zipObj.toString() : "Sin CP");
-                shippingData.put("city", cityObj != null ? cityObj.toString() : "Sin Ciudad");
+                data.put("billing_address", metadata.getOrDefault("billing_address", "Sin dirección").toString());
+                data.put("billing_zip", metadata.getOrDefault("billing_zip", "Sin CP").toString());
+                data.put("billing_city", metadata.getOrDefault("billing_city", "Sin Ciudad").toString());
+                data.put("billing_refs", metadata.getOrDefault("billing_refs", "").toString());
+
+                data.put("email", metadata.getOrDefault("user_email", "cliente_sin_mail@ejemplo.com").toString());
             } else {
-                shippingData.put("address", "Sin dirección");
-                shippingData.put("zip", "Sin CP");
-                shippingData.put("city", "Sin Ciudad");
+                data.put("shipping_address", "Sin dirección");
+                data.put("shipping_zip", "Sin CP");
+                data.put("shipping_city", "Sin Ciudad");
+                data.put("shipping_refs", "");
+
+                data.put("billing_address", "Sin dirección");
+                data.put("billing_zip", "Sin CP");
+                data.put("billing_city", "Sin Ciudad");
+                data.put("billing_refs", "");
+
+                data.put("email", "cliente_sin_mail@ejemplo.com");
             }
 
-            return shippingData;
+            return data;
         } catch (Exception e) {
             System.err.println("❌ Error al recuperar metadatos de MP: " + e.getMessage());
             return Collections.emptyMap();
