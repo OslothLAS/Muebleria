@@ -2,121 +2,87 @@
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mis Compras | El Edén</title>
 
-    <!-- 🚀 1. Traemos TODOS tus estilos y fuentes originales -->
     <th:block th:replace="~{fragments :: head-css}"></th:block>
 
     <style>
-        /* 🚀 2. Ajustamos la tabla para que use tu color corporativo #1e2d42 */
-        .table-silvero {
-            border-radius: 8px;
-            overflow: hidden;
-            margin-bottom: 0;
+        /* Ajuste de contenedor principal para móviles */
+        .orders-container { max-width: 1000px; margin-top: 40px; margin-bottom: 80px; padding: 0 15px; }
+
+        /* Estilo tabla Silvero */
+        .table-responsive-wrapper {
+            background: #fff; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            overflow-x: auto; /* 🚀 ESTO HACE QUE LA TABLA NO ROMPA LA PANTALLA */
             width: 100%;
-            background-color: #fff;
         }
-        .table-silvero thead {
-            background-color: #1e2d42; /* Tu color azul oscuro */
-            color: white;
-        }
-        .table-silvero thead th {
-            border: none;
-            font-weight: 500;
-            padding: 15px;
-        }
-        .table-silvero tbody td {
-            vertical-align: middle;
-            padding: 15px;
-            border-bottom: 1px solid #eee;
-            color: #555;
-        }
+        .table-silvero { border-radius: 8px; width: 100%; min-width: 600px; background-color: #fff; }
+        .table-silvero thead { background-color: #1e2d42; color: white; }
+        .table-silvero thead th { border: none; font-weight: 500; padding: 15px; text-align: left; }
+        .table-silvero tbody td { vertical-align: middle; padding: 15px; border-bottom: 1px solid #eee; color: #555; }
 
+        /* Botón responsive */
         .btn-outline-silvero {
-            color: #1e2d42;
-            border: 1px solid #1e2d42;
-            border-radius: 4px;
-            padding: 6px 15px;
-            font-size: 13px;
-            font-weight: 600;
-            transition: all 0.3s;
-            text-decoration: none;
-            display: inline-block;
-        }
-        .btn-outline-silvero:hover {
-            color: #3d5a83;
-            border: 1px solid #365075;
-            background-color: #f8f9fa;
-            border-radius: 4px;
-            padding: 6px 15px;
-            font-size: 13px;
-            font-weight: 600;
-            transition: all 0.3s;
-            text-decoration: none;
-            display: inline-block;
+            color: #1e2d42; border: 1px solid #1e2d42; border-radius: 4px;
+            padding: 8px 12px; font-size: 12px; font-weight: 600; text-decoration: none; display: inline-block;
         }
 
-        /* Badges de estado de envío y pago */
-        .badge-aprobado { background-color: #d4edda; color: #155724; padding: 6px 12px; border-radius: 4px; font-size: 12px; font-weight: bold; text-transform: uppercase; }
-        .badge-pendiente { background-color: #fff3cd; color: #856404; padding: 6px 12px; border-radius: 4px; font-size: 12px; font-weight: bold; text-transform: uppercase; }
-        .badge-en-camino { background-color: #e3f2fd; color: #1976d2; padding: 6px 12px; border-radius: 4px; font-size: 12px; font-weight: bold; text-transform: uppercase; }
-        .badge-entregado { background-color: #e8f5e9; color: #2e7d32; padding: 6px 12px; border-radius: 4px; font-size: 12px; font-weight: bold; text-transform: uppercase; }
-        /* 🚀 NUEVO: Badge para Cancelado */
-        .badge-cancelado { background-color: #f8d7da; color: #721c24; padding: 6px 12px; border-radius: 4px; font-size: 12px; font-weight: bold; text-transform: uppercase; }
+        /* Badges responsive */
+        .badge-base { padding: 5px 10px; border-radius: 4px; font-size: 11px; font-weight: bold; text-transform: uppercase; white-space: nowrap; }
+        .badge-aprobado { background-color: #d4edda; color: #155724; }
+        .badge-pendiente { background-color: #fff3cd; color: #856404; }
+        .badge-en-camino { background-color: #e3f2fd; color: #1976d2; }
+        .badge-entregado { background-color: #e8f5e9; color: #2e7d32; }
+        .badge-cancelado { background-color: #f8d7da; color: #721c24; }
+
+        /* 🚀 MEDIA QUERY PARA CELULARES */
+        @media (max-width: 576px) {
+            .orders-container { margin-top: 20px; }
+            h2 { font-size: 22px !important; }
+            .table-silvero thead th, .table-silvero tbody td { padding: 10px; font-size: 13px; }
+            .btn-outline-silvero { padding: 6px 10px; font-size: 11px; }
+        }
     </style>
 </head>
-<body style="background-color: #F8F9FA;"> <!-- Fondo gris clarito para resaltar la tarjeta blanca -->
+<body style="background-color: #F8F9FA;">
 
-<!-- 🚀 3. Agregamos tu barra de navegación (Header) -->
 <th:block th:replace="~{fragments :: header-principal}"></th:block>
 
-<div class="container" style="max-width: 1000px; margin-top: 60px; margin-bottom: 100px;">
-    <h2 style="margin-bottom: 30px; color: #333; font-weight: 700;">📦 Mis Pedidos</h2>
+<div class="container orders-container">
+    <h2 style="margin-bottom: 25px; color: #333; font-weight: 700;">📦 Mis Pedidos</h2>
 
-    <!-- Mensaje si la lista está vacía -->
     <div th:if="${#lists.isEmpty(orders)}" style="background-color: #fff; border-left: 4px solid #1e2d42; padding: 20px; border-radius: 6px; box-shadow: 0 2px 5px rgba(0,0,0,0.05);">
         <span style="color: #555; font-size: 16px;">No has realizado ninguna compra todavía.</span>
         <a href="/products" style="color: #1e2d42; font-weight: bold; margin-left: 10px; text-decoration: underline;">Ir a la tienda</a>
     </div>
 
-    <!-- Tabla de compras -->
-    <div th:unless="${#lists.isEmpty(orders)}" style="background: #fff; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); overflow: hidden;">
+    <!-- 🚀 Wrapper que permite el scroll horizontal en móviles -->
+    <div th:unless="${#lists.isEmpty(orders)}" class="table-responsive-wrapper">
         <table class="table-silvero">
             <thead>
             <tr>
                 <th># Orden</th>
                 <th>Fecha</th>
-                <th>Estado del Envío</th>
+                <th>Estado</th>
                 <th>Total</th>
-                <th style="text-align: center;">Acciones</th>
+                <th style="text-align: center;">Acción</th>
             </tr>
             </thead>
             <tbody>
             <tr th:each="order : ${orders}">
                 <td style="font-weight: 700; color: #1e2d42;" th:text="${'ORD-' + order.id}">ORD-001</td>
-
-                <!-- Tu variable original dateCreated formateda -->
-                <td th:text="${#temporals.format(order.dateCreated, 'dd/MM/yyyy HH:mm')}">Fecha</td>
-
-                <!-- 🚀 4. Mapeo dinámico de TODOS los estados posibles -->
+                <td th:text="${#temporals.format(order.dateCreated, 'dd/MM/yy HH:mm')}">Fecha</td>
                 <td>
-                    <span class="badge-aprobado" th:if="${order.status != null and order.status == 'APPROVED'}">Aprobado</span>
-
-                    <!-- Unificamos PENDING (Mercado Pago) y PENDING_TRANSFER (Transferencia Bancaria) -->
-                    <span class="badge-pendiente" th:if="${order.status != null and (order.status == 'PENDING' or order.status == 'PENDING_TRANSFER')}">Pendiente</span>
-
-                    <span class="badge-en-camino" th:if="${order.status != null and order.status == 'EN_CAMINO'}">En camino</span>
-                    <span class="badge-entregado" th:if="${order.status != null and order.status == 'ENTREGADO'}">Entregado</span>
-
-                    <!-- 🚀 Estado Cancelado agregado -->
-                    <span class="badge-cancelado" th:if="${order.status != null and order.status == 'CANCELLED'}">Cancelado</span>
+                    <span class="badge-base badge-aprobado" th:if="${order.status == 'APPROVED'}">Aprobado</span>
+                    <span class="badge-base badge-pendiente" th:if="${order.status == 'PENDING' or order.status == 'PENDING_TRANSFER'}">Pendiente</span>
+                    <span class="badge-base badge-en-camino" th:if="${order.status == 'EN_CAMINO'}">En camino</span>
+                    <span class="badge-base badge-entregado" th:if="${order.status == 'ENTREGADO'}">Entregado</span>
+                    <span class="badge-base badge-cancelado" th:if="${order.status == 'CANCELLED'}">Cancelado</span>
                 </td>
-
-                <!-- Formateamos el precio estilo Argentina -->
-                <td style="font-weight: 700; color: #333;" th:text="${'$' + #numbers.formatDecimal(order.totalAmount, 1, 'POINT', 2, 'COMMA')}">$1000.00</td>
-
+                <td style="font-weight: 700; color: #333;" th:text="${'$' + #numbers.formatDecimal(order.totalAmount, 1, 'POINT', 2, 'COMMA')}">$0.00</td>
                 <td style="text-align: center;">
-                    <a th:href="@{/order-details/{id}(id=${order.id})}" class="btn-outline-silvero">Ver Detalles</a>
+                    <a th:href="@{/order-details/{id}(id=${order.id})}" class="btn-outline-silvero">Ver detalle</a>
                 </td>
             </tr>
             </tbody>
@@ -124,7 +90,6 @@
     </div>
 </div>
 
-<!-- 🚀 5. Agregamos tu Footer -->
 <th:block th:replace="~{fragments :: footer-principal}"></th:block>
 
 </body>

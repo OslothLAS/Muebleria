@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <!-- Incluimos tu fragmento del head con los CSS -->
+  <th:block th:replace="fragments :: head"></th:block>
+  <title>Mis Notificaciones</title>
+  <style>
+    .noti-card {
+      border-left: 4px solid transparent;
+      transition: all 0.3s ease;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+    /* Estilo para las nuevas/no leídas */
+    .noti-unread {
+      border-left-color: #d9534f;
+      background-color: #fdfaf9;
+    }
+    /* Estilo para las viejas/leídas */
+    .noti-read {
+      border-left-color: #e0e0e0;
+      background-color: #ffffff;
+    }
+    .noti-card:hover {
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      transform: translateY(-2px);
+    }
+  </style>
+</head>
+<body>
+
+<!-- Incluimos tu barra de navegación (donde ya está la campanita) -->
+<div th:replace="fragments :: header"></div>
+
+<div class="container" style="margin-top: 60px; margin-bottom: 100px; min-height: 50vh;">
+  <div class="row">
+    <div class="col-lg-8 offset-lg-2">
+
+      <h2 style="color: #1e2d42; margin-bottom: 30px; font-weight: 700;">
+        <span class="lnr lnr-alarm" style="margin-right: 10px;"></span>Centro de Notificaciones
+      </h2>
+
+      <!-- MENSAJE SI EL HISTORIAL ESTÁ VACÍO -->
+      <div th:if="${todasLasNotificaciones == null or #lists.isEmpty(todasLasNotificaciones)}"
+           class="alert alert-info text-center"
+           style="background-color: #f8f9fa; border: 1px dashed #ddd; padding: 50px; border-radius: 10px;">
+        <span class="lnr lnr-envelope" style="font-size: 50px; color: #ccc; display: block; margin-bottom: 15px;"></span>
+        <h4 style="color: #666; font-weight: bold;">Tu buzón está vacío</h4>
+        <p style="color: #888;">Acá te avisaremos sobre el estado de tus compras y las novedades de la tienda.</p>
+        <a href="/" class="btn btn-primary mt-3" style="background-color: #1e2d42; border: none; padding: 10px 25px;">Ir a comprar</a>
+      </div>
+
+      <!-- LISTADO DE NOTIFICACIONES -->
+      <div th:if="${todasLasNotificaciones != null and !#lists.isEmpty(todasLasNotificaciones)}">
+
+        <!-- Bucle th:each para dibujar cada tarjeta -->
+        <div th:each="noti : ${todasLasNotificaciones}"
+             class="card noti-card mb-3"
+             th:classappend="${!noti.leida} ? 'noti-unread' : 'noti-read'">
+
+          <div class="card-body" style="padding: 20px;">
+            <div class="d-flex justify-content-between align-items-start mb-2">
+              <h5 class="card-title mb-0" style="color: #222; font-weight: bold;" th:text="${noti.titulo}">Título del Aviso</h5>
+              <span class="badge"
+                    style="background-color: #f1f1f1; color: #666; font-size: 11px;"
+                    th:text="${#temporals.format(noti.fecha, 'dd/MM/yyyy - HH:mm')}">Fecha</span>
+            </div>
+
+            <p class="card-text mt-2" style="color: #555; line-height: 1.5; font-size: 14px;" th:text="${noti.mensaje}">
+              Detalle completo del mensaje de la notificación.
+            </p>
+
+            <!-- Botón dinámico si la notificación tiene una URL de acción -->
+            <a th:if="${noti.urlAccion != null and !noti.urlAccion.isEmpty()}"
+               th:href="${noti.urlAccion}"
+               class="btn btn-sm btn-outline-dark mt-2"
+               style="font-size: 12px; font-weight: bold;">
+              Ver detalles
+            </a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- Incluimos tu pie de página -->
+<div th:replace="~{fragments :: footer-principal}"></div>
+</body>
+</html>

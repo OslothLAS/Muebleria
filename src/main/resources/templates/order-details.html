@@ -1,77 +1,214 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
-    <meta charset="UTF-8">
-    <title>Detalle de Orden</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="shortcut icon" type="image/icon" th:href="@{/assets/logo/favicon.png}"/>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Detalle de Orden | Silvero</title>
+
+    <!-- 1. Estilos Globales de Silvero -->
+    <th:block th:replace="~{fragments :: head-css}"></th:block>
+
+    <style>
+        /* Contenedor principal responsive */
+        .order-detail-container {
+            max-width: 900px;
+            margin-top: 40px;
+            margin-bottom: 80px;
+            padding: 0 15px;
+        }
+
+        /* Estilo de tarjeta corporativa */
+        .silvero-card {
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            overflow: hidden;
+            border: none;
+        }
+
+        .silvero-card-header {
+            background-color: #1e2d42;
+            color: white;
+            padding: 20px 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .silvero-card-body {
+            padding: 30px;
+        }
+
+        /* Tabla responsive con scroll horizontal en mobile */
+        .table-responsive-wrapper {
+            overflow-x: auto;
+            width: 100%;
+            margin-top: 20px;
+            border-radius: 8px;
+            border: 1px solid #eee;
+        }
+
+        .table-silvero-detail {
+            width: 100%;
+            min-width: 600px;
+            background-color: #fff;
+            margin-bottom: 0;
+            border-collapse: collapse;
+        }
+
+        .table-silvero-detail thead {
+            background-color: #f8f9fa;
+            color: #333;
+        }
+
+        .table-silvero-detail thead th {
+            border-bottom: 2px solid #dee2e6;
+            font-weight: 600;
+            padding: 15px;
+            text-align: left;
+            font-size: 14px;
+        }
+
+        .table-silvero-detail tbody td {
+            vertical-align: middle;
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            color: #555;
+            font-size: 14px;
+        }
+
+        /* Badges de estado */
+        .badge-status {
+            padding: 6px 14px;
+            border-radius: 50px;
+            font-size: 12px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        .badge-approved { background-color: #d4edda; color: #155724; }
+        .badge-pending { background-color: #fff3cd; color: #856404; }
+        .badge-shipping { background-color: #e3f2fd; color: #1976d2; }
+        .badge-delivered { background-color: #e8f5e9; color: #2e7d32; }
+        .badge-cancelled { background-color: #f8d7da; color: #721c24; }
+
+        /* Botones de acción */
+        .btn-silvero-back {
+            background-color: #6c757d;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-weight: 550;
+            text-decoration: none;
+            transition: 0.2s;
+            display: inline-block;
+        }
+        .btn-silvero-back:hover {
+            background-color: #9ba7b3;
+            color: #bdbdbd;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-weight: 550;
+            text-decoration: none;
+            transition: 0.2s;
+            display: inline-block;
+        }
+
+        /* Ajustes Mobile */
+        @media (max-width: 576px) {
+            .order-detail-container { margin-top: 20px; }
+            .silvero-card-header { flex-direction: column; gap: 10px; align-items: flex-start !important; padding: 15px 20px; }
+            .silvero-card-body { padding: 15px; }
+            h4 { font-size: 18px !important; }
+            h3 { font-size: 20px !important; }
+        }
+    </style>
 </head>
-<body class="bg-light">
+<body style="background-color: #E9ECEF;">
 
-<div class="container mt-5">
+<!-- Header Principal con barra sticky e iconos unificados -->
+<th:block th:replace="~{fragments :: header-principal}"></th:block>
 
-    <div class="card shadow">
-        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+<div class="container order-detail-container">
+    <div class="card silvero-card">
+
+        <!-- Header de la Orden -->
+        <div class="silvero-card-header">
             <h4 class="mb-0">🧾 Orden #<span th:text="${order.id}">001</span></h4>
-            <span class="badge bg-light text-dark" th:text="${order.status}">APPROVED</span>
+
+            <!-- Estados mapeados con diseño pro -->
+            <span class="badge badge-status badge-approved" th:if="${order.status == 'APPROVED'}">Aprobado</span>
+            <span class="badge badge-status badge-pending" th:if="${order.status == 'PENDING' or order.status == 'PENDING_TRANSFER'}">Pendiente</span>
+            <span class="badge badge-status badge-shipping" th:if="${order.status == 'EN_CAMINO'}">En camino</span>
+            <span class="badge badge-status badge-delivered" th:if="${order.status == 'ENTREGADO'}">Entregado</span>
+            <span class="badge badge-status badge-cancelled" th:if="${order.status == 'CANCELLED'}">Cancelado</span>
         </div>
 
-        <div class="card-body">
+        <!-- Cuerpo de la Orden -->
+        <div class="silvero-card-body">
             <div class="row mb-4">
-                <div class="col-md-6">
-                    <p class="text-muted">Fecha de compra:</p>
-                    <h5 th:text="${#temporals.format(order.dateCreated, 'dd-MM-yyyy HH:mm')}">Fecha</h5>
+                <div class="col-md-6 col-6">
+                    <p class="text-muted mb-1" style="font-size: 13px;">Fecha de compra:</p>
+                    <h5 class="fw-bold" style="color: #333;" th:text="${#temporals.format(order.dateCreated, 'dd/MM/yyyy HH:mm')}">Fecha</h5>
                 </div>
-                <div class="col-md-6 text-end">
-                    <p class="text-muted">Total Pagado:</p>
-                    <h3 class="text-success" th:text="${'$' + order.totalAmount}">$1500</h3>
+                <div class="col-md-6 col-6 text-end">
+                    <p class="text-muted mb-1" style="font-size: 13px;">Total Pagado:</p>
+                    <h3 class="fw-bold text-success" th:text="${'$' + #numbers.formatDecimal(order.totalAmount, 1, 'POINT', 2, 'COMMA')}">$0.00</h3>
                 </div>
             </div>
 
-            <hr>
+            <hr style="border-color: #eee;">
 
-            <h5>🛒 Productos Comprados:</h5>
-            <table class="table table-bordered mt-3">
-                <thead class="table-light">
-                <tr>
-                    <th>Producto</th> <!-- 🚀 Cambiamos el título de la columna -->
-                    <th>Precio Unit. (Al momento de compra)</th>
-                    <th>Cantidad</th>
-                    <th>Subtotal</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr th:each="item : ${order.orderItems}">
+            <h5 class="fw-bold mb-3" style="color: #1e2d42;">🛒 Productos Comprados:</h5>
 
-                    <!-- 🚀 CELDA ACTUALIZADA: Nombre y disponibilidad -->
-                    <td>
-                        <!-- Si el producto tiene nombre (está disponible) -->
-                        <a th:if="${item.productName != null and !item.productName.isEmpty()}"
-                           th:href="@{/product/{id}(id=${item.productId})}"
-                           style="text-decoration: none; font-weight: 500; color: #0d6efd;">
-                            <span th:text="${item.productName}">Nombre Mueble</span>
-                        </a>
+            <!-- Tabla responsiva -->
+            <div class="table-responsive-wrapper">
+                <table class="table table-silvero-detail">
+                    <thead>
+                    <tr>
+                        <th>Producto</th>
+                        <th>Precio Unit.</th>
+                        <th>Cantidad</th>
+                        <th>Subtotal</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="item : ${order.orderItems}">
+                        <td>
+                            <a th:if="${item.productName != null and !item.productName.isEmpty()}"
+                               th:href="@{/product/{id}(id=${item.productId})}"
+                               style="text-decoration: none; font-weight: 600; color: #1e2d42;">
+                                <span th:text="${item.productName}">Nombre Mueble</span>
+                            </a>
+                            <span th:if="${item.productName == null or item.productName.isEmpty()}"
+                                  class="text-danger" style="font-style: italic;">
+                                Ya no está disponible (ID: <span th:text="${item.productId}"></span>)
+                            </span>
+                        </td>
 
-                        <!-- Si el producto fue borrado o no está disponible -->
-                        <span th:if="${item.productName == null or item.productName.isEmpty()}"
-                              class="text-danger" style="font-style: italic;">
-                            Ya no está disponible (ID: <span th:text="${item.productId}"></span>)
-                        </span>
-                    </td>
-
-                    <td th:text="${'$' + item.price}">$500</td>
-                    <td th:text="${item.quantity}">2</td>
-                    <td th:text="${'$' + (item.price * item.quantity)}">$1000</td>
-                </tr>
-                </tbody>
-            </table>
+                        <td th:text="${'$' + #numbers.formatDecimal(item.price, 1, 'POINT', 2, 'COMMA')}">$0.00</td>
+                        <td class="fw-bold" th:text="${item.quantity}">1</td>
+                        <td class="fw-bold text-dark" th:text="${'$' + #numbers.formatDecimal(item.price * item.quantity, 1, 'POINT', 2, 'COMMA')}">$0.00</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
-        <div class="card-footer text-center">
-            <a href="/my-orders" class="btn btn-secondary">⬅ Volver a mis compras</a>
-            <a href="/" class="btn btn-secondary"> Volver a inicio</a>
+
+        <!-- Footer con botones -->
+        <div class="card-footer bg-light text-center py-3" style="border-top: 1px solid #eee;">
+            <div class="d-flex justify-content-center gap-3 flex-wrap">
+                <a href="/my-orders" class="btn-silvero-back">⬅ Volver a mis compras</a>
+                <a href="/" class="btn-silvero-back" style="background-color: #1e2d42;">🏠 Volver a inicio</a>
+            </div>
         </div>
     </div>
 </div>
+
+<!-- Footer Principal -->
+<th:block th:replace="~{fragments :: footer-principal}"></th:block>
 
 </body>
 </html>

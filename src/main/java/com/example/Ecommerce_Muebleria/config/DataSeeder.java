@@ -1,6 +1,5 @@
 package com.example.Ecommerce_Muebleria.config;
 
-
 import com.example.Ecommerce_Muebleria.entities.commons.Product;
 import com.example.Ecommerce_Muebleria.BackProducts.repositories.ProductRepository;
 import com.example.Ecommerce_Muebleria.BackProducts.scheduler.ProductScheduler;
@@ -24,50 +23,49 @@ public class DataSeeder implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
         if (productRepository.count() == 0) {
-            System.out.println("🌱 Iniciando carga de datos con imágenes reales y categorías...");
+            System.out.println("🌱 Iniciando carga de datos con imágenes de catálogo de la mueblería...");
 
             // --- 1. PRODUCTOS VIEJOS (4) ---
-            crearProducto("Silla Vintage", "Estilo clásico restaurado", "/assets/images/collection/arrivals1.png", new BigDecimal("45.00"), 35, false, "Sillas");
-            crearProducto("Mesa Roble", "Madera maciza antigua", "/assets/images/collection/arrivals2.png", new BigDecimal("120.00"), 40, false, "Mesas");
-            crearProducto("Sillón Retro", "Diseño de los 70", "/assets/images/collection/arrivals3.png", new BigDecimal("80.00"), 50, false, "Sofás");
-            crearProducto("Lámpara Antigua", "Iluminación cálida", "/assets/images/collection/arrivals4.png", new BigDecimal("30.00"), 32, false, "Iluminación");
+            crearProducto("Sillón YPF Dark Wood", "Estructura de madera maciza tono oscuro", "/assets/images/collection/Sillon-YPF-dark-wood.jpg", new BigDecimal("185000"), 45, false, "Sofás y Sillones");
+            crearProducto("Mesa Baja Dark Wood", "Ideal para centros de living reducidos", "/assets/images/collection/Mesa-baja-dark-wood.jpg", new BigDecimal("75000"), 35, false, "Mesas");
+            crearProducto("Estante Bodega de Vinos", "Exhibidor flotante en madera natural", "/assets/images/collection/Estante-de-vinos.jpg", new BigDecimal("35000"), 60, false, "Organización");
+            crearProducto("Mesa Ratona Empotrable", "Diseño funcional que optimiza espacio", "/assets/images/collection/Mesa-ratona-empotrable.jpg", new BigDecimal("95000"), 40, false, "Mesas");
 
             // --- 2. PRODUCTOS DESTACADOS (4) ---
-            crearProducto("Silla Bali", "Nuestra silla estrella", "/assets/images/collection/SillaBalli.png", new BigDecimal("219000"), 50, true, "Sillas");
-            crearProducto("Mesa Ratona", "Ideal para living", "/assets/images/collection/arrivals5.png", new BigDecimal("95.00"), 50, true, "Mesas");
-            crearProducto("Lámpara Arco", "Diseño moderno de pie", "/assets/images/collection/arrivals6.png", new BigDecimal("150.00"), 50, true, "Iluminación");
-            crearProducto("Silla Comedor", "Ergonómica y suave", "/assets/images/collection/arrivals7.png", new BigDecimal("65.00"), 50, true, "Sillas");
+            crearProducto("Mesa Ratona Varillada", "Diseño moderno con base cilíndrica de varillas", "/assets/images/collection/Mesa-ratona-varillada.jpg", new BigDecimal("135000"), 50, true, "Mesas");
+            crearProducto("Juego Estantería y Cómoda", "Combo completo para tu sala de estar", "/assets/images/collection/Juego-completo-de-estanteria-y-comoda.jpg", new BigDecimal("320000"), 50, true, "Módulos y Combos");
+            crearProducto("Biblioteca Montessori", "Mueble accesible para el cuarto de los chicos", "/assets/images/collection/Biblioteca-montesori.jpg", new BigDecimal("85000"), 50, true, "Línea Infantil");
+            crearProducto("Banco con Zapatero", "Mueble recibidor tono Dark Wood", "/assets/images/collection/Banco-con-zapatero-dark-wood.jpg", new BigDecimal("115000"), 50, true, "Recibidores");
 
-            // --- 3. PRODUCTOS NUEVOS (6) ---
-            crearProducto("Sofá Minimalista", "Gris claro 3 cuerpos", "/assets/images/collection/arrivals8.png", new BigDecimal("350.00"), 50, false, "Sofás");
-            crearProducto("Butaca Madera", "Artesanal", "/assets/images/collection/arrivals1.png", new BigDecimal("110.00"), 50, false, "Sillas");
-            crearProducto("Mesa de Luz", "Pequeña y práctica", "/assets/images/collection/arrivals2.png", new BigDecimal("55.00"), 0, false, "Dormitorio");
-            crearProducto("Espejo Marco", "Decorativo circular", "/assets/images/collection/arrivals3.png", new BigDecimal("45.00"), 0, false, "Decoración");
-            crearProducto("Estantería", "Hierro negro", "/assets/images/collection/arrivals4.png", new BigDecimal("85.00"), 0, false, "Almacenamiento");
-            crearProducto("Alfombra Yute", "Tejido natural", "/assets/images/collection/arrivals5.png", new BigDecimal("70.00"), 0, false, "Decoración");
+            // --- 3. PRODUCTOS NUEVOS (6) --- (Días de antigüedad en 0)
+            crearProducto("Mesa Montessori Regulable", "Crece junto con tus hijos", "/assets/images/collection/Mesa-montesori-regulable.jpg", new BigDecimal("65000"), 0, false, "Línea Infantil");
+            crearProducto("Estante con Llavero", "Recibidor de pared práctico y minimalista", "/assets/images/collection/Estante-con-llavero.jpg", new BigDecimal("22000"), 0, false, "Organización");
+            crearProducto("Bandeja de Centro de Sofá", "Apoyabrazos rígido de madera para bebidas", "/assets/images/collection/Bandeja-de-centro-de-sofa.jpg", new BigDecimal("18000"), 0, false, "Accesorios");
+            crearProducto("Mesa de Luz para Sofá", "Organizador lateral estilo Dark Wood", "/assets/images/collection/Mesa-de-luz-de-sofa-dark-wood.jpg", new BigDecimal("55000"), 0, false, "Mesas");
+            crearProducto("Organizador Dark Wood", "Estantería baja multipropósito", "/assets/images/collection/Organizador-dark-wood.jpg", new BigDecimal("89000"), 0, false, "Organización");
+            crearProducto("Mesa de Luz Larga", "Amplia superficie de apoyo y guardado", "/assets/images/collection/Mesa-de-luz-larga.jpg", new BigDecimal("72000"), 0, false, "Dormitorio");
 
             // --- 4. RELLENO / STANDARD (6) ---
-            crearProducto("Perchero Pie", "Madera natural", "/assets/images/collection/arrivals6.png", new BigDecimal("25.00"), 50, false, "Decoración");
-            crearProducto("Set Cojines", "Pack x2 lino", "/assets/images/collection/arrivals7.png", new BigDecimal("35.00"), 39, false, "Decoración");
-            crearProducto("Macetero Alto", "Cerámica blanca", "/assets/images/collection/arrivals8.png", new BigDecimal("20.00"), 120, false, "Decoración");
-            crearProducto("Silla Oficina", "Con ruedas", "/assets/images/collection/SillaBalli.png", new BigDecimal("120.00"), 90, false, "Oficina");
-            crearProducto("Mesa Auxiliar", "Metal y vidrio", "/assets/images/collection/arrivals1.png", new BigDecimal("60.00"), 6, false, "Mesas");
-            crearProducto("Cesta Mimbre", "Organizadora", "/assets/images/collection/arrivals2.png", new BigDecimal("15.00"), 90, false, "Almacenamiento");
+            crearProducto("Caja de Maquillaje", "Organizador de madera con divisiones", "/assets/images/collection/Caja-de-maquillaje.jpg", new BigDecimal("25000"), 70, false, "Accesorios");
+            crearProducto("Silla Plegable con Colcha", "Asiento auxiliar cómodo y fácil de guardar", "/assets/images/collection/Silla-plegable-con-colcha.jpg", new BigDecimal("48000"), 85, false, "Sillas");
+            crearProducto("Silla de Exterior", "Madera tratada resistente a la intemperie", "/assets/images/collection/Siila-exterior.jpg", new BigDecimal("55000"), 45, false, "Exterior");
+            crearProducto("Zapatero de Pared", "Estructura flotante para ahorrar espacio", "/assets/images/collection/Zapatero-de-pared.jpg", new BigDecimal("42000"), 65, false, "Organización");
+            crearProducto("Estante Varillado", "Estante decorativo con respaldo de varillas", "/assets/images/collection/Estante-varillado.jpg", new BigDecimal("38000"), 33, false, "Decoración");
+            crearProducto("Set de Bancos de Exterior", "Par de bancos rústicos para jardín o balcón", "/assets/images/collection/Bancos-exterior.jpg", new BigDecimal("145000"), 50, false, "Exterior");
 
             // Actualizamos estados para que los viejos dejen de ser "New"
             productScheduler.updateNewStatus();
 
-            System.out.println("✅ Seeder finalizado: 20 Productos creados con categorías asignadas.");
+            System.out.println("✅ Seeder finalizado: 20 Productos creados con imágenes del catálogo.");
         }
     }
 
-    // 🚀 Agregamos el parámetro String categoria al final
     private void crearProducto(String nombre, String desc, String imagen, BigDecimal precio, int diasAntiguedad, boolean esDestacado, String categoria) {
         Product p = new Product(nombre, desc, imagen, precio);
         p.setCreatedAt(LocalDateTime.now().minusDays(diasAntiguedad));
         p.setNewProduct(true);
         p.setEsDestacado(esDestacado);
-        p.setCategory(categoria); // 🚀 Seteamos la categoría acá
+        p.setCategory(categoria);
         productRepository.save(p);
     }
 }

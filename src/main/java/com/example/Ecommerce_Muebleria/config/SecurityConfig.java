@@ -44,12 +44,9 @@ public class SecurityConfig {
                         .requestMatchers("/", "/index.html", "/static/**", "/css/**", "/js/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/products/**", "/api/collections/**").permitAll()
                         .requestMatchers("/api/cart/**", "/api/cart/checkout").permitAll()
-
-                        // 🔐 RUTAS DE PRODUCTOS (ADMIN/OPERACIONES)
+                        .requestMatchers("/firebase-messaging-sw.js", "/api/notifications/subscribe").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/products/**", "/api/collections/**").permitAll() // Según tu código anterior era libre
                         .requestMatchers("/api/products/question/save").authenticated()
-
-                        // 🛑 ADMINISTRACIÓN
                         .requestMatchers("/admin/**").hasRole("ADMIN")
 
                         .anyRequest().permitAll() // Permitimos el resto para no romper el Front durante la migración

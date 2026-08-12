@@ -39,7 +39,7 @@ $(document).ready(function(){
 	
 		// i. client (carousel)
 		
-			$('#client').owlCarousel({
+		/*	$('#client').owlCarousel({
 				items:5,
 				loop:true,
 				smartSpeed: 1000,
@@ -71,6 +71,8 @@ $(document).ready(function(){
 					owl.trigger('stop.owl.autoplay')
 				})
 
+
+
 		// ii.  testimonial-carousel
 		
 			$("#collection-carousel").owlCarousel({
@@ -87,15 +89,17 @@ $(document).ready(function(){
 				// navText:["<i class='fa fa-angle-left'></i>","<i class='fa fa-angle-right'></i>"]
 			});
 
+				*/
+
 
     // 3. welcome animation support
 
-        $(window).load(function(){
+	$(window).on('load', function(){
         	$(".welcome-hero-txt h4,.welcome-hero-txt h2,.welcome-hero-txt p").removeClass("animated fadeInUp").css({'opacity':'0'});
             $(".welcome-hero-txt button").removeClass("animated fadeInDown").css({'opacity':'0'});
         });
 
-        $(window).load(function(){
+	$(window).on('load', function(){
         	$(".welcome-hero-txt h4,.welcome-hero-txt h2,.welcome-hero-txt p").addClass("animated fadeInUp").css({'opacity':'0'});
             $(".welcome-hero-txt button").addClass("animated fadeInDown").css({'opacity':'0'});
         });
