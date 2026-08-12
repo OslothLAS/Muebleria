@@ -2,35 +2,99 @@
 <html class="no-js" lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="utf-8">
+    <!-- 🚀 ETIQUETA VITAL PARA QUE FUNCIONE EL RESPONSIVE EN MOBILE -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>¡Pedido Registrado! | El Edén</title>
     <link rel="stylesheet" th:href="@{/assets/css/bootstrap.min.css}">
     <link rel="stylesheet" th:href="@{/assets/css/font-awesome.min.css}">
     <style>
         body { background-color: #ededed; font-family: 'Roboto', sans-serif; }
         .nav-simple { background: #1e2d42; padding: 10px 0; margin-bottom: 20px; }
-        .success-container { background: #fff; padding: 40px; border-radius: 6px; box-shadow: 0 1px 2px rgba(0,0,0,.12); max-width: 600px; margin: auto; margin-top: 40px; text-align: center; }
-        .icon-success { font-size: 60px; color: #e69500; margin-bottom: 20px; }
-        .bank-details { background-color: #f8f9fa; border: 1px dashed #ccc; padding: 20px; border-radius: 8px; text-align: left; margin: 30px 0; }
+
+        /* Contenedor principal */
+        .success-container {
+            background: #fff;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,.05);
+            max-width: 600px;
+            margin: 40px auto;
+            text-align: center;
+        }
+
+        .icon-success { font-size: 60px; margin-bottom: 15px; }
+
+        .bank-details {
+            background-color: #f8f9fa;
+            border: 1px dashed #ccc;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: left;
+            margin: 25px 0;
+        }
         .bank-details p { margin-bottom: 8px; font-size: 1.1rem; color: #333; }
-        .btn-home { background-color: #1e2d42; color: white; border: none; padding: 12px 30px; font-weight: 600; border-radius: 6px; text-decoration: none; display: inline-block; transition: 0.3s; }
-        .btn-home:hover { opacity: 0.9; color: white; text-decoration: none; }
-        .instructions { font-size: 0.95rem; color: #666; margin-bottom: 20px; }
+
+        .btn-home {
+            background-color: #1e2d42;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            font-weight: 600;
+            border-radius: 6px;
+            text-decoration: none;
+            display: inline-block;
+            transition: 0.3s;
+        }
+        .btn-home:hover { background-color: #2a3e59; color: white; text-decoration: none; }
+
+        .instructions { font-size: 0.95rem; color: #666; margin-bottom: 20px; line-height: 1.5; }
+
+        /* ========================================== */
+        /* 📱 OPTIMIZACIÓN PARA CELULARES             */
+        /* ========================================== */
+        @media (max-width: 767px) {
+            .success-container {
+                margin: 20px 15px; /* Agrega margen lateral para que no toque los bordes del vidrio */
+                padding: 25px 20px; /* Reduce el relleno interno */
+            }
+
+            h2 { font-size: 24px !important; margin-bottom: 10px !important; }
+            .icon-success { font-size: 50px; }
+
+            .bank-details {
+                padding: 15px;
+                margin: 20px 0;
+            }
+            .bank-details p {
+                font-size: 0.95rem;
+                /* 🚀 Esto evita que el CBU largo rompa la pantalla hacia los costados */
+                word-wrap: break-word;
+                overflow-wrap: break-word;
+            }
+
+            .btn-home {
+                width: 100%; /* Botón de ancho completo para tocar fácil con el dedo */
+                padding: 15px 0;
+            }
+        }
     </style>
 </head>
 <body>
 
 <nav class="nav-simple">
-    <div class="container"><a href="/" style="color:white; font-weight: bold; text-decoration: none; font-size: 1.5rem;">el edén.</a></div>
+    <!-- Centramos el logo en mobile y lo dejamos a la izquierda en PC -->
+    <div class="container text-center text-md-start">
+        <a href="/" style="color:white; font-weight: bold; text-decoration: none; font-size: 1.5rem;">el edén.</a>
+    </div>
 </nav>
 
 <div class="container">
     <div class="success-container">
-        <!-- Podés usar FontAwesome si lo tenés, o un simple emoji -->
         <div class="icon-success">🛒✨</div>
 
         <h2 style="font-weight: 700; color: #1e2d42; margin-bottom: 15px;">¡Tu pedido está casi listo!</h2>
         <p class="instructions">
-            Hemos registrado tu orden exitosamente con el descuento aplicado. <br>
+            Hemos registrado tu orden exitosamente con el descuento aplicado. <br><br>
             Para que empecemos a preparar tu envío, por favor realizá la transferencia por el total a la siguiente cuenta:
         </p>
 
@@ -39,7 +103,6 @@
             <p><strong>Titular:</strong> Mueblería El Edén S.R.L.</p>
             <p><strong>CBU / CVU:</strong> 0140000000000000000000</p>
             <p><strong>Alias:</strong> EL.EDEN.MUEBLES</p>
-            <!-- Podés agregar CUIT si es necesario -->
             <p><strong>CUIT:</strong> 30-12345678-9</p>
         </div>
 
@@ -49,7 +112,7 @@
 
         <a href="/" class="btn-home mt-3">Volver al inicio</a>
         <br>
-        <a href="/my-orders" style="display: inline-block; margin-top: 15px; color: #3483fa; text-decoration: none;">Ver mis pedidos</a>
+        <a href="/my-orders" style="display: inline-block; margin-top: 20px; color: #3483fa; text-decoration: none; font-weight: 500;">Ver mis pedidos</a>
     </div>
 </div>
 

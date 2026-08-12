@@ -1,6 +1,10 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
+    <meta charset="utf-8">
+    <!-- 🚀 ETIQUETA VITAL PARA EL RESPONSIVE -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <div th:replace="~{fragments :: head-css}"></div>
     <title>Silvero | Dashboard de Administración</title>
 
@@ -28,9 +32,11 @@
         .btn-crear:hover {
             padding: 10px 20px; border-radius: 6px; text-decoration: none;
             font-weight: 600; transition: 0.3s; display: inline-flex; align-items: center; gap: 8px;
-            border: none;
+            border: none; opacity: 0.9;
         }
+
         /* --- ESTILOS DE TABLAS --- */
+        .table-admin { width: 100%; }
         .table-admin thead th {
             background-color: #f9f9f9; border-bottom: 2px solid #e69500;
             color: #555; font-weight: 600; text-transform: uppercase; font-size: 12px;
@@ -49,7 +55,7 @@
             color: white; transition: 0.2s; border: none;
         }
         .btn-edit { background-color: #ffc107; color: #333; }
-        .btn-edit:hover { background-color: #e0a800; }
+        .btn-edit:hover { background-color: #e0a800; color: #333; }
         .btn-delete { background-color: #dc3545; }
         .btn-delete:hover { background-color: #c82333; }
 
@@ -60,13 +66,12 @@
         .btn-product {
             background-color: #28a745;
             color: white !important;
-            transition: background-color 0.3s ease; /* Transición suave de color */
+            transition: background-color 0.3s ease;
         }
 
         .btn-product:hover {
             background-color: #218838;
             color: white !important;
-            transition: background-color 0.3s ease; /* Transición suave de color */
         }
 
         /* Botón Colecciones (Naranja Silvero) */
@@ -79,7 +84,38 @@
         .btn-collection:hover {
             background-color: #cc8400;
             color: white !important;
-            transition: background-color 0.3s ease;
+        }
+
+        .white-panel {
+            background: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        /* ========================================== */
+        /* 📱 OPTIMIZACIÓN PARA CELULARES Y TABLETS   */
+        /* ========================================== */
+        @media (max-width: 767px) {
+            #admin-dashboard { padding: 20px 0 !important; }
+            .white-panel { padding: 15px !important; margin-bottom: 20px !important; }
+
+            /* Ajuste del encabezado */
+            .admin-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+            .admin-header h2 { font-size: 18px !important; }
+
+            /* Botones ancho completo */
+            .header-actions-admin { width: 100%; }
+            .btn-crear { width: 100%; justify-content: center; }
+
+            /* 🚀 Forzamos un ancho mínimo para habilitar el scroll horizontal */
+            .table-admin { min-width: 750px; }
+
+            .section-divider { margin: 25px 0; }
         }
     </style>
 </head>
@@ -90,7 +126,7 @@
 <section id="admin-dashboard" style="padding: 40px 0;">
     <div class="container">
         <!-- 🚀 BLOQUE 0: GESTIÓN DE PEDIDOS (ACCESO DIRECTO) -->
-        <div class="white-panel" style="margin-bottom: 30px; border-top: 4px solid #1e2d42; padding: 25px; background-color: #fff; border-radius: 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+        <div class="white-panel" style="margin-bottom: 30px; border-top: 4px solid #1e2d42; padding: 25px;">
             <div class="admin-header" style="border-bottom: none; margin-bottom: 0; padding-bottom: 0;">
                 <h2><i class="fa fa-shopping-cart" style="color: #1e2d42;"></i> Gestión de Pedidos y Ventas</h2>
                 <div class="header-actions-admin">
@@ -154,7 +190,7 @@
 
         <div class="section-divider"></div>
 
-        <!-- 🚀 BLOQUE 2: GESTIÓN DE PRODUCTOS (TU TABLA ORIGINAL) -->
+        <!-- 🚀 BLOQUE 2: GESTIÓN DE PRODUCTOS -->
         <div class="white-panel" style="border-top: 4px solid #28a745;">
             <div class="admin-header">
                 <h2><i class="fa fa-tag" style="color: #28a745;"></i> Gestión de Productos</h2>

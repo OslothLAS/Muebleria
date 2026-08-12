@@ -1,6 +1,10 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
+    <meta charset="utf-8">
+    <!-- 🚀 ETIQUETA VITAL PARA RESPONSIVE -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <div th:replace="~{fragments :: head-css}"></div>
     <title>Silvero | Dashboard de Pedidos</title>
 
@@ -23,10 +27,12 @@
             border: none; background-color: #6c757d; color: white !important;
         }
         .btn-volver:hover {
-            padding: 10px 20px; border-radius: 6px; text-decoration: none;
-            font-weight: 600; transition: 0.3s; display: inline-flex; align-items: center; gap: 8px;
-            border: none; background-color: #6c757d; color: #b8b8b8 !important; }
+            background-color: #5a6268; color: white !important;
+        }
 
+        .table-admin {
+            width: 100%;
+        }
         .table-admin thead th {
             background-color: #f9f9f9; border-bottom: 2px solid #1e2d42; /* Azul corporativo */
             color: #555; font-weight: 600; text-transform: uppercase; font-size: 12px;
@@ -50,6 +56,36 @@
         .details-mini { font-size: 0.85rem; color: #777; margin-top: 5px; }
 
         .white-panel { background: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+
+        /* ========================================== */
+        /* 📱 OPTIMIZACIÓN PARA CELULARES Y TABLETS   */
+        /* ========================================== */
+        @media (max-width: 767px) {
+            #admin-orders-dashboard { padding: 20px 0 !important; }
+            .white-panel { padding: 15px; }
+
+            /* Ajuste del encabezado */
+            .admin-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+            .admin-header h2 { font-size: 18px; }
+
+            .header-actions-admin { width: 100%; }
+            .btn-volver { width: 100%; justify-content: center; } /* Botón ancho completo */
+
+            /* 🚀 Forzamos un ancho mínimo para habilitar el scroll horizontal */
+            .table-admin { min-width: 800px; }
+
+            /* Ajuste del formulario de actualización en celulares */
+            .update-form-container {
+                flex-wrap: wrap !important;
+                gap: 8px;
+            }
+            .status-select { width: 100%; margin-right: 0; }
+            .btn-update { width: 100%; padding: 10px; }
+        }
     </style>
 </head>
 <body style="background-color: #f8f9fa;">
@@ -65,7 +101,6 @@
             <div class="admin-header">
                 <h2><i class="fa fa-shopping-cart" style="color: #1e2d42;"></i> Gestión Integral de Pedidos</h2>
                 <div class="header-actions-admin">
-                    <!-- Asumiendo que /admin es la ruta de tu dashboard principal -->
                     <a th:href="@{/}" class="btn-volver">
                         <i class="fa fa-arrow-left"></i> Volver al Inicio
                     </a>
@@ -79,6 +114,7 @@
             </div>
             <!-- FIN DEL CARTEL -->
 
+            <!-- Wrapper necesario para el scroll horizontal en mobile -->
             <div class="table-responsive">
                 <table class="table table-hover table-admin">
                     <thead>
@@ -120,7 +156,7 @@
 
                         <!-- Formulario de actualización -->
                         <td>
-                            <form th:action="@{/admin/orders/{id}/update-status(id=${order.id})}" method="post" style="display: flex; align-items: center; margin: 0;">
+                            <form th:action="@{/admin/orders/{id}/update-status(id=${order.id})}" method="post" class="update-form-container" style="display: flex; align-items: center; margin: 0;">
                                 <select name="newStatus" class="status-select">
                                     <option value="PENDING_TRANSFER" th:selected="${order.status == 'PENDING_TRANSFER'}">Pend. Transferencia</option>
                                     <option value="PENDING" th:selected="${order.status == 'PENDING'}">Pend. (Mercado Pago)</option>

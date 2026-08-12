@@ -2,19 +2,33 @@
 <html class="no-js" lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="utf-8">
+    <!-- 🚀 ETIQUETA VITAL PARA EL RESPONSIVE -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Datos de Envío y Facturación | El Edén</title>
     <link rel="stylesheet" th:href="@{/assets/css/bootstrap.min.css}">
     <link rel="stylesheet" th:href="@{/assets/css/font-awesome.min.css}">
     <style>
         body { background-color: #ededed; font-family: 'Roboto', sans-serif; }
         .nav-simple { background: #1e2d42; padding: 10px 0; margin-bottom: 20px; }
-        .checkout-container { background: #fff; padding: 30px; border-radius: 6px; box-shadow: 0 1px 2px rgba(0,0,0,.12); max-width: 900px; margin: auto; margin-bottom: 40px;}
+
+        .checkout-container {
+            background: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,.08);
+            max-width: 900px;
+            margin: auto;
+            margin-bottom: 40px;
+        }
+
         .section-title { font-weight: 600; color: #1e2d42; margin-bottom: 20px; border-bottom: 2px solid #f0f0f0; padding-bottom: 10px; font-size: 1.2rem;}
         .form-group { margin-bottom: 15px; }
         label { font-weight: 500; color: #666; margin-bottom: 5px; font-size: 0.9rem; }
         .form-control { border-radius: 4px; border: 1px solid #ddd; padding: 10px; }
+
         .btn-pagar { background-color: #1e2d42; color: white; border: none; width: 100%; padding: 15px; font-weight: 600; border-radius: 6px; margin-top: 10px; transition: 0.3s;}
         .btn-pagar:hover { opacity: 0.9; cursor: pointer; }
+
         .summary-mini { background: #f9f9f9; padding: 20px; border-radius: 6px; border: 1px solid #eee; position: sticky; top: 20px;}
         .checkbox-container { background-color: #eef2f5; padding: 15px; border-radius: 6px; margin-bottom: 20px; border: 1px solid #d5e0e8; }
 
@@ -28,12 +42,45 @@
         /* Cajas de pago más compactas para el recuadro derecho */
         .payment-box-mini { padding: 10px; margin-bottom: 8px; }
         .payment-box-mini label { font-size: 0.85rem; }
+
+        /* ========================================== */
+        /* 📱 OPTIMIZACIÓN EXTREMA PARA CELULARES     */
+        /* ========================================== */
+        @media (max-width: 767px) {
+            .checkout-container {
+                padding: 20px 15px;
+                margin: 0 10px 40px 10px; /* Evita que pegue con el filo de la pantalla */
+            }
+
+            h2 { font-size: 22px !important; margin-bottom: 20px !important; }
+            .section-title { font-size: 1.1rem; }
+
+            .summary-mini {
+                margin-top: 30px;
+                padding: 15px;
+            }
+
+            /* Ocultamos el selector de pago derecho en móvil para evitar duplicados al apilarse las columnas */
+            .payment-selector-right {
+                display: none !important;
+            }
+
+            .discount-badge {
+                display: inline-block;
+                margin-left: 0;
+                margin-top: 5px;
+            }
+
+            .payment-box { flex-wrap: wrap; }
+        }
     </style>
 </head>
 <body>
 
 <nav class="nav-simple">
-    <div class="container"><a href="/" style="color:white; font-weight: bold; text-decoration: none; font-size: 1.5rem;">el edén.</a></div>
+    <div class="container text-center text-md-start">
+        <a href="/" style="color:white; font-weight: bold; text-decoration: none; font-size: 1.5rem;">el edén.</a>
+    </div>
 </nav>
 
 <div class="container">
@@ -148,18 +195,20 @@
                             </div>
                         </div>
 
-                        <!-- SELECTOR DE PAGO REPETIDO (DERECHA) 🚀 -->
-                        <h5 style="font-size: 0.9rem; font-weight: 700; color: #666; margin-bottom: 10px;">Seleccioná cómo pagar:</h5>
+                        <!-- SELECTOR DE PAGO REPETIDO (DERECHA) - Se oculta en mobile 🚀 -->
+                        <div class="payment-selector-right">
+                            <h5 style="font-size: 0.9rem; font-weight: 700; color: #666; margin-bottom: 10px;">Seleccioná cómo pagar:</h5>
 
-                        <label class="payment-box payment-box-mini" for="mp-right">
-                            <input type="radio" name="paymentMethod_dummy" id="mp-right" value="MERCADO_PAGO" checked onclick="sincronizarMetodoPago('MERCADO_PAGO')">
-                            <label for="mp-right">Mercado Pago</label>
-                        </label>
+                            <label class="payment-box payment-box-mini" for="mp-right">
+                                <input type="radio" name="paymentMethod_dummy" id="mp-right" value="MERCADO_PAGO" checked onclick="sincronizarMetodoPago('MERCADO_PAGO')">
+                                <label for="mp-right">Mercado Pago</label>
+                            </label>
 
-                        <label class="payment-box payment-box-mini" for="transfer-right">
-                            <input type="radio" name="paymentMethod_dummy" id="transfer-right" value="TRANSFER" onclick="sincronizarMetodoPago('TRANSFER')">
-                            <label for="transfer-right">Transferencia <span style="color:#28a745; font-weight: bold;">(-10%)</span></label>
-                        </label>
+                            <label class="payment-box payment-box-mini" for="transfer-right">
+                                <input type="radio" name="paymentMethod_dummy" id="transfer-right" value="TRANSFER" onclick="sincronizarMetodoPago('TRANSFER')">
+                                <label for="transfer-right">Transferencia <span style="color:#28a745; font-weight: bold;">(-10%)</span></label>
+                            </label>
+                        </div>
 
                         <button type="submit" id="btn-submit" class="btn-pagar mt-3">Ir a pagar a Mercado Pago</button>
                         <a href="/cart" style="display: block; text-align: center; margin-top: 15px; color: #3483fa; font-size: 0.9rem; text-decoration: none;">← Volver al carrito</a>
@@ -213,16 +262,15 @@
         }
     }
 
-    // 🚀 NUEVA FUNCIÓN: Sincroniza las dos cajas de pago y actualiza el total
     function sincronizarMetodoPago(method) {
-        // 1. Sincronizamos los radio buttons visualmente
+        // Sincronizamos los radio buttons visualmente
         document.getElementById('mp-left').checked = (method === 'MERCADO_PAGO');
         document.getElementById('mp-right').checked = (method === 'MERCADO_PAGO');
 
         document.getElementById('transfer-left').checked = (method === 'TRANSFER');
         document.getElementById('transfer-right').checked = (method === 'TRANSFER');
 
-        // 2. Actualizamos el botón y el precio
+        // Actualizamos el botón y el precio
         const totalSpan = document.getElementById('display-total');
         const discountText = document.getElementById('discount-text');
         const btnSubmit = document.getElementById('btn-submit');
