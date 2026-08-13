@@ -88,6 +88,7 @@ public class GlobalDataController {
         model.addAttribute("productQuantities", productQuantities);
         model.addAttribute("favoritesIds", favoritesIds);
 
+
     }
 
     private String getCartId(OidcUser oidcUser, HttpSession session) {

@@ -10,21 +10,26 @@
     <th:block th:replace="~{fragments :: head-css}"></th:block>
 
     <style>
-        .nav-btn.shop-item > a,
-        .nav-btn.shop-item > a i { color: #1e2d42 !important; }
+        /* --- ESTILOS GLOBALES --- */
+        body {
+            background-color: #818181 !important;
+            font-family: 'Roboto', sans-serif;
+            color: #333;
+        }
+        #all-products { min-height: 800px; }
+        .nav-btn.shop-item > a, .nav-btn.shop-item > a i { color: #1e2d42 !important; }
 
         /* --- ESTILOS DE TARJETA --- */
         .single-new-arrival {
             background: #F6F4F0;
             border-radius: 13px;
             padding: 12px;
-            margin-bottom: 30px;
+            margin: 0 auto 30px auto;
             transition: all 0.3s ease;
             text-align: left;
             border: 2px solid #eee;
             height: 320px;
             max-width: 280px;
-            margin-left: auto; margin-right: auto;
             display: flex;
             flex-direction: column;
             justify-content: flex-start;
@@ -54,7 +59,6 @@
 
         .single-new-arrival-caption { padding: 0 5px; margin-bottom: 2px; }
 
-        /* Ajuste para que el nombre no rompa el diseño */
         .single-new-arrival h4 a {
             color: #333; font-weight: 700; font-size: 15px;
             margin-top: 5px; margin-bottom: 2px;
@@ -67,14 +71,12 @@
         .mis-acciones-producto {
             width: 100%;
             margin-top: auto;
-            display: flex; /* Flex para alinear carrito y corazón */
+            display: flex;
             align-items: center;
             gap: 10px;
         }
 
-        .mi-btn-agregar, .mi-control-cantidad {
-            flex-grow: 1; /* El carrito ocupa el espacio sobrante */
-        }
+        .mi-btn-agregar, .mi-control-cantidad { flex-grow: 1; }
 
         .mi-btn-agregar {
             background-color: #1e2d42; color: white !important;
@@ -85,16 +87,13 @@
             text-decoration: none; transition: 0.2s; cursor: pointer; border: none;
             box-shadow: 0 4px 6px rgba(230, 149, 0, 0.15);
         }
-        .mi-btn-agregar:hover {
-            background-color: #2e4867;
-            color: white !important;
+        .mi-btn-agregar:hover {             background-color: #172033; color: white !important;
             border-radius: 50px;
             display: flex; align-items: center; justify-content: center;
             width: 100%; height: 35px;
             font-size: 12px; font-weight: 650;
             text-decoration: none; transition: 0.2s; cursor: pointer; border: none;
-            box-shadow: 0 4px 6px rgba(230, 149, 0, 0.15);
-        }
+            box-shadow: 0 4px 6px rgba(230, 149, 0, 0.15); }
 
         .mi-control-cantidad { display: flex; align-items: center; width: 100%; height: 40px; }
 
@@ -114,7 +113,24 @@
             min-width: 48px; text-align: center;
         }
 
-        /* --- HTMX & SCROLL --- */
+        /* --- BOTÓN DE FAVORITOS (CORAZÓN) --- */
+        .mi-btn-fav {
+            width: 40px; height: 40px; border-radius: 50%;
+            background-color: #F6F4F0; border: 1px solid transparent;
+            color: #ccc; display: flex !important; align-items: center; justify-content: center;
+            padding: 0; line-height: 1; font-size: 20px; cursor: pointer;
+            transition: all 0.3s ease; text-decoration: none !important; flex-shrink: 0;
+        }
+        .mi-btn-fav i { font-size: 20px !important; margin: 0; padding: 0; transition: transform 0.3s; }
+        .mi-btn-fav:hover { border-color: transparent; color: #1e2d42; transform: scale(1.05); }
+
+        .mi-btn-fav.activo {
+            border: 2px solid transparent; color: #1e2d42;
+            box-shadow: 0 2px 8px rgba(230, 149, 0, 0.2);
+        }
+        .mi-btn-fav.activo i { transform: scale(1.1); }
+
+        /* --- HTMX & EFECTOS GLOBALES --- */
         .fade-in-scroll { opacity: 0; transform: translateY(20px); animation: fadeInUp 0.6s ease-out forwards; }
         @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
 
@@ -126,70 +142,12 @@
         }
         .htmx-request .htmx-indicator, .htmx-request.htmx-indicator { opacity: 1; }
 
-        #all-products { min-height: 800px; }
-
         .cart-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.5); z-index: 9998;
             visibility: hidden; opacity: 0; transition: 0.3s;
         }
         .cart-overlay.active { visibility: visible; opacity: 1; }
-
-        /* =========================================
-           BOTÓN DE FAVORITOS (CORAZÓN) - REFINADO
-        ========================================= */
-        .mi-btn-fav {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background-color: #F6F4F0;
-            border: 1px solid transparent; /* Borde sutil por defecto */
-            color: #ccc;
-            display: flex !important;
-            align-items: center;
-            justify-content: center;
-            padding: 0;
-            line-height: 1;
-            font-size: 20px; /* Tamaño base del icono */
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-decoration: none !important;
-            flex-shrink: 0;
-        }
-
-        .mi-btn-fav i {
-            font-size: 20px !important;
-            margin: 0; padding: 0;
-            transition: transform 0.3s;
-        }
-
-        .mi-btn-fav:hover {
-            border-color: transparent;
-            color: #1e2d42;
-            transform: scale(1.05);
-        }
-
-        /* ESTADO ACTIVO */
-        .mi-btn-fav.activo {
-            background-color: #F6F4F0;
-            border: 2px solid transparent; /* CORREGIDO: 2px se ve mejor que 10px */
-            color: #1e2d42;
-            box-shadow: 0 2px 8px rgba(230, 149, 0, 0.2);
-        }
-
-        .mi-btn-fav.activo i {
-            transform: scale(1.1);
-        }
-        body {background-color: #818181 !important; /* Un gris medio-claro, pero notable (antes era #ededed) */
-
-            /* El resto dejalo igual */
-            font-family: 'Roboto', sans-serif;
-            color: #333; }
-
-        .card-container {
-            max-width: 1184px; margin: 0 auto 30px auto; background-color: #F8F9FA;
-            border-radius: 4px; box-shadow: 0 1px 2px 0 rgba(0,0,0,.12); padding: 40px;
-        }
     </style>
 </head>
 

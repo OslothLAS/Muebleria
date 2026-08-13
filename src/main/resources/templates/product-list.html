@@ -190,6 +190,35 @@
 
         <div class="section-divider"></div>
 
+        <!-- 🚀 BLOQUE: CONFIGURACIÓN DEL BANNER PRINCIPAL -->
+        <div class="white-panel" style="margin-bottom: 30px; border-top: 4px solid #17a2b8;">
+            <div class="admin-header">
+                <h2><i class="fa fa-image" style="color: #17a2b8;"></i> Configuración del Super Banner</h2>
+            </div>
+
+            <form th:action="@{/admin/banner/upload}" method="post" enctype="multipart/form-data" style="display: flex; gap: 15px; align-items: flex-end;">
+                <div style="flex-grow: 1;">
+                    <label for="bannerImage" style="font-weight: 600; color: #555;">Subir nueva imagen de banner (Recomendado: 1200x500px)</label>
+                    <input type="file" name="file" id="bannerImage" class="form-control" accept="image/*" required>
+                </div>
+                <button type="submit" class="btn-crear" style="background-color: #17a2b8; color: white !important;">
+                    <i class="fa fa-upload"></i> Guardar Banner
+                </button>
+            </form>
+
+            <!-- Vista previa del banner actual -->
+            <div th:if="${superBannerUrl != null}" style="margin-top: 20px;">
+                <p style="font-size: 13px; color: #666; margin-bottom: 5px;">Banner actual visible en la tienda:</p>
+                <img th:src="${superBannerUrl}" alt="Banner Actual" style="width: 100%; max-width: 600px; border-radius: 8px; border: 1px solid #ddd;">
+
+                <form th:action="@{/admin/banner/delete}" method="post" style="margin-top: 10px;">
+                    <button type="submit" class="btn-action btn-delete" style="width: auto; padding: 5px 15px; border-radius: 4px;">
+                        <i class="fa fa-trash"></i> Eliminar Banner
+                    </button>
+                </form>
+            </div>
+        </div>
+
         <!-- 🚀 BLOQUE 2: GESTIÓN DE PRODUCTOS -->
         <div class="white-panel" style="border-top: 4px solid #28a745;">
             <div class="admin-header">

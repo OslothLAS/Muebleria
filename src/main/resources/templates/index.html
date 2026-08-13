@@ -19,8 +19,8 @@
 
 	<style>
 		/* =========================================
-           ESTILOS EXCLUSIVOS DE LA VISTA INICIO
-        ========================================= */
+            ESTILOS EXCLUSIVOS DE LA VISTA INICIO
+         ========================================= */
 
 		/* --- HTMX & SCROLL --- */
 		.fade-in-scroll { opacity: 0; transform: translateY(20px); animation: fadeInUp 0.6s ease-out forwards; }
@@ -35,6 +35,72 @@
 		.htmx-request .htmx-indicator, .htmx-request.htmx-indicator { opacity: 1; }
 
 		#all-products { min-height: 800px; }
+
+		/* =========================================
+          🚀 ESTILOS DEL SUPER BANNER PRINCIPAL (FULL WIDTH)
+       ========================================= */
+		.super-banner-container {
+			position: relative;
+			width: 100%;
+			max-width: 100%; /* Liberamos el ancho máximo */
+			margin: 0 0 40px 0; /* Sin márgenes a los costados ni arriba */
+			border-radius: 0; /* Bordes rectos para que pegue a los costados de la pantalla */
+			overflow: hidden;
+		}
+
+		.super-banner-container img {
+			width: 100vw; /* 100% del Viewport Width (ancho de la pantalla) */
+			height: auto;
+			max-height: 550px; /* Limita la altura en PC para que no tape todo el contenido */
+			object-fit: cover;
+			display: block;
+		}
+
+		.btn-super-banner {
+			position: absolute;
+			bottom: 15%;
+			left: 50%;
+			transform: translateX(-50%);
+			background-color: #1e2d42; /* Azul corporativo */
+			color: #ffffff !important; /* Letras blancas */
+			padding: 15px 50px;
+			font-size: 18px;
+			font-weight: 700;
+			text-transform: uppercase;
+			letter-spacing: 1px;
+			border: none; /* Quitamos el borde para un diseño más limpio */
+			border-radius: 50px; /* Bordes bien redondeados (estilo píldora) */
+			text-decoration: none;
+			transition: all 0.3s ease;
+			box-shadow: 0 6px 15px rgba(30, 45, 66, 0.4); /* Sombra con un leve tono azulado */
+		}
+
+		.btn-super-banner:hover {
+			position: absolute;
+			bottom: 15%;
+			left: 50%;
+			transform: translateX(-50%);
+			background-color: #15202c; /* Azul corporativo */
+			color: #ffffff !important; /* Letras blancas */
+			padding: 15px 50px;
+			font-size: 18px;
+			font-weight: 700;
+			text-transform: uppercase;
+			letter-spacing: 1px;
+			border: none; /* Quitamos el borde para un diseño más limpio */
+			border-radius: 50px; /* Bordes bien redondeados (estilo píldora) */
+			text-decoration: none;
+			transition: all 0.3s ease;
+			box-shadow: 0 6px 15px rgba(30, 45, 66, 0.4); /* Sombra con un leve tono azulado */}
+
+		/* Ajuste responsivo para el botón del banner */
+		@media (max-width: 767px) {
+			.btn-super-banner {
+				padding: 12px 30px;
+				font-size: 15px;
+				bottom: 10%;
+			}
+		}
 
 		/* --- COLECCIONES EL EDÉN --- */
 		.single-collection {
@@ -75,7 +141,6 @@
 		.collections-slider:not(.slick-initialized) { display: flex; overflow: hidden; }
 		.collections-slider:not(.slick-initialized) > div { width: 50%; padding: 15px; }
 
-		/* Posición específica de flechas en Colecciones (más abiertas que en el banner) */
 		.collections-slider .slick-prev-eden { left: -100px; }
 		.collections-slider .slick-next-eden { right: -100px; }
 	</style>
@@ -84,6 +149,23 @@
 <body>
 
 <div th:replace="~{fragments :: header-principal}"></div>
+
+<!-- ========================================== -->
+<!-- 🚀 SUPER BANNER (Full Width) -->
+<!-- ========================================== -->
+<section id="super-banner" th:if="${superBannerUrl != null}" style="padding: 0;">
+	<!-- container-fluid ocupa el 100% de la pantalla, px-0 quita los márgenes de Bootstrap -->
+	<div class="container-fluid px-0">
+		<div class="super-banner-container">
+			<!-- La imagen dinámica que carga el Admin -->
+			<img th:src="${superBannerUrl}" alt="Mueblería El Edén - Novedades">
+			<!-- Botón flotante -->
+			<a href="/products" class="btn-super-banner">Comprar ahora</a>
+		</div>
+	</div>
+</section>
+
+<!-- El banner slider anterior queda abajo o lo podés comentar/eliminar si querés que quede solo el Super Banner -->
 <div th:replace="~{fragments :: banner-home}"></div>
 
 <!-- ========================================== -->
@@ -121,7 +203,6 @@
 		<div class="section-header"><h2>Nuevos Ingresos</h2></div>
 		<div class="new-arrivals-content">
 			<div class="row">
-				<!-- Magia de Thymeleaf: Llamamos al fragmento limpio para cada producto -->
 				<th:block th:each="product : ${productsNew}">
 					<div th:replace="~{fragments :: cardProducto(${product})}"></div>
 				</th:block>
@@ -138,7 +219,6 @@
 		<div class="section-header"><h2>Productos Destacados</h2></div>
 		<div class="feature-content">
 			<div class="row">
-				<!-- Magia de Thymeleaf: Llamamos al fragmento limpio para cada producto -->
 				<th:block th:each="product : ${featuredProducts}">
 					<div th:replace="~{fragments :: cardProducto(${product})}"></div>
 				</th:block>
@@ -147,17 +227,9 @@
 	</div>
 </section>
 
-<!-- ========================================== -->
-<!-- FOOTER, PANEL LATERAL Y SCRIPTS -->
-<!-- ========================================== -->
-
-<!-- El footer-principal YA incluye jQuery, Bootstrap, Custom JS y la lógica inicial del Slider -->
 <div th:replace="~{fragments :: footer-principal}"></div>
-
-<!-- El sideCartPanel YA incluye el div .cart-overlay en su interior -->
 <div th:replace="~{fragments :: sideCartPanel}"></div>
 
-<!-- Solo nos faltaba cargar la librería principal de Slick JS -->
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
 
 </body>

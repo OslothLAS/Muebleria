@@ -39,68 +39,40 @@
 
             /* --- HEADER ACTIONS (ICONOS Y PERFIL) --- */
             .header-actions { flex-shrink: 0; margin-left: 30px; }
-
-            /* Eliminamos el 'height: 100%' para que la caja no toque el techo */
             .header-actions ul, .sticky-icons-hidden > ul { list-style: none; display: flex; align-items: center; margin: 0; padding: 0; gap: 40px !important; }
-
-            /* 🚀 FIX: Igualamos los contenedores al tamaño y padding de la campana */
             .header-actions > ul > li > a, .sticky-icons-hidden > ul > li > a {
                 font-size: 24px; color: #333 !important; text-decoration: none; position: relative;
                 display: flex !important; align-items: center; justify-content: center;
                 padding: 15px 0 !important; transition: color 0.3s ease;
             }
-
             .header-actions > ul > li > a:hover, .sticky-icons-hidden > ul > li > a:hover { color: #1e2d42 !important; cursor: pointer; }
             .header-actions .lnr, .sticky-icons-hidden .lnr { font-size: 20px; }
 
-            /* 🚀 FIX: Clonamos el diseño y posición EXACTA del globo rojo, pero en azul oscuro */
             .badge-cart {
-                position: absolute !important;
-                top: 8px !important;
-                right: -10px !important;
-                font-size: 11px !important;
-                font-weight: bold !important;
-                background-color: #1e2d42 !important;
-                color: white !important;
-                width: 18px !important;
-                height: 18px !important;
-                display: flex !important;
-                justify-content: center !important;
-                align-items: center !important;
-                border-radius: 50% !important;
-                line-height: 1 !important;
-                box-shadow: 0 2px 4px rgba(0,0,0,0.2) !important;
-                padding: 0 !important;
-                border: none !important;
+                position: absolute !important; top: 8px !important; right: -10px !important;
+                font-size: 11px !important; font-weight: bold !important;
+                background-color: #1e2d42 !important; color: white !important;
+                width: 18px !important; height: 18px !important;
+                display: flex !important; justify-content: center !important;
+                align-items: center !important; border-radius: 50% !important;
+                line-height: 1 !important; box-shadow: 0 2px 4px rgba(0,0,0,0.2) !important;
+                padding: 0 !important; border: none !important;
             }
 
             .profile-link { display: flex !important; align-items: center; gap: 12px; text-decoration: none !important; color: #555 !important; padding: 5px !important; }
             .profile-link:hover { color: #1e2d42 !important; }
 
-            /* Alineación estricta de la barra inferior para escritorio */
             @media (min-width: 992px) {
-                .sticky-icons-hidden {
-                    display: flex !important;
-                    align-items: center; /* Esto es lo que centra todo perfectamente sin estirarlo */
-                    height: 62px;
-                    margin-top: 0 !important;
-                }
+                .sticky-icons-hidden { display: flex !important; align-items: center; height: 62px; margin-top: 0 !important; }
             }
 
             /* Menú desplegable estándar (Perfil) */
             .header-actions .dropdown-menu, .sticky-icons-hidden .dropdown-menu { display: none !important; opacity: 0 !important; visibility: hidden !important; position: absolute; top: 100%; right: 0 !important; left: auto !important; background: #fff; z-index: 9999; box-shadow: 0 5px 15px rgba(0,0,0,0.1); border: none !important; border-top: 3px solid #1e2d42 !important; border-radius: 0 0 4px 4px; margin-top: 0; min-width: 200px; transform: none !important; animation: none !important; }
             .header-actions li, .sticky-icons-hidden li { position: relative !important; }
-            /* 1. Efecto hover tradicional SOLO para computadoras (Evita el bug táctil) */
             @media (min-width: 992px) {
-                .header-actions li:hover > .dropdown-menu, .sticky-icons-hidden li:hover > .dropdown-menu {
-                    display: block !important; opacity: 1 !important; visibility: visible !important; margin-top: 0;
-                }
+                .header-actions li:hover > .dropdown-menu, .sticky-icons-hidden li:hover > .dropdown-menu { display: block !important; opacity: 1 !important; visibility: visible !important; margin-top: 0; }
             }
-
-            /* 2. Soporte para el CLIC táctil (Bootstrap agrega la clase .open automáticamente) */
-            .header-actions li.open > .dropdown-menu, .sticky-icons-hidden li.open > .dropdown-menu {
-                display: block !important; opacity: 1 !important; visibility: visible !important; margin-top: 0;
-            }
+            .header-actions li.open > .dropdown-menu, .sticky-icons-hidden li.open > .dropdown-menu { display: block !important; opacity: 1 !important; visibility: visible !important; margin-top: 0; }
             .profile-menu li { display: block; width: 100%; border-bottom: 1px solid #f5f5f5; }
             .profile-menu li:last-child { border-bottom: none; }
             .profile-menu li a { display: block; padding: 10px 20px; font-size: 14px; color: #555; text-decoration: none; transition: all 0.2s; }
@@ -130,20 +102,10 @@
 
             /* --- CAMPANITA DE NOTIFICACIONES (ESCRITORIO) --- */
             .noti-custom-menu {
-                display: none !important;
-                position: absolute;
-                top: 100%;
-                right: 0;
-                left: auto;
-                background: #fff;
-                z-index: 9999;
-                box-shadow: 0 5px 15px rgba(0,0,0,0.15);
-                border-top: 3px solid #1e2d42;
-                border-radius: 0 0 4px 4px;
-                min-width: 450px;
-                width: 450px;
-                padding: 0;
-                margin-top: 0;
+                display: none !important; position: absolute; top: 100%; right: 0; left: auto;
+                background: #fff; z-index: 9999; box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+                border-top: 3px solid #1e2d42; border-radius: 0 0 4px 4px;
+                min-width: 450px; width: 450px; padding: 0; margin-top: 0;
             }
             .noti-custom-menu.mostrar-click { display: block !important; }
 
@@ -172,33 +134,70 @@
             .item-desactivado .sc-trash, .item-desactivado .btn-trash-active { pointer-events: auto !important; opacity: 1 !important; filter: none !important; cursor: pointer; color: #d9534f; }
             .badge-desactivado { background-color: #666; color: white; font-size: 10px; padding: 2px 6px; border-radius: 3px; font-weight: bold; text-transform: uppercase; margin-top: 5px; display: inline-block; }
 
-            /* ========================================== */
-            /* 📱 OPTIMIZACIÓN EXTREMA PARA CELULARES Y TABLETS (Máx 991px) */
-            /* ========================================== */
+            /* ========================================================== */
+            /* 📱 OPTIMIZACIÓN LIMPIA PARA CELULARES Y TABLETS (Máx 991px) */
+            /* ========================================================== */
             @media (max-width: 991px) {
-                html {
-                    scroll-padding-top: 100px;
+                html { scroll-padding-top: 100px; }
+
+                /* 🚀 FIX: Ocultar los íconos y el buscador de arriba en móvil para no duplicar */
+                .header-actions { display: none !important; }
+                .header-top-container .search-wrapper { display: none !important; }
+
+                .header-top { padding: 10px 0 !important; }
+                .header-top-container { gap: 10px !important; flex-direction: column; }
+
+                /* =======================================
+                   BARRA INFERIOR MÓVIL AL RAS DE LA PANTALLA
+                   ======================================= */
+                /* Forzamos al contenedor a ocupar el 100% y le sacamos los márgenes gigantes */
+                .navbar-bottom .container {
+                    width: 100% !important;
+                    max-width: 100% !important;
+                    padding: 0 10px !important; /* 10px de separación del borde de la pantalla */
                 }
 
-                /* Iconos superiores ocultos */
-                .header-actions {
-                    display: none !important;
+                /* Reinicio de floats para Bootsnav */
+                .navbar-header, .attr-nav, .navbar-collapse {
+                    float: none !important;
+                    display: flex !important;
                 }
 
-                .header-top {
-                    padding: 10px 0 !important;
+                .navbar-bottom .container > nav {
+                    display: flex !important;
+                    flex-wrap: nowrap !important;
+                    justify-content: space-between !important;
+                    align-items: center !important;
+                    padding: 5px 0 !important;
+                    min-height: 60px !important;
+                    width: 100% !important;
                 }
 
-                .header-top-container {
-                    gap: 10px !important;
-                    flex-direction: column;
+                /* Escudo izquierdo (Hamburguesa) */
+                .navbar-header {
+                    order: 1 !important;
+                    margin: 0 !important;
+                    width: auto !important;
+                    flex-shrink: 0 !important;
+                }
+                .navbar-toggle {
+                    margin: 5px 0 !important;
+                    padding: 10px 5px !important;
+                    font-size: 26px !important;
+                    display: block !important;
                 }
 
-                .search-wrapper {
-                    width: 100%;
-                    margin: 0;
+                /* El Buscador en el centro (Con tope de tamaño) */
+                .mobile-search-bar {
+                    display: block !important;
+                    order: 2 !important;
+                    flex-grow: 1 !important;
+                    width: 100% !important;
+                    max-width: 140px !important; /* 🚀 Acá controlás qué tan chico lo querés (probá 160px, 180px, 200px) */
+                    margin: 0 auto !important; /* Esto lo mantiene perfectamente centrado */
                 }
-
+                .mobile-search-bar .search-input { width: 100% !important; height: 36px; padding: 5px 30px 5px 15px; border: 1.5px solid #1e2d42 !important; border-radius: 50px !important; font-size: 13px; outline: none; }
+                .mobile-search-bar .search-btn { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: transparent; border: none; font-size: 14px; color: #666; padding: 0; }
                 /* Barra Sticky transformada y siempre visible */
                 .sticky-icons-hidden {
                     opacity: 1 !important;
@@ -207,69 +206,49 @@
                     pointer-events: auto !important;
                 }
 
-                .navbar-bottom .container > nav {
-                    display: flex !important;
-                    flex-wrap: wrap !important;
-                    align-items: center !important;
-                    justify-content: space-between !important;
-                    padding: 5px 0 !important;
-                    min-height: auto !important;
-                }
-
-                /* Ajuste para anclar el botón de menú/cierre a la izquierda */
-                .navbar-bottom .navbar-header {
-                    float: none !important;
+                /* Escudo derecho (Iconos) */
+                .attr-nav {
+                    order: 3 !important;
                     margin: 0 !important;
-                    display: flex !important;
-                    justify-content: flex-start !important; /* 👈 Esto fuerza el botón a la izquierda */
-                    align-items: center !important;
-                    width: 100% !important; /* Asegura que el contenedor ocupe el ancho para poder alinear */
-                }
-
-                .navbar-bottom .navbar-toggle {
-                    margin: 5px 0 !important;
-                }
-
-                .navbar-bottom .attr-nav {
-                    float: none !important;
-                    margin: 0 !important;
-                    display: flex !important;
+                    flex-shrink: 0 !important;
                     align-items: center !important;
                 }
-
-                /* Separación fluida entre carrito, campana y perfil */
-                .navbar-bottom .attr-nav > ul {
+                .attr-nav > ul {
                     display: flex !important;
                     flex-direction: row !important;
-                    gap: 18px !important;
+                    gap: 15px !important;
                     margin: 0 !important;
                     padding: 0 !important;
                     align-items: center !important;
                 }
-
-                .navbar-bottom .attr-nav .profile-link span:not(.lnr) {
-                    display: none !important;
+                .sticky-icons-hidden > ul > li > a {
+                    font-size: 22px !important;
+                    padding: 5px 0 !important;
+                    width: auto !important;
+                    height: auto !important;
                 }
+                .navbar-bottom .attr-nav .profile-link span:not(.lnr) { display: none !important; }
 
+                /* Menú Desplegable Móvil */
                 #navbar-menu {
+                    order: 4 !important;
                     width: 100% !important;
                     flex-basis: 100% !important;
                     border-top: none !important;
+                    position: absolute;
+                    top: 80px;
+                    left: 0;
+                    background: #fff;
+                    border-top: 1px solid #eee;
                 }
 
-                /* Ajuste de Paneles para que escalen bien en pantallas grandes (Ej: Pro Max) */
-                .sticky-icons-hidden li {
-                    position: relative !important;
-                }
-
+                /* Ajuste de Paneles Flotantes (Perfil / Notificaciones) */
+                .sticky-icons-hidden li { position: relative !important; }
                 .sticky-icons-hidden li > .profile-menu:not(.noti-custom-menu) {
-                    /* 🚀 Magia responsiva: Crece con la pantalla pero frena en 340px */
                     width: 85vw !important;
                     max-width: 340px !important;
-                    /* 🚀 Lo anclamos cerquita del ícono derecho */
                     right: -70px !important;
                 }
-
                 .noti-custom-menu {
                     display: none !important;
                     position: absolute;
@@ -286,178 +265,30 @@
                     padding: 0;
                     margin-top: 0;
                 }
-                /* ========================================== */
-                /* 📱 AJUSTES DEL BANNER PARA MOBILE (Máx 767px) */
-                /* ========================================== */
-                @media (max-width: 767px) {
-                    .single-slide-item {
-                        width: 90% !important;
-                        height: auto !important;
-                        min-height: 480px;
-                    }
+            }
 
-                    /* 1. Títulos */
-                    .titulo-mobile {
-                        display: block !important;
-                        text-align: center;
-                        font-size: 28px !important;
-                        font-weight: 700;
-                        margin: 25px 0 10px 0 !important;
-                        color: #333;
-                    }
+            /* ========================================== */
+            /* 📱 AJUSTES DEL BANNER PARA MOBILE (Máx 767px) */
+            /* ========================================== */
+            @media (max-width: 767px) {
+                .single-slide-item { width: 90% !important; height: auto !important; min-height: 480px; }
+                .titulo-mobile { display: block !important; text-align: center; font-size: 28px !important; font-weight: 700; margin: 25px 0 10px 0 !important; color: #333; }
+                .titulo-desktop { display: none !important; }
 
-                    .titulo-desktop {
-                        display: none !important;
-                    }
+                .welcome-hero-content > .row { display: flex; flex-direction: column-reverse !important; align-items: center; }
+                .welcome-hero-img { display: flex !important; width: 100%; height: 200px !important; padding: 0 !important; justify-content: center; }
+                .welcome-hero-img img { max-height: 100% !important; object-fit: contain; }
+                .welcome-hero-txt { width: 100% !important; padding: 15px 20px 30px 20px !important; text-align: center !important; margin: 0 !important; }
+                .welcome-hero-txt p { font-size: 15px !important; line-height: 1.4; margin-bottom: 25px !important; }
 
-                    /* 2. Inversión del orden (Imagen arriba, Texto abajo) */
-                    .welcome-hero-content > .row {
-                        display: flex;
-                        flex-direction: column-reverse !important;
-                        align-items: center;
-                    }
+                .botones-banner { display: flex !important; flex-direction: row !important; justify-content: space-between !important; gap: 10px !important; width: 100%; }
+                .botones-banner .btn-cart { width: 48% !important; padding: 12px 5px !important; font-size: 12px !important; display: flex; justify-content: center; align-items: center; white-space: nowrap; }
 
-                    /* 3. Imagen en el medio */
-                    .welcome-hero-img {
-                        display: flex !important;
-                        width: 100%;
-                        height: 200px !important;
-                        padding: 0 !important;
-                        justify-content: center;
-                    }
-
-                    .welcome-hero-img img {
-                        max-height: 100% !important;
-                        object-fit: contain;
-                    }
-
-                    /* 4. Texto descriptivo */
-                    .welcome-hero-txt {
-                        width: 100% !important;
-                        padding: 15px 20px 30px 20px !important;
-                        text-align: center !important;
-                        margin: 0 !important;
-                    }
-
-                    .welcome-hero-txt p {
-                        font-size: 15px !important;
-                        line-height: 1.4;
-                        margin-bottom: 25px !important;
-                    }
-
-                    /* 5. Botones lado a lado */
-                    .botones-banner {
-                        display: flex !important;
-                        flex-direction: row !important;
-                        justify-content: space-between !important;
-                        gap: 10px !important;
-                        width: 100%;
-                    }
-
-                    .botones-banner .btn-cart {
-                        width: 48% !important;
-                        padding: 12px 5px !important;
-                        font-size: 12px !important;
-                        display: flex;
-                        justify-content: center;
-                        align-items: center;
-                        white-space: nowrap;
-                    }
-
-                    /* ========================================================== */
-                    /* 🚀 FIX: BANNER EN TABLETS / PANTALLAS MEDIANAS             */
-                    /* ========================================================== */
-
-                    /* 1. Quitamos los 100px de relleno lateral que lo aplastaban */
-                    .home-banner-slider-container {
-                        padding: 0 15px !important;
-                    }
-
-                    /* 2. Le decimos que ocupe el mismo ancho que los paneles de abajo */
-                    .single-slide-item {
-                        width: 100% !important;
-                        max-width: 750px !important; /* El ancho exacto de los contenedores de Bootstrap en esta resolución */
-                    }
-
-                    /* 3. Metemos las flechas un poco hacia adentro para que no se corten */
-                    .home-banner-slider .slick-prev-eden { left: -5px !important; z-index: 10; }
-                    .home-banner-slider .slick-next-eden { right: -5px !important; z-index: 10; }
-
-                    .slick-prev-eden, .slick-next-eden {
-                        display: none !important;
-                    }
-                }
-
-                @media (max-width: 991px) {
-                    html {
-                        scroll-padding-top: 100px;
-                    }
-
-                    /* --- 1. REINICIO DE FLOATS (Crucial para Bootsnav) --- */
-                    .navbar-header, .attr-nav, .navbar-collapse {
-                        float: none !important;
-                        display: flex !important;
-                    }
-
-                    /* --- 2. EL CONTENEDOR ES LA FILA FLEXIBLE --- */
-                    .navbar-bottom .container > nav {
-                        display: flex !important;
-                        flex-wrap: nowrap !important;
-                        justify-content: space-between !important; /* Hamburguesa a la izq, Íconos a la der */
-                        align-items: center !important;
-                        padding: 5px 15px !important;
-                        min-height: 60px !important;
-                        width: 100% !important;
-                    }
-
-                    /* --- 3. HAMBURGUESA A LA IZQUIERDA --- */
-                    .navbar-header {
-                        order: 1 !important;
-                        margin: 0 !important;
-                    }
-
-                    .navbar-toggle {
-                        margin: 0 !important;
-                        padding: 10px !important;
-                        font-size: 24px !important;
-                        display: block !important;
-                    }
-
-                    /* --- 4. ÍCONOS A LA DERECHA (Carrito, Campana, Perfil) --- */
-                    .attr-nav {
-                        order: 2 !important;
-                        margin: 0 !important;
-                    }
-
-                    .attr-nav > ul {
-                        display: flex !important;
-                        flex-direction: row !important;
-                        gap: 15px !important;
-                        margin: 0 !important;
-                        padding: 0 !important;
-                        align-items: center !important;
-                    }
-
-                    /* Aseguramos tamaño táctil de los íconos */
-                    .sticky-icons-hidden > ul > li > a {
-                        font-size: 24px !important;
-                        padding: 8px !important;
-                        width: 44px !important;
-                        height: 44px !important;
-                        justify-content: center !important;
-                    }
-
-                    /* --- 5. MENÚ DEBAJO (Oculto hasta hacer clic) --- */
-                    #navbar-menu {
-                        order: 3 !important;
-                        width: 100% !important;
-                        position: absolute;
-                        top: 80px;
-                        left: 0;
-                        background: #fff;
-                        border-top: 1px solid #eee;
-                    }
-                }
+                .home-banner-slider-container { padding: 0 15px !important; }
+                .single-slide-item { width: 100% !important; max-width: 750px !important; }
+                .home-banner-slider .slick-prev-eden { left: -5px !important; z-index: 10; }
+                .home-banner-slider .slick-next-eden { right: -5px !important; z-index: 10; }
+                .slick-prev-eden, .slick-next-eden { display: none !important; }
             }
         </style>
     </th:block>
@@ -544,11 +375,22 @@
     <div class="navbar-bottom">
         <div class="container">
             <nav class="navbar navbar-default bootsnav navbar-scrollspy" data-minus-value-desktop="70" data-minus-value-mobile="55" data-speed="1000">
-                <div class="navbar-header">
+
+                <!-- Hamburguesa (Izquierda) -->
+                <div class="navbar-header" style="order: 1;">
                     <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar-menu"><i class="fa fa-bars"></i></button>
                 </div>
 
-                <div class="attr-nav sticky-icons-hidden">
+                <!-- 🚀 NUEVO: BUSCADOR MÓVIL (Centro) -->
+                <div class="mobile-search-bar" style="display: none; position: relative;">
+                    <form action="/products" method="get" class="search-form" style="margin: 0;">
+                        <input type="text" name="keyword" class="search-input" placeholder="Buscar...">
+                        <button type="submit" class="search-btn"><i class="fa fa-search"></i></button>
+                    </form>
+                </div>
+
+                <!-- Iconos (Derecha) -->
+                <div class="attr-nav sticky-icons-hidden" style="order: 3;">
                     <ul>
                         <li>
                             <a href="javascript:void(0);" onclick="toggleCart()" style="display: flex; align-items: center; position: relative; padding: 15px 0;">
@@ -556,7 +398,6 @@
                                 <span class="badge badge-cart" th:text="${cartCount}" style="background-color: #1e2d42 !important; color: white !important; position: absolute !important; top: 8px !important; right: -10px !important; border-radius: 50% !important; width: 18px !important; height: 18px !important; display: flex !important; justify-content: center !important; align-items: center !important; font-size: 11px !important; font-weight: bold !important; line-height: 1 !important; box-shadow: 0 2px 4px rgba(0,0,0,0.2) !important; padding: 0 !important; border: none !important; min-width: 0 !important; margin: 0 !important;">0</span>
                             </a>
                         </li>
-                        <!-- 🔔 CAMPANITA 100% CLICK-ONLY -->
                         <li class="noti-click-container" sec:authorize="isAuthenticated()" style="position: relative;">
                             <a href="javascript:void(0);" onclick="toggleCampanita(event)" style="display: flex; align-items: center; position: relative; padding: 15px 0;">
                                 <span class="lnr lnr-alarm" style="font-size: 20px;"></span>
@@ -602,7 +443,8 @@
                     </ul>
                 </div>
 
-                <div class="collapse navbar-collapse menu-ui-design" id="navbar-menu">
+                <!-- Menú Desplegable -->
+                <div class="collapse navbar-collapse menu-ui-design" id="navbar-menu" style="order: 4;">
                     <ul class="nav navbar-nav navbar-center">
                         <li><a href="/">Inicio</a></li>
                         <li class="dropdown">
@@ -911,9 +753,6 @@
     </style>
 </div>
 
-<!-- ========================================== -->
-<!-- TARJETAS Y CSS INDIVIDUAL -->
-<!-- ========================================== -->
 <th:block th:fragment="css-tarjetas">
     <style>
         .single-new-arrival { background: #F8F9FA; border-radius: 13px; padding: 12px; margin-bottom: 30px; transition: all 0.3s ease; text-align: left; border: 2px solid #eee; height: 320px; max-width: 280px; margin-left: auto; margin-right: auto; display: flex; flex-direction: column; justify-content: flex-start; position: relative; }
@@ -924,47 +763,103 @@
         .single-new-arrival-caption { padding: 0 5px; margin-bottom: 2px; }
         .single-new-arrival h4 a { color: #333; font-weight: 700; font-size: 15px; margin-top: 5px; margin-bottom: 2px; text-decoration: none; display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .arrival-product-price { color: #666; font-weight: 500; font-size: 14px; margin: 0; }
-        .mis-acciones-producto { width: 100%; margin-top: auto; display: flex; align-items: center; gap: 10px; }
-        .mi-btn-agregar, .mi-control-cantidad { flex-grow: 1; }
-        .mi-btn-agregar { background-color: #1e2d42; color: white !important; border-radius: 50px; display: flex; align-items: center; justify-content: center; width: 100%; height: 35px; font-size: 12px; font-weight: 650; text-decoration: none; transition: 0.2s; cursor: pointer; border: none; box-shadow: 0 4px 6px rgba(230, 149, 0, 0.15); }
-        .mi-btn-agregar:hover { background-color: #1e2d42; color: white !important; }
-        .mi-control-cantidad { display: flex; align-items: center; width: 100%; height: 40px; }
-        .mi-btn-circulo { width: 35px; height: 35px; border-radius: 50%; background: #1e2d42; color: #fff; border: none; font-size: 18px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 0; line-height: 1; margin-right: 8px; transition: 0.2s; }
-        .mi-btn-circulo:hover { background: #1e2d42; transform: scale(1.05); }
-        .mi-numero-cantidad { font-size: 16px; font-weight: 800; color: #333; border: 1px solid #e0e0e0; border-radius: 8px; background-color: #fff; padding: 6px 12px; min-width: 48px; text-align: center; }
-        .mi-btn-fav { width: 40px; height: 40px; border-radius: 50%; background-color: #fff; border: 1px solid transparent; color: #ccc; display: flex !important; align-items: center; justify-content: center; font-size: 20px; cursor: pointer; transition: all 0.3s ease; text-decoration: none !important; flex-shrink: 0; }
-        .mi-btn-fav i { font-size: 20px !important; transition: transform 0.3s; }
-        .mi-btn-fav:hover { color: #1e2d42; transform: scale(1.05); }
-        .mi-btn-fav.activo { border: 2px solid transparent; color: #1e2d42; box-shadow: 0 2px 8px rgba(230, 149, 0, 0.2); }
+
+        .mis-acciones-producto { width: 100%; margin-top: auto; display: block; } /* Ahora es un bloque 100% ancho */
+
+        /* Botón Agregar al carrito a lo ancho total */
+        .mi-btn-agregar { background-color: #1e2d42; color: white !important; border-radius: 50px; display: flex; align-items: center; justify-content: center; width: 100%; height: 35px; font-size: 12px; font-weight: 650; text-decoration: none; transition: 0.2s; cursor: pointer; border: none; box-shadow: 0 4px 6px rgba(30, 45, 66, 0.15); white-space: nowrap; }
+        .mi-btn-agregar:hover {background-color: #131c29; color: white !important; }
+
+        .mi-control-cantidad { display: flex; align-items: center; width: 100%; height: 35px; justify-content: space-between; }
+        .mi-btn-circulo { width: 35px; height: 35px; border-radius: 50%; background: #1e2d42; color: #fff; border: none; font-size: 18px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 0; line-height: 1; transition: 0.2s; }
+        .mi-btn-circulo:hover { background: #131c29; transform: scale(1.05); }
+        .mi-numero-cantidad { font-size: 16px; font-weight: 800; color: #333; border: 1px solid #e0e0e0; border-radius: 8px; background-color: #fff; padding: 4px 10px; min-width: 48px; text-align: center; flex-grow: 1; margin: 0 8px; }
+
+        /* 🚀 BOTÓN DE FAVORITOS (Flotando arriba a la derecha) */
+        .mi-btn-fav {
+            position: absolute; top: 12px; right: 12px; z-index: 10;
+            width: 35px; height: 35px; border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.49); border: none; color: #1e2d42;
+            display: flex !important; align-items: center; justify-content: center;
+            font-size: 18px; cursor: pointer; transition: all 0.3s ease; text-decoration: none !important;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1); /* Sombrilla para que se lea siempre sobre la foto */
+        }
+        .mi-btn-fav i { transition: transform 0.3s; margin-top: 2px; }
+        .mi-btn-fav:hover { color: #1e2d42; transform: scale(1.1); }
+        .mi-btn-fav.activo { color: #1e2d42; } /* Solo pintamos el icono, mantenemos el fondo blanco limpio */
         .mi-btn-fav.activo i { transform: scale(1.1); }
+
+        /* ========================================== */
+        /* 📱 2 COLUMNAS EN CELULARES */
+        /* ========================================== */
+        @media (max-width: 767px) {
+            .single-new-arrival {
+                height: auto;
+                min-height: 250px;
+                padding: 8px;
+                margin-bottom: 15px;
+            }
+            .single-new-arrival-bg { height: 130px !important; }
+            .single-new-arrival h4 a {
+                font-size: 12px;
+                white-space: normal;
+                display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+                line-height: 1.2;
+            }
+            .arrival-product-price { font-size: 13px; margin-bottom: 8px; }
+
+            /* Botón agregar entra perfecto ahora */
+            .mi-btn-agregar { font-size: 11px; height: 32px; }
+
+            /* Corazón un poquito más compacto en móvil */
+            .mi-btn-fav { width: 30px; height: 30px; font-size: 15px; top: 8px; right: 8px; }
+            .mi-btn-fav i { font-size: 15px !important; }
+
+            .mi-btn-circulo { width: 30px; height: 30px; font-size: 16px; }
+            .mi-numero-cantidad { font-size: 13px; padding: 4px; min-width: 35px; }
+        }
     </style>
 </th:block>
 
-<div th:fragment="cardProducto(product)" class="col-md-3 col-sm-4">
+<div th:fragment="cardProducto(product)" class="col-md-3 col-sm-4 col-xs-6 col-6">
     <div class="single-new-arrival" th:id="'card-producto-' + ${product.id}" th:with="isAvailable=${product.stock != null and product.stock > 0 and product.activo}">
+
+        <!-- 🚀 CORAZÓN FLOTANTE (Ley de Jakob) -->
+        <a href="javascript:void(0);" th:with="currentFav=${#lists.contains(favoritesIds ?: {}, product.id)}" th:id="'btn-fav-' + ${product.id}" class="mi-btn-fav" th:classappend="${currentFav} ? 'activo' : ''" th:onclick="'toggleFavorite(' + ${product.id} + ')'" title="Añadir a favoritos">
+            <i class="fa" th:classappend="${currentFav} ? 'fa-heart' : 'fa-heart-o'"></i>
+        </a>
+
         <div class="single-new-arrival-bg">
             <a th:href="@{/product/{id}(id=${product.id})}">
                 <img th:src="@{${product.imageUrl}}" th:alt="${product.name}" th:style="${!isAvailable} ? 'opacity: 0.6;' : ''">
             </a>
         </div>
+
         <div class="single-new-arrival-caption">
             <h4><a th:href="@{/product/{id}(id=${product.id})}" th:text="${product.name}">Nombre</a></h4>
             <p class="arrival-product-price" th:if="${isAvailable}" th:text="${'$ ' + product.price}">$0.00</p>
             <p class="arrival-product-price" th:unless="${isAvailable}" style="color: #d9534f; font-weight: bold;">No Disponible</p>
         </div>
+
+        <!-- Ahora esto tiene el 100% del ancho para el botón -->
         <div class="mis-acciones-producto">
-            <div style="flex-grow: 1;" th:with="safeId=${product.id}, qtyInCart=${(productQuantities != null and productQuantities.containsKey(safeId)) ? productQuantities.get(safeId) : 0}" th:id="'acciones-cart-' + ${safeId}">
-                <a href="javascript:void(0);" class="mi-btn-agregar" th:if="${isAvailable and qtyInCart == 0}" th:onclick="'agregarConAjax(' + ${safeId} + ')'">Agregar al carrito</a>
+            <div style="width: 100%;" th:with="safeId=${product.id}, qtyInCart=${(productQuantities != null and productQuantities.containsKey(safeId)) ? productQuantities.get(safeId) : 0}" th:id="'acciones-cart-' + ${safeId}">
+
+                <a href="javascript:void(0);" class="mi-btn-agregar" th:if="${isAvailable and qtyInCart == 0}" th:onclick="'agregarConAjax(' + ${safeId} + ')'">
+                    Agregar al carrito
+                </a>
+
                 <div class="mi-control-cantidad" th:if="${isAvailable and qtyInCart > 0}">
                     <button class="mi-btn-circulo" th:onclick="'updateCardQty(' + ${safeId} + ', -1)'">-</button>
-                    <button class="mi-btn-circulo" th:onclick="'updateCardQty(' + ${safeId} + ', 1)'">+</button>
                     <span class="mi-numero-cantidad" th:id="'card-qty-val-' + ${safeId}" th:text="${qtyInCart}">1</span>
+                    <button class="mi-btn-circulo" th:onclick="'updateCardQty(' + ${safeId} + ', 1)'">+</button>
                 </div>
-                <a href="javascript:void(0);" class="mi-btn-agregar" th:unless="${isAvailable}" style="background-color: #e0e0e0; cursor: not-allowed; color: #888 !important; box-shadow: none;">Sin stock</a>
+
+                <a href="javascript:void(0);" class="mi-btn-agregar" th:unless="${isAvailable}" style="background-color: #e0e0e0; cursor: not-allowed; color: #888 !important; box-shadow: none;">
+                    Sin stock
+                </a>
+
             </div>
-            <a href="javascript:void(0);" th:with="currentFav=${#lists.contains(favoritesIds ?: {}, product.id)}" th:id="'btn-fav-' + ${product.id}" class="mi-btn-fav" th:classappend="${currentFav} ? 'activo' : ''" th:onclick="'toggleFavorite(' + ${product.id} + ')'" title="Añadir a favoritos">
-                <i class="fa" th:classappend="${currentFav} ? 'fa-heart' : 'fa-heart-o'"></i>
-            </a>
         </div>
     </div>
 </div>

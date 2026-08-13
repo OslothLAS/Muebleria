@@ -1,7 +1,9 @@
 package com.example.Ecommerce_Muebleria.Front.controller;
 
+import com.example.Ecommerce_Muebleria.BackProducts.services.GlobalConfigService;
 import com.example.Ecommerce_Muebleria.Front.services.OrderService;
 import com.example.Ecommerce_Muebleria.Front.services.ProductService;
+import com.example.Ecommerce_Muebleria.config.GlobalConfig;
 import com.example.Ecommerce_Muebleria.entities.cart.Cart;
 import com.example.Ecommerce_Muebleria.entities.commons.Collection;
 import com.example.Ecommerce_Muebleria.Front.services.CartService;
@@ -39,6 +41,9 @@ public class HomeController {
     @Autowired
     private OrderService orderService;
 
+    @Autowired
+    private GlobalConfigService configService;
+
     @GetMapping("/")
     public String index(@RequestParam(defaultValue = "0") int page,
                         Model model,
@@ -57,6 +62,9 @@ public class HomeController {
         model.addAttribute("productsNew", productsNew);
         model.addAttribute("products", products);
         model.addAttribute("activeCollections", collections);
+
+        GlobalConfig config = configService.getConfig();
+        model.addAttribute("superBannerUrl", config.getSuperBannerUrl());
 
         if (request.getHeader("HX-Request") != null) {
             return "index :: lista-productos";
