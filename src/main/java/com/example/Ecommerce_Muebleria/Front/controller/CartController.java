@@ -1,5 +1,7 @@
 package com.example.Ecommerce_Muebleria.Front.controller;
 
+import com.example.Ecommerce_Muebleria.BackProfiles.entities.UserProfile;
+import com.example.Ecommerce_Muebleria.BackProfiles.services.UserProfileService;
 import com.example.Ecommerce_Muebleria.Front.services.CartService;
 import com.example.Ecommerce_Muebleria.Front.services.OrderService;
 import com.example.Ecommerce_Muebleria.Front.services.ProductService;
@@ -35,6 +37,9 @@ public class CartController {
     private final OrderService orderService;
     private final WishlistService wishlistService;
     private final ProductService productService;
+
+    @Autowired
+    private UserProfileService userProfileService;
 
     @Autowired
     private WebClient cartWebClient;
@@ -294,7 +299,22 @@ public class CartController {
         model.addAttribute("myCart", cart);
         model.addAttribute("totalAmount", total);
 
-        return "checkout"; // El HTML que te pasé antes
+        // 🚀 NUEVO: Lógica de autocompletado de datos
+        // Si hay un usuario logueado con Auth0, buscamos su perfil predeterminado
+        if (oidcUser != null) {
+            String auth0Id = oidcUser.getSubject();
+            if (auth0Id == null) {
+                auth0Id = oidcUser.getName();
+            }
+
+            // Buscamos el perfil usando el servicio que inyectamos arriba
+            UserProfile userProfile = userProfileService.getProfileByAuth0Id(auth0Id);
+
+            // Lo enviamos al HTML para que los th:value se llenen solos
+            model.addAttribute("userProfile", userProfile);
+        }
+
+        return "checkout";
     }
 
     @PostMapping("/process-checkout")

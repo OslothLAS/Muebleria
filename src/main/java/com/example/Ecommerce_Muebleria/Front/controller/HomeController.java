@@ -1,6 +1,7 @@
 package com.example.Ecommerce_Muebleria.Front.controller;
 
 import com.example.Ecommerce_Muebleria.BackProducts.services.GlobalConfigService;
+import com.example.Ecommerce_Muebleria.BackProducts.services.StoreConfigService;
 import com.example.Ecommerce_Muebleria.Front.services.OrderService;
 import com.example.Ecommerce_Muebleria.Front.services.ProductService;
 import com.example.Ecommerce_Muebleria.config.GlobalConfig;
@@ -11,6 +12,7 @@ import com.example.Ecommerce_Muebleria.Front.services.internal.CollectionClientS
 import com.example.Ecommerce_Muebleria.Front.services.internal.WishlistService;
 import com.example.Ecommerce_Muebleria.entities.commons.Product;
 
+import com.example.Ecommerce_Muebleria.entities.front.StoreConfig;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +33,9 @@ public class HomeController {
 
     @Autowired
     private CartService cartService;
+
+    @Autowired
+    private StoreConfigService storeConfigService;
 
     @Autowired
     private CollectionClientService collectionService;
@@ -55,6 +60,9 @@ public class HomeController {
         List<Product> destacados = productService.findFeaturedProducts();
         List<Collection> collections = collectionService.getActiveCollections();
 
+        StoreConfig storeConfig = storeConfigService.getConfig();
+
+
         // 2. BORRÁ TODO LO RELACIONADO AL CARRITO Y FAVORITOS DE ACÁ
         // (Eso ya lo hace el GlobalDataController para todas las páginas)
 
@@ -62,6 +70,9 @@ public class HomeController {
         model.addAttribute("productsNew", productsNew);
         model.addAttribute("products", products);
         model.addAttribute("activeCollections", collections);
+        model.addAttribute("bannerActive", storeConfig.isBannerActive());
+        model.addAttribute("carouselActive", storeConfig.isCarouselActive());
+        model.addAttribute("collectionsActive", storeConfig.isCollectionsActive());
 
         GlobalConfig config = configService.getConfig();
         model.addAttribute("superBannerUrl", config.getSuperBannerUrl());
@@ -105,6 +116,8 @@ public class HomeController {
         model.addAttribute("totalPages", response.getOrDefault("totalPages", 0));
         model.addAttribute("activePage", "products");
         model.addAttribute("sort", sort);
+
+
 
         if (request.getHeader("HX-Request") != null) {
             return "shop :: items-scroll";

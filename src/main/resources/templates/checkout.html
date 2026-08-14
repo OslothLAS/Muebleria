@@ -98,28 +98,33 @@
                     <div class="row">
                         <div class="col-md-8 form-group">
                             <label>Calle y Número</label>
-                            <input type="text" name="shippingAddress" class="form-control" placeholder="Ej: Av. Rivadavia 1234" required>
+                            <!-- Agregamos th:value apuntando a defaultShippingAddress -->
+                            <input type="text" name="shippingAddress" class="form-control" placeholder="Ej: Av. Rivadavia 1234" th:value="${userProfile?.defaultShippingAddress}" required>
                         </div>
                         <div class="col-md-4 form-group">
                             <label>Código Postal</label>
-                            <input type="text" name="shippingZipCode" class="form-control" placeholder="Ej: C1033AAJ" required>
+                            <!-- Agregamos th:value apuntando a defaultZipCode -->
+                            <input type="text" name="shippingZipCode" class="form-control" placeholder="Ej: C1033AAJ" th:value="${userProfile?.defaultZipCode}" required>
                         </div>
                     </div>
 
                     <div class="row">
                         <div class="col-md-6 form-group">
                             <label>Entre qué calles</label>
-                            <input type="text" name="shippingBetweenStreets" class="form-control" placeholder="Ej: Lima y Salta" required>
+                            <!-- Agregamos th:value apuntando a defaultBetweenStreets -->
+                            <input type="text" name="shippingBetweenStreets" class="form-control" placeholder="Ej: Lima y Salta" th:value="${userProfile?.defaultBetweenStreets}" required>
                         </div>
                         <div class="col-md-6 form-group">
                             <label>Ciudad / Provincia</label>
-                            <input type="text" name="shippingCity" class="form-control" placeholder="Ej: CABA" required>
+                            <!-- Agregamos th:value apuntando a defaultCity -->
+                            <input type="text" name="shippingCity" class="form-control" placeholder="Ej: CABA" th:value="${userProfile?.defaultCity}" required>
                         </div>
                     </div>
 
                     <div class="form-group">
                         <label>Referencias adicionales / Piso / Depto</label>
-                        <textarea name="shippingReferencesInfo" class="form-control" rows="2" placeholder="Ej: Casa con rejas negras, timbre 3B..."></textarea>
+                        <!-- ATENCIÓN: Los textarea en Thymeleaf usan th:text, no th:value -->
+                        <textarea name="shippingReferencesInfo" class="form-control" rows="2" placeholder="Ej: Casa con rejas negras, timbre 3B..." th:text="${userProfile?.defaultReferencesInfo}"></textarea>
                     </div>
 
                     <!-- CHECKBOX PARA CLONAR DATOS -->

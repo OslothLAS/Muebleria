@@ -26,13 +26,14 @@
         .btn-crear {
             padding: 10px 20px; border-radius: 6px; text-decoration: none;
             font-weight: 600; transition: 0.3s; display: inline-flex; align-items: center; gap: 8px;
-            border: none;
+            border: none; cursor: pointer;
         }
 
         .btn-crear:hover {
+            opacity: 0.9; text-decoration: none; color: white;
             padding: 10px 20px; border-radius: 6px; text-decoration: none;
             font-weight: 600; transition: 0.3s; display: inline-flex; align-items: center; gap: 8px;
-            border: none; opacity: 0.9;
+            border: none; cursor: pointer;
         }
 
         /* --- ESTILOS DE TABLAS --- */
@@ -93,6 +94,17 @@
             box-shadow: 0 1px 3px rgba(0,0,0,0.1);
         }
 
+        /* Tarjetas de visibilidad */
+        .visibility-card {
+            border: 1px solid #eee;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            background: #fcfcfc;
+            flex: 1;
+            min-width: 200px;
+        }
+
         /* ========================================== */
         /* 📱 OPTIMIZACIÓN PARA CELULARES Y TABLETS   */
         /* ========================================== */
@@ -133,6 +145,54 @@
                     <a th:href="@{/admin/orders}" class="btn-crear" style="background-color: #1e2d42; color: white !important;">
                         Ver panel de pedidos <i class="fa fa-arrow-right"></i>
                     </a>
+                </div>
+            </div>
+        </div>
+        <!-- 🚀 NUEVO BLOQUE: CONTROL DE VISIBILIDAD DE SECCIONES -->
+        <div class="white-panel" style="margin-bottom: 30px; border-top: 4px solid #6f42c1;">
+            <div class="admin-header">
+                <h2><i class="fa fa-eye" style="color: #6f42c1;"></i> Control de Visibilidad (Inicio)</h2>
+            </div>
+
+            <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+
+                <!-- Toggle Super Banner -->
+                <div class="visibility-card">
+                    <h4 style="margin-top: 0; font-size: 16px; color: #333; font-weight: 600;"><i class="fa fa-image"></i> Super Banner</h4>
+                    <p style="font-size: 12px; color: #777;">Mostrar u ocultar la imagen gigante de la portada.</p>
+                    <form th:action="@{/admin/banner/toggle}" method="post">
+                        <button type="submit" class="btn-crear" style="width: 100%; justify-content: center; margin-top: 10px;"
+                                th:style="${bannerActive} ? 'background-color: #6c757d; color: white;' : 'background-color: #28a745; color: white;'">
+                            <i class="fa" th:classappend="${bannerActive} ? 'fa-eye-slash' : 'fa-eye'"></i>
+                            <span th:text="${bannerActive} ? 'Ocultar Banner' : 'Mostrar Banner'"></span>
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Toggle Carrousel -->
+                <div class="visibility-card">
+                    <h4 style="margin-top: 0; font-size: 16px; color: #333; font-weight: 600;"><i class="fa fa-clone"></i> Carrousel Principal</h4>
+                    <p style="font-size: 12px; color: #777;">Mostrar u ocultar los productos en slider de la portada.</p>
+                    <form th:action="@{/admin/visibility/carousel}" method="post">
+                        <button type="submit" class="btn-crear" style="width: 100%; justify-content: center; margin-top: 10px;"
+                                th:style="${carouselActive} ? 'background-color: #6c757d; color: white;' : 'background-color: #28a745; color: white;'">
+                            <i class="fa" th:classappend="${carouselActive} ? 'fa-eye-slash' : 'fa-eye'"></i>
+                            <span th:text="${carouselActive} ? 'Ocultar Carrousel' : 'Mostrar Carrousel'"></span>
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Toggle Colecciones -->
+                <div class="visibility-card">
+                    <h4 style="margin-top: 0; font-size: 16px; color: #333; font-weight: 600;"><i class="fa fa-folder-open"></i> Sección Colecciones</h4>
+                    <p style="font-size: 12px; color: #777;">Mostrar u ocultar la grilla de colecciones destacadas.</p>
+                    <form th:action="@{/admin/visibility/collections}" method="post">
+                        <button type="submit" class="btn-crear" style="width: 100%; justify-content: center; margin-top: 10px;"
+                                th:style="${collectionsActive} ? 'background-color: #6c757d; color: white;' : 'background-color: #28a745; color: white;'">
+                            <i class="fa" th:classappend="${collectionsActive} ? 'fa-eye-slash' : 'fa-eye'"></i>
+                            <span th:text="${collectionsActive} ? 'Ocultar Colecciones' : 'Mostrar Colecciones'"></span>
+                        </button>
+                    </form>
                 </div>
             </div>
         </div>
@@ -196,26 +256,34 @@
                 <h2><i class="fa fa-image" style="color: #17a2b8;"></i> Configuración del Super Banner</h2>
             </div>
 
-            <form th:action="@{/admin/banner/upload}" method="post" enctype="multipart/form-data" style="display: flex; gap: 15px; align-items: flex-end;">
-                <div style="flex-grow: 1;">
+            <form th:action="@{/admin/banner/upload}" method="post" enctype="multipart/form-data" style="display: flex; gap: 15px; align-items: flex-end; flex-wrap: wrap;">
+                <div style="flex-grow: 1; min-width: 250px;">
                     <label for="bannerImage" style="font-weight: 600; color: #555;">Subir nueva imagen de banner (Recomendado: 1200x500px)</label>
                     <input type="file" name="file" id="bannerImage" class="form-control" accept="image/*" required>
                 </div>
-                <button type="submit" class="btn-crear" style="background-color: #17a2b8; color: white !important;">
+                <button type="submit" class="btn-crear" style="background-color: #17a2b8; color: white !important; height: 44px;">
                     <i class="fa fa-upload"></i> Guardar Banner
                 </button>
             </form>
 
             <!-- Vista previa del banner actual -->
             <div th:if="${superBannerUrl != null}" style="margin-top: 20px;">
-                <p style="font-size: 13px; color: #666; margin-bottom: 5px;">Banner actual visible en la tienda:</p>
-                <img th:src="${superBannerUrl}" alt="Banner Actual" style="width: 100%; max-width: 600px; border-radius: 8px; border: 1px solid #ddd;">
+                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+                    <p style="font-size: 14px; font-weight: 600; color: #333; margin: 0;">Estado actual de la imagen:</p>
+                    <span th:if="${bannerActive}" class="label label-success">VISIBLE EN TIENDA</span>
+                    <span th:unless="${bannerActive}" class="label label-default">OCULTO</span>
+                </div>
 
-                <form th:action="@{/admin/banner/delete}" method="post" style="margin-top: 10px;">
-                    <button type="submit" class="btn-action btn-delete" style="width: auto; padding: 5px 15px; border-radius: 4px;">
-                        <i class="fa fa-trash"></i> Eliminar Banner
-                    </button>
-                </form>
+                <!-- Efecto visual: Si está desactivado, la foto se ve en blanco y negro -->
+                <img th:src="${superBannerUrl}" alt="Banner Actual" style="width: 100%; max-width: 600px; border-radius: 8px; border: 1px solid #ddd; transition: 0.3s;" th:styleappend="${!bannerActive} ? 'opacity: 0.5; filter: grayscale(1);' : ''">
+
+                <div style="margin-top: 15px;">
+                    <form th:action="@{/admin/banner/delete}" method="post">
+                        <button type="submit" class="btn-action btn-delete" style="width: auto; padding: 5px 15px; border-radius: 6px; height: 40px; font-weight: 600;">
+                            <i class="fa fa-trash"></i> Eliminar Imagen Definitivamente
+                        </button>
+                    </form>
+                </div>
             </div>
         </div>
 

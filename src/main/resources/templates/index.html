@@ -19,8 +19,8 @@
 
 	<style>
 		/* =========================================
-            ESTILOS EXCLUSIVOS DE LA VISTA INICIO
-         ========================================= */
+             ESTILOS EXCLUSIVOS DE LA VISTA INICIO
+          ========================================= */
 
 		/* --- HTMX & SCROLL --- */
 		.fade-in-scroll { opacity: 0; transform: translateY(20px); animation: fadeInUp 0.6s ease-out forwards; }
@@ -37,21 +37,21 @@
 		#all-products { min-height: 800px; }
 
 		/* =========================================
-          🚀 ESTILOS DEL SUPER BANNER PRINCIPAL (FULL WIDTH)
-       ========================================= */
+                  🚀 ESTILOS DEL SUPER BANNER PRINCIPAL (FULL WIDTH)
+               ========================================= */
 		.super-banner-container {
 			position: relative;
 			width: 100%;
-			max-width: 100%; /* Liberamos el ancho máximo */
-			margin: 0 0 40px 0; /* Sin márgenes a los costados ni arriba */
-			border-radius: 0; /* Bordes rectos para que pegue a los costados de la pantalla */
+			max-width: 100%;
+			margin: 0 0 40px 0;
+			border-radius: 0;
 			overflow: hidden;
 		}
 
 		.super-banner-container img {
-			width: 100vw; /* 100% del Viewport Width (ancho de la pantalla) */
+			width: 100vw;
 			height: auto;
-			max-height: 550px; /* Limita la altura en PC para que no tape todo el contenido */
+			max-height: 550px;
 			object-fit: cover;
 			display: block;
 		}
@@ -61,44 +61,34 @@
 			bottom: 15%;
 			left: 50%;
 			transform: translateX(-50%);
-			background-color: #1e2d42; /* Azul corporativo */
-			color: #ffffff !important; /* Letras blancas */
+			background-color: #1e2d42;
+			color: #ffffff !important;
 			padding: 15px 50px;
 			font-size: 18px;
 			font-weight: 700;
 			text-transform: uppercase;
 			letter-spacing: 1px;
-			border: none; /* Quitamos el borde para un diseño más limpio */
-			border-radius: 50px; /* Bordes bien redondeados (estilo píldora) */
+			border: none;
+			border-radius: 50px;
 			text-decoration: none;
 			transition: all 0.3s ease;
-			box-shadow: 0 6px 15px rgba(30, 45, 66, 0.4); /* Sombra con un leve tono azulado */
+			box-shadow: 0 6px 15px rgba(30, 45, 66, 0.4);
+			/* 🚀 FIX: Forzamos a que el texto NUNCA se parta en dos líneas */
+			white-space: nowrap;
 		}
 
 		.btn-super-banner:hover {
-			position: absolute;
-			bottom: 15%;
-			left: 50%;
-			transform: translateX(-50%);
-			background-color: #15202c; /* Azul corporativo */
-			color: #ffffff !important; /* Letras blancas */
-			padding: 15px 50px;
-			font-size: 18px;
-			font-weight: 700;
-			text-transform: uppercase;
-			letter-spacing: 1px;
-			border: none; /* Quitamos el borde para un diseño más limpio */
-			border-radius: 50px; /* Bordes bien redondeados (estilo píldora) */
-			text-decoration: none;
-			transition: all 0.3s ease;
-			box-shadow: 0 6px 15px rgba(30, 45, 66, 0.4); /* Sombra con un leve tono azulado */}
+			background-color: #15202c;
+			color: #ffffff !important;
+			box-shadow: 0 6px 15px rgba(30, 45, 66, 0.6);
+		}
 
 		/* Ajuste responsivo para el botón del banner */
 		@media (max-width: 767px) {
 			.btn-super-banner {
-				padding: 12px 30px;
-				font-size: 15px;
-				bottom: 10%;
+				padding: 10px 25px; /* 🚀 FIX: Relleno más compacto para móvil */
+				font-size: 13px;    /* 🚀 FIX: Letra un pelín más chica para que entre bien */
+				bottom: 12%;        /* Lo subimos un poquito para que no muerda el borde */
 			}
 		}
 
@@ -151,27 +141,30 @@
 <div th:replace="~{fragments :: header-principal}"></div>
 
 <!-- ========================================== -->
-<!-- 🚀 SUPER BANNER (Full Width) -->
+<!-- 🚀 SUPER BANNER (Full Width) con validación infalible -->
 <!-- ========================================== -->
-<section id="super-banner" th:if="${superBannerUrl != null}" style="padding: 0;">
-	<!-- container-fluid ocupa el 100% de la pantalla, px-0 quita los márgenes de Bootstrap -->
-	<div class="container-fluid px-0">
-		<div class="super-banner-container">
-			<!-- La imagen dinámica que carga el Admin -->
-			<img th:src="${superBannerUrl}" alt="Mueblería El Edén - Novedades">
-			<!-- Botón flotante -->
-			<a href="/products" class="btn-super-banner">Comprar ahora</a>
+<th:block th:if="${bannerActive}">
+	<section id="super-banner" th:if="${superBannerUrl != null}" style="padding: 0;">
+		<div class="container-fluid px-0">
+			<div class="super-banner-container">
+				<img th:src="${superBannerUrl}" alt="Mueblería El Edén - Novedades">
+				<a href="/products" class="btn-super-banner">Comprar ahora</a>
+			</div>
 		</div>
-	</div>
-</section>
-
-<!-- El banner slider anterior queda abajo o lo podés comentar/eliminar si querés que quede solo el Super Banner -->
-<div th:replace="~{fragments :: banner-home}"></div>
+	</section>
+</th:block>
 
 <!-- ========================================== -->
-<!-- SECCIÓN COLECCIONES -->
+<!-- 🚀 CARROUSEL PRINCIPAL con validación infalible -->
 <!-- ========================================== -->
-<section id="collections-eden">
+<th:block th:if="${carouselActive}">
+	<div th:replace="~{fragments :: banner-home}"></div>
+</th:block>
+
+<!-- ========================================== -->
+<!-- 🚀 SECCIÓN COLECCIONES con validación collectionsActive -->
+<!-- ========================================== -->
+<section id="collections-eden" th:if="${collectionsActive}">
 	<div class="container white-panel">
 		<div class="section-header">
 			<h2>Nuestras Colecciones</h2>

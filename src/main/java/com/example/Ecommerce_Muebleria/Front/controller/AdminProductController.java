@@ -1,9 +1,11 @@
 package com.example.Ecommerce_Muebleria.Front.controller;
 
+import com.example.Ecommerce_Muebleria.BackProducts.services.StoreConfigService;
 import com.example.Ecommerce_Muebleria.Front.services.ImageService;
 import com.example.Ecommerce_Muebleria.Front.services.ProductService;
 import com.example.Ecommerce_Muebleria.Front.services.internal.CollectionClientService;
 import com.example.Ecommerce_Muebleria.entities.commons.Product;
+import com.example.Ecommerce_Muebleria.entities.front.StoreConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -14,14 +16,10 @@ import com.example.Ecommerce_Muebleria.entities.commons.Collection;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Optional;
 
 @Controller
 @RequestMapping("/admin")
 public class AdminProductController {
-
-    // 🚀 CHAU RestClient y CHAU @Value productServiceUrl.
-    // Todo ocurre en la memoria del monolito.
 
     @Autowired
     private ProductService productService;
@@ -32,28 +30,36 @@ public class AdminProductController {
     @Autowired
     private ImageService imageService;
 
+    // 🚀 INYECTAMOS EL NUEVO SERVICIO DE CONFIGURACIÓN
+    @Autowired
+    private StoreConfigService storeConfigService;
+
     @GetMapping("/products")
     public String listProducts(Model model) {
+        // 1. Cargamos Productos
         List<Product> products = productService.findAllProducts();
+
+        // 2. Cargamos Colecciones (Vital para que la tabla de colecciones en tu HTML funcione)
+        List<Collection> collections = collectionClientService.getActiveCollections();
+
+        // 3. Cargamos Configuraciones de Visibilidad
+        StoreConfig config = storeConfigService.getConfig();
+        model.addAttribute("bannerActive", config.isBannerActive());
+        model.addAttribute("carouselActive", config.isCarouselActive());
+        model.addAttribute("collectionsActive", config.isCollectionsActive());
+
+        // 4. Mandamos todo a la vista
         model.addAttribute("products", products);
+        model.addAttribute("collections", collections);
         model.addAttribute("product", new Product());
-        return "product-list";
+
+        return "product-list"; // Asegurate de que tu HTML del dashboard se llame product-list.html
     }
 
     @GetMapping("/collections/products")
     public String mainDashboard(Model model) {
         System.out.println("DEBUG: Entrando al Dashboard de Admin");
-
-        List<Product> products = productService.findAllProducts();
-        System.out.println("DEBUG: Productos cargados -> " + (products != null ? products.size() : "NULL"));
-
-        // Llamada nativa a la BD local
-        List<Collection> collections = collectionClientService.getActiveCollections();
-
-        model.addAttribute("products", products);
-        model.addAttribute("collections", collections);
-        model.addAttribute("product", new Product());
-
+        // Como centralizamos todo en /products, dejamos que este simplemente redirija
         return "redirect:/admin/products";
     }
 
@@ -101,7 +107,7 @@ public class AdminProductController {
             return "redirect:/admin/products/new?error=upload";
         } catch (Exception e) {
             System.err.println("Error general al guardar el producto:");
-            e.printStackTrace(); // 👈 Esto nos va a mostrar el error real en la consola
+            e.printStackTrace();
             return "redirect:/admin/products/new?error=backend";
         }
     }
@@ -109,9 +115,7 @@ public class AdminProductController {
     @PostMapping("/products/delete/{id}")
     public String deleteProduct(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         try {
-            // 🚀 Ejecución directa de código Java, sin protocolos de red
             productService.deactivateProduct(id);
-
             redirectAttributes.addFlashAttribute("mensaje", "Producto desactivado correctamente.");
             redirectAttributes.addFlashAttribute("clase", "warning");
 
@@ -133,15 +137,41 @@ public class AdminProductController {
     @PostMapping("/products/restore/{id}")
     public String restoreProduct(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         try {
-            // 🚀 Ejecución directa de código Java
             productService.restoreProduct(id);
-
             redirectAttributes.addFlashAttribute("mensaje", "Producto restaurado con éxito.");
             redirectAttributes.addFlashAttribute("clase", "success");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("mensaje", "No se pudo restaurar el producto.");
             redirectAttributes.addFlashAttribute("clase", "danger");
         }
+        return "redirect:/admin/products";
+    }
+
+    // ========================================================
+    // 🚀 NUEVOS ENDPOINTS: CONTROL DE VISIBILIDAD (BOTONES)
+    // ========================================================
+
+    @PostMapping("/visibility/carousel")
+    public String toggleCarousel(RedirectAttributes redirectAttributes) {
+        storeConfigService.toggleCarousel();
+        redirectAttributes.addFlashAttribute("mensaje", "Visibilidad del carrousel actualizada.");
+        redirectAttributes.addFlashAttribute("clase", "success");
+        return "redirect:/admin/products";
+    }
+
+    @PostMapping("/visibility/collections")
+    public String toggleCollections(RedirectAttributes redirectAttributes) {
+        storeConfigService.toggleCollections();
+        redirectAttributes.addFlashAttribute("mensaje", "Visibilidad de las colecciones actualizada.");
+        redirectAttributes.addFlashAttribute("clase", "success");
+        return "redirect:/admin/products";
+    }
+
+    @PostMapping("/banner/toggle")
+    public String toggleBanner(RedirectAttributes redirectAttributes) {
+        storeConfigService.toggleBanner();
+        redirectAttributes.addFlashAttribute("mensaje", "Visibilidad del banner actualizada.");
+        redirectAttributes.addFlashAttribute("clase", "success");
         return "redirect:/admin/products";
     }
 }
