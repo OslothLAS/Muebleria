@@ -253,7 +253,7 @@
                     display: none !important;
                     position: absolute;
                     top: 100%;
-                    right: -55px;
+                    right: -57px;
                     left: auto;
                     background: #fff;
                     z-index: 9999;
@@ -289,39 +289,6 @@
                 .home-banner-slider .slick-prev-eden { left: -5px !important; z-index: 10; }
                 .home-banner-slider .slick-next-eden { right: -5px !important; z-index: 10; }
                 .slick-prev-eden, .slick-next-eden { display: none !important; }
-            }
-
-            /* ========================================================== */
-            /* 🚀 FIX DEFINITIVO: ELIMINAR HUECOS EN LA GRILLA (FLEXBOX)  */
-            /* ========================================================== */
-
-            /* 1. Convertimos las filas de productos en grillas flexibles */
-            .new-arrivals-content .row,
-            .feature-content .row,
-            #contenedor-dinamico .row {
-                display: flex;
-                flex-wrap: wrap;
-            }
-
-            /* 2. Desactivamos el clearfix viejo de Bootstrap que estorba al flexbox */
-            .new-arrivals-content .row::before, .new-arrivals-content .row::after,
-            .feature-content .row::before, .feature-content .row::after,
-            #contenedor-dinamico .row::before, #contenedor-dinamico .row::after {
-                display: none !important;
-            }
-
-            /* 3. Convertimos cada columna individual en una caja flexible */
-            .new-arrivals-content .row > div[class*="col-"],
-            .feature-content .row > div[class*="col-"],
-            #contenedor-dinamico .row > div[class*="col-"] {
-                display: flex;
-                flex-direction: column;
-            }
-
-            /* 4. Le decimos a la tarjeta que se estire automáticamente para llenar el hueco */
-            .single-new-arrival {
-                height: auto !important;
-                flex-grow: 1;
             }
         </style>
     </th:block>
@@ -741,9 +708,9 @@
                     </div>
                     <div class="sc-qty-box">
                         <button type="button" class="sc-qty-btn" th:onclick="'updateSideQty(' + ${item.productDetail.id} + ', -1, this)'" th:disabled="${item.quantity == 1 || !isAvailable}"> - </button>
-                        <button type="button" class="sc-qty-btn" th:onclick="'updateSideQty(' + ${item.productDetail.id} + ', 1, this)'" th:disabled="${!isAvailable}">+</button>
                         <input type="text" class="sc-qty-input" th:id="'sc-input-qty-' + ${item.productDetail.id}" th:value="${item.quantity}" readonly>
-                   </div>
+                        <button type="button" class="sc-qty-btn" th:onclick="'updateSideQty(' + ${item.productDetail.id} + ', 1, this)'" th:disabled="${!isAvailable}">+</button>
+                    </div>
                 </div>
                 <button class="sc-trash" th:onclick="'removeSideItem(' + ${item.productDetail.id} + ')'" title="Eliminar"><i class="fa fa-trash-o"></i></button>
             </div>
@@ -794,14 +761,42 @@
         .single-new-arrival-bg img { max-height: 100%; max-width: 100%; object-fit: contain; mix-blend-mode: multiply; transition: transform 0.3s; }
         .single-new-arrival:hover .single-new-arrival-bg img { transform: scale(1.05); }
         .single-new-arrival-caption { padding: 0 5px; margin-bottom: 2px; }
-        .single-new-arrival h4 a { color: #333; font-weight: 700; font-size: 15px; margin-top: 5px; margin-bottom: 2px; text-decoration: none; display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .single-new-arrival h4 a { color: #333; font-weight: 700; font-size: 13px; margin-top: 3px; margin-bottom: 2px; text-decoration: none; display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .arrival-product-price { color: #666; font-weight: 500; font-size: 14px; margin: 0; }
 
         .mis-acciones-producto { width: 100%; margin-top: auto; display: block; } /* Ahora es un bloque 100% ancho */
 
         /* Botón Agregar al carrito a lo ancho total */
-        .mi-btn-agregar { background-color: #1e2d42; color: white !important; border-radius: 50px; display: flex; align-items: center; justify-content: center; width: 100%; height: 35px; font-size: 12px; font-weight: 650; text-decoration: none; transition: 0.2s; cursor: pointer; border: none; box-shadow: 0 4px 6px rgba(30, 45, 66, 0.15); white-space: nowrap; }
-        .mi-btn-agregar:hover {background-color: #131c29; color: white !important; border-radius: 50px; display: flex; align-items: center; justify-content: center; width: 100%; height: 35px; font-size: 12px; font-weight: 650; text-decoration: none; transition: 0.2s; cursor: pointer; border: none; box-shadow: 0 4px 6px rgba(30, 45, 66, 0.15); white-space: nowrap;  }
+        .mi-btn-agregar {
+            background-color: #1e2d42;
+            color: white !important;
+            border-radius: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 35px;
+            font-size: 12px;
+            font-weight: 650;
+            text-decoration: none;
+            transition: 0.2s;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 4px 6px rgba(30, 45, 66, 0.15); white-space: nowrap; }
+        .mi-btn-agregar:hover {background-color: #131c29; color: white !important;
+            border-radius: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 35px;
+            font-size: 12px;
+            font-weight: 650;
+            text-decoration: none;
+            transition: 0.2s;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 4px 6px rgba(30, 45, 66, 0.15); white-space: nowrap;  }
 
         .mi-control-cantidad { display: flex; align-items: center; width: 100%; height: 35px; justify-content: space-between; }
         .mi-btn-circulo { width: 35px; height: 35px; border-radius: 50%; background: #1e2d42; color: #fff; border: none; font-size: 18px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 0; line-height: 1; transition: 0.2s; }
@@ -826,25 +821,30 @@
         /* 📱 2 COLUMNAS EN CELULARES */
         /* ========================================== */
         @media (max-width: 767px) {
-            .single-new-arrival {
-                height: auto;
-                min-height: 250px;
-                padding: 8px;
-                margin-bottom: 15px;
+
+            .container {
+                padding-left: 6px !important;
+                padding-right: 6px !important;
             }
+            .col-xs-6, .col-6 {
+                width: 50% !important;
+            }
+            /* 2. La tarjeta blanca se estira para ocupar casi toda la pantalla */
+            .single-new-arrival {
+                max-width: 100% !important;
+                width: 280px !important;
+                height: auto !important;
+                min-height: auto;
+                padding: 6px;
+                margin-bottom: 20px;
+            }
+
             .single-new-arrival-bg { height: 130px !important; }
             .single-new-arrival h4 a {
-                color: #333;
-                font-weight: 700;
-                font-size: 15px;
-                margin-top: 5px;
-                margin-bottom: 2px;
-                text-decoration: none;
-                display: block;
-                white-space: nowrap;
-                overflow: hidden;
-                text-overflow: ellipsis;
-                text-transform: none !important; /* 🚀 FIX: Fuerza a respetar tu base de datos */
+                font-size: 11px;
+                white-space: normal;
+                display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+                line-height: 1.2;
             }
             .arrival-product-price { font-size: 13px; margin-bottom: 8px; }
 
@@ -891,9 +891,9 @@
 
                 <div class="mi-control-cantidad" th:if="${isAvailable and qtyInCart > 0}">
                     <button class="mi-btn-circulo" th:onclick="'updateCardQty(' + ${safeId} + ', -1)'">-</button>
-                    <button class="mi-btn-circulo" th:onclick="'updateCardQty(' + ${safeId} + ', 1)'">+</button>
                     <span class="mi-numero-cantidad" th:id="'card-qty-val-' + ${safeId}" th:text="${qtyInCart}">1</span>
-                  </div>
+                    <button class="mi-btn-circulo" th:onclick="'updateCardQty(' + ${safeId} + ', 1)'">+</button>
+                </div>
 
                 <a href="javascript:void(0);" class="mi-btn-agregar" th:unless="${isAvailable}" style="background-color: #e0e0e0; cursor: not-allowed; color: #888 !important; box-shadow: none;">
                     Sin stock
