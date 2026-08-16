@@ -41,7 +41,11 @@ public class Product {
     private String extraImage1;
     private String extraImage2;
     private String extraImage3;
-    private String category;
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "product_categories", joinColumns = @JoinColumn(name = "product_id"))
+    @Column(name = "category")
+    private List<String> categories = new ArrayList<>();
 
     @Column(name = "activo")
     private Boolean activo = true;

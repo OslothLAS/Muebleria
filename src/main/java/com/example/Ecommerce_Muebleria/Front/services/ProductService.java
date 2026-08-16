@@ -213,19 +213,32 @@ public class ProductService {
     // --- PLAN B: FALLBACK POR CATEGORÍA (Filtrado en memoria) ---
     public List<Product> findProductsByCategory(String category, int limit) {
         try {
-            // 🚀 Asegurate de que findAllActiveProducts() sea el nombre real
-            // del método que ya usás para traer tu catálogo desde el 8080.
             List<Product> all = findAllActiveProducts();
 
             return all.stream()
-                    .filter(p -> p.getCategory() != null && p.getCategory().equalsIgnoreCase(category))
-                    .filter(p -> p.getActivo() == null || p.getActivo())
+                    // 🚀 Ahora verificamos si la lista contiene la categoría
+                    .filter(p -> p.getCategories() != null && p.getCategories().contains(category))
                     .limit(limit)
                     .toList();
 
         } catch (Exception e) {
-            System.err.println("⚠️ Error en filtrado por categoría: " + e.getMessage());
+            log.error("⚠️ Error en filtrado por categoría: " + e.getMessage());
             return new ArrayList<>();
         }
+    }
+
+    // 🚀 NUEVO: Método optimizado para buscar los recomendados en el detalle del producto
+    public List<Product> findRecommendedProducts(List<String> categories, Long currentProductId, int limit) {
+        // Busca coincidencias, limitadas a 4 (o el límite que pases)
+        List<Product> recomendados = productRepository.findDistinctByCategoriesInAndActivoTrue(
+                categories,
+                PageRequest.of(0, limit + 1) // Pedimos uno extra por si viene el producto actual
+        );
+
+        // Filtramos para que no se recomiende a sí mismo
+        return recomendados.stream()
+                .filter(p -> !p.getId().equals(currentProductId))
+                .limit(limit)
+                .toList();
     }
 }

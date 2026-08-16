@@ -193,10 +193,122 @@
 <!-- ========================================== -->
 <section id="new-arrivals">
 	<div class="container white-panel">
-		<div class="section-header"><h2>Nuevos Ingresos</h2></div>
+		<div class="section-header"><h2>Novedades</h2></div>
 		<div class="new-arrivals-content">
 			<div class="row">
 				<th:block th:each="product : ${productsNew}">
+					<div th:replace="~{fragments :: cardProducto(${product})}"></div>
+				</th:block>
+			</div>
+		</div>
+	</div>
+</section>
+
+<!-- ========================================== -->
+<!-- SECCIÓN NOVEDADES -->
+<!-- ========================================== -->
+<section id="new-arrivals" th:if="${productsNew != null and !productsNew.isEmpty()}">
+	<div class="container white-panel">
+		<div class="section-header"><h2>Novedades</h2></div>
+		<div class="new-arrivals-content">
+			<div class="row">
+				<th:block th:each="product : ${productsNew}">
+					<div th:replace="~{fragments :: cardProducto(${product})}"></div>
+				</th:block>
+			</div>
+		</div>
+	</div>
+</section>
+
+<!-- ========================================== -->
+<!-- SECCIÓN HABITACIÓN -->
+<!-- ========================================== -->
+<section id="habitacion" th:if="${productsHabitacion != null and !productsHabitacion.isEmpty()}">
+	<div class="container white-panel">
+		<div class="section-header"><h2>Habitación</h2></div>
+		<div class="new-arrivals-content">
+			<div class="row">
+				<th:block th:each="product : ${productsHabitacion}">
+					<div th:replace="~{fragments :: cardProducto(${product})}"></div>
+				</th:block>
+			</div>
+		</div>
+	</div>
+</section>
+
+<!-- ========================================== -->
+<!-- SECCIÓN BAÑO -->
+<!-- ========================================== -->
+<section id="bano" th:if="${productsBano != null and !productsBano.isEmpty()}">
+	<div class="container white-panel">
+		<div class="section-header"><h2>Baño</h2></div>
+		<div class="new-arrivals-content">
+			<div class="row">
+				<th:block th:each="product : ${productsBano}">
+					<div th:replace="~{fragments :: cardProducto(${product})}"></div>
+				</th:block>
+			</div>
+		</div>
+	</div>
+</section>
+
+<!-- ========================================== -->
+<!-- SECCIÓN BALCÓN -->
+<!-- ========================================== -->
+<section id="balcon" th:if="${productsBalcon != null and !productsBalcon.isEmpty()}">
+	<div class="container white-panel">
+		<div class="section-header"><h2>Balcón</h2></div>
+		<div class="new-arrivals-content">
+			<div class="row">
+				<th:block th:each="product : ${productsBalcon}">
+					<div th:replace="~{fragments :: cardProducto(${product})}"></div>
+				</th:block>
+			</div>
+		</div>
+	</div>
+</section>
+
+<!-- ========================================== -->
+<!-- SECCIÓN COMEDOR -->
+<!-- ========================================== -->
+<section id="comedor" th:if="${productsComedor != null and !productsComedor.isEmpty()}">
+	<div class="container white-panel">
+		<div class="section-header"><h2>Comedor</h2></div>
+		<div class="new-arrivals-content">
+			<div class="row">
+				<th:block th:each="product : ${productsComedor}">
+					<div th:replace="~{fragments :: cardProducto(${product})}"></div>
+				</th:block>
+			</div>
+		</div>
+	</div>
+</section>
+
+<!-- ========================================== -->
+<!-- SECCIÓN LIVING -->
+<!-- ========================================== -->
+<section id="living" th:if="${productsLiving != null and !productsLiving.isEmpty()}">
+	<div class="container white-panel">
+		<div class="section-header"><h2>Living</h2></div>
+		<div class="new-arrivals-content">
+			<div class="row">
+				<th:block th:each="product : ${productsLiving}">
+					<div th:replace="~{fragments :: cardProducto(${product})}"></div>
+				</th:block>
+			</div>
+		</div>
+	</div>
+</section>
+
+<!-- ========================================== -->
+<!-- SECCIÓN EXTERIOR -->
+<!-- ========================================== -->
+<section id="exterior" th:if="${productsExterior != null and !productsExterior.isEmpty()}">
+	<div class="container white-panel">
+		<div class="section-header"><h2>Exterior</h2></div>
+		<div class="new-arrivals-content">
+			<div class="row">
+				<th:block th:each="product : ${productsExterior}">
 					<div th:replace="~{fragments :: cardProducto(${product})}"></div>
 				</th:block>
 			</div>

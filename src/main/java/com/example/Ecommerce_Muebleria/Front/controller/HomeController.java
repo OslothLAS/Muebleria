@@ -1,5 +1,6 @@
 package com.example.Ecommerce_Muebleria.Front.controller;
 
+import com.example.Ecommerce_Muebleria.BackProducts.repositories.ProductRepository;
 import com.example.Ecommerce_Muebleria.BackProducts.services.GlobalConfigService;
 import com.example.Ecommerce_Muebleria.BackProducts.services.StoreConfigService;
 import com.example.Ecommerce_Muebleria.Front.services.OrderService;
@@ -30,6 +31,9 @@ public class HomeController {
 
     @Autowired
     private ProductService productService;
+
+    @Autowired
+    private ProductRepository productRepository;
 
     @Autowired
     private CartService cartService;
@@ -73,6 +77,13 @@ public class HomeController {
         model.addAttribute("bannerActive", storeConfig.isBannerActive());
         model.addAttribute("carouselActive", storeConfig.isCarouselActive());
         model.addAttribute("collectionsActive", storeConfig.isCollectionsActive());
+
+        model.addAttribute("productsHabitacion", productRepository.findByCategoriesContainingAndActivoTrue("Habitacion"));
+        model.addAttribute("productsBano", productRepository.findByCategoriesContainingAndActivoTrue("Baño"));
+        model.addAttribute("productsBalcon", productRepository.findByCategoriesContainingAndActivoTrue("Balcon"));
+        model.addAttribute("productsComedor", productRepository.findByCategoriesContainingAndActivoTrue("Comedor"));
+        model.addAttribute("productsLiving", productRepository.findByCategoriesContainingAndActivoTrue("Living"));
+        model.addAttribute("productsExterior", productRepository.findByCategoriesContainingAndActivoTrue("Exterior"));
 
         GlobalConfig config = configService.getConfig();
         model.addAttribute("superBannerUrl", config.getSuperBannerUrl());
@@ -160,7 +171,7 @@ public class HomeController {
             } else {
                 // PLAN B: Fallback a la misma categoría si nadie los compró juntos todavía
                 // Asumiendo que el producto tiene un atributo Category y armás el método en ProductService
-                recommendedProducts = productService.findProductsByCategory(product.getCategory(), 4);
+                recommendedProducts = productService.findRecommendedProducts(product.getCategories(), product.getId(), 4);
 
                 // Removemos el producto actual para que no se recomiende a sí mismo
                 recommendedProducts.removeIf(p -> p.getId().equals(id));

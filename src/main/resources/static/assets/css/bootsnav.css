@@ -1258,6 +1258,11 @@ body.on-side .wrap-sticky nav.navbar.bootsnav.sticked{
         padding-left: 0;
     }
 
+    .navbar-brand:focus {
+        outline: none;
+        box-shadow: 0 0 0 2px #333; /* Cambia #333 por el color de acento de tu marca */
+        border-radius: 4px;
+    }
     nav.bootsnav.navbar-full .navbar-toggle {
         display: inline-block;
         float: right;
