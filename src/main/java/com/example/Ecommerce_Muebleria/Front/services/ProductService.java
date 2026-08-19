@@ -13,6 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.*;
 
 import lombok.extern.slf4j.Slf4j;
@@ -41,6 +42,54 @@ public class ProductService {
         return productRepository.findByNewProductTrueAndActivoTrue();
     }
 
+    // 🚀 NUEVO: MÉTODO MAESTRO PARA FILTRAR EN LA TIENDA
+    public Map<String, Object> filterProductsPaginated(String keyword, List<String> categorias,
+                                                       BigDecimal minPrice, BigDecimal maxPrice,
+                                                       Boolean inStock, int page, String sortParam) {
+        try {
+            // 1. Traemos todos los productos activos
+            List<Product> allActive = findAllActiveProducts();
+
+            // 2. Aplicamos todos los filtros de una usando Streams
+            List<Product> filtrados = allActive.stream()
+                    .filter(p -> keyword == null || keyword.isEmpty() || p.getName().toLowerCase().contains(keyword.toLowerCase()))
+                    .filter(p -> minPrice == null || p.getPrice().compareTo(minPrice) >= 0)
+                    .filter(p -> maxPrice == null || p.getPrice().compareTo(maxPrice) <= 0)
+                    .filter(p -> inStock == null || !inStock || (p.getStock() != null && p.getStock() > 0))
+                    .filter(p -> categorias == null || categorias.isEmpty() ||
+                            (p.getCategories() != null && p.getCategories().stream().anyMatch(categorias::contains)))
+                    .collect(java.util.stream.Collectors.toList());
+
+            // 3. Aplicamos el ordenamiento
+            if ("price_asc".equals(sortParam)) {
+                filtrados.sort(Comparator.comparing(Product::getPrice));
+            } else if ("price_desc".equals(sortParam)) {
+                filtrados.sort(Comparator.comparing(Product::getPrice).reversed());
+            } else { // "new" por defecto
+                filtrados.sort((p1, p2) -> Long.compare(p2.getId(), p1.getId()));
+            }
+
+            // 4. Paginación manual (12 productos por página)
+            int pageSize = 12;
+            int totalItems = filtrados.size();
+            int totalPages = (int) Math.ceil((double) totalItems / pageSize);
+            int start = Math.min(page * pageSize, totalItems);
+            int end = Math.min((page + 1) * pageSize, totalItems);
+            List<Product> pageContent = filtrados.subList(start, end);
+
+            // 5. Devolvemos el mismo Map que espera tu HomeController
+            Map<String, Object> response = new HashMap<>();
+            response.put("products", pageContent);
+            response.put("currentPage", page);
+            response.put("totalPages", totalPages);
+            response.put("totalItems", totalItems);
+            return response;
+
+        } catch (Exception e) {
+            log.error("Error filtrando productos: {}", e.getMessage());
+            return fallbackPagination();
+        }
+    }
     // --- BÚSQUEDA DE RECOMENDACIONES (ALGORITMO) ---
     public List<Product> findProductsByIds(List<Long> ids) {
         List<Product> recommended = new ArrayList<>();

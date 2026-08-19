@@ -59,13 +59,8 @@
             transition: opacity 0.2s, transform 0.1s;
         }
 
-        .btn-reply-send:hover {
-            opacity: 0.7;
-        }
-
-        .btn-reply-send:active {
-            transform: scale(0.95);
-        }
+        .btn-reply-send:hover { opacity: 0.7; }
+        .btn-reply-send:active { transform: scale(0.95); }
 
         .admin-reply-container {
             background-color: #f8f9fa;
@@ -86,28 +81,37 @@
             border-radius: 4px; box-shadow: 0 1px 2px 0 rgba(0,0,0,.12); padding: 40px;
         }
 
+        /* 🚀 DISEÑO DE GALERÍA Y DETALLES */
         .col-gallery {
-            flex: 0 0 35%;
+            flex: 0 0 calc(58% - 10px);
+            max-width: calc(58% - 10px);
             display: flex;
-            padding-right: 10px;
-            position: -webkit-sticky; position: sticky; top: 20px;
+            flex-direction: row;
+            position: -webkit-sticky; position: sticky; top: 80px;
             z-index: 10;
         }
 
-        /* 🚀 ESTILOS ACTUALIZADOS PARA LAS MINIATURAS */
+        .col-details {
+            flex: 0 0 calc(42% - 10px);
+            max-width: calc(42% - 10px);
+            display: flex;
+            flex-direction: column;
+        }
+
         .thumbnail-list {
             display: flex;
-            flex-direction: row;
-            justify-content: center;
+            flex-direction: column;
+            justify-content: flex-start;
             gap: 12px;
-            margin-top: 15px;
-            width: 100%;
+            margin-top: 0;
+            margin-right: 15px;
+            width: 80px;
+            flex: 0 0 80px;
         }
 
         .thumbnail {
             width: 80px;
             height: 80px;
-            flex: 0 0 80px;
             border: 2px solid #ddd;
             border-radius: 8px;
             cursor: pointer;
@@ -119,15 +123,8 @@
             transition: border-color 0.2s ease;
         }
 
-        .thumbnail:hover {
-            border-color: #aaa;
-        }
-
-        .thumbnail.active {
-            border-color: #e69500;
-            border-width: 2px;
-        }
-
+        .thumbnail:hover { border-color: #aaa; }
+        .thumbnail.active { border-color: #1e2d42; border-width: 2px; }
         .thumbnail img { width: 100%; height: 100%; object-fit: contain; }
 
         .main-image-container {
@@ -135,7 +132,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            aspect-ratio: 1 / 2;
+            aspect-ratio: 1 / 1;
             background-color: #fff;
             border-radius: 8px;
             border: 1px solid #eee;
@@ -143,38 +140,34 @@
         }
         .main-image-container img { max-width: 100%; max-height: 100%; object-fit: contain; }
 
-        .col-middle-info {
-            flex: 1;
-            min-width: 320px;
-            padding: 0 15px;
+        /* 🚀 FIX PARA EL CORAZÓN DE FAVORITOS */
+        .fav-container-fix {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            z-index: 10;
         }
-
-        .col-right-buy-box {
-            flex: 0 0 25%;
-            min-width: 280px;
+        .fav-container-fix a {
+            font-size: 28px !important;
+            color: #1e2d42 !important;
+            background: transparent !important;
+            border: none !important;
+            box-shadow: none !important;
+            padding: 0 !important;
+            display: inline-block;
+            transition: 0.2s;
         }
+        .fav-container-fix a:hover { transform: scale(1.1); }
 
-        .seller-notes-card {
-            border: 1px solid #eee;
-            border-radius: 8px;
-            padding: 20px;
-            background-color: #fff;
-            margin-bottom: 20px;
-        }
-
-        .seller-content {
-            font-size: 15px;
-            line-height: 1.6;
-            color: #555;
-        }
-
-        .product-title { font-size: 22px; font-weight: 600; margin-bottom: 15px; line-height: 1.2; }
+        .seller-notes-card { border: 1px solid #eee; border-radius: 8px; padding: 20px; background-color: #fff; margin-bottom: 20px; }
+        .seller-content { font-size: 15px; line-height: 1.6; color: #555; }
+        .product-title { font-size: 26px; font-weight: 700; margin-bottom: 15px; line-height: 1.2; }
         .price-main { font-size: 36px; font-weight: 300; }
 
+        /* 🚀 BOTÓN DE AGREGAR AL CARRITO AZUL */
         .btn-action { width: 100%; border: none; border-radius: 6px; padding: 14px 0; font-weight: 600; margin-bottom: 10px; cursor: pointer; transition: 0.3s; }
-        .btn-buy-now { background-color: #e69500; color: #fff; border: 1px solid #e69500; }
-        .btn-buy-now:hover { background-color: #fff; color: #e69500; }
-        .btn-add-cart { background-color: #fff3e0; color: #e69500; border: 1px solid #e69500; }
+        .btn-add-cart { background-color: #1e2d42; color: #fff; border: 2px solid #1e2d42; }
+        .btn-add-cart:hover { background-color: #131c29; }
 
         .rec-carousel { display: flex; gap: 20px; overflow-x: auto; padding-bottom: 15px; scroll-behavior: smooth; }
         .rec-card { flex: 0 0 220px; border: 1px solid #eee; border-radius: 6px; background: #fff; cursor: pointer; transition: 0.2s; }
@@ -185,154 +178,41 @@
         .specs-table tr:nth-child(odd) { background-color: #f5f5f5; }
         .specs-table td { padding: 14px 20px; font-size: 15px; }
         .specs-table td.label { font-weight: 600; width: 40%; color: #000; }
-
         .bottom-section-title { font-size: 24px; font-weight: 400; margin-bottom: 25px; padding-bottom: 10px; border-bottom: 1px solid #eee; }
+        .questions-wrapper { margin-top: 50px; border-top: 2px solid #f0f0f0; padding-top: 40px; }
 
-        .questions-wrapper {
-            margin-top: 50px;
-            border-top: 2px solid #f0f0f0;
-            padding-top: 40px;
-        }
+        .section-title-custom { font-size: 28px; font-weight: 700; color: #222; margin-bottom: 30px; display: flex; align-items: center; gap: 12px; }
+        .section-title-custom::after { content: ''; flex-grow: 1; height: 1px; background: #eee; }
 
-        .section-title-custom {
-            font-size: 28px;
-            font-weight: 700;
-            color: #222;
-            margin-bottom: 30px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .section-title-custom::after {
-            content: '';
-            flex-grow: 1;
-            height: 1px;
-            background: #eee;
-        }
-
+        /* PREGUNTAS */
         .ask-box-container {
-            background: #fff;
-            border: 2px solid #e69500;
-            border-radius: 15px;
-            padding: 25px;
-            margin-bottom: 50px;
-            box-shadow: 0 4px 15px rgba(230, 149, 0, 0.05);
+            background: #fff; border: 2px solid #1e2d42; border-radius: 15px; padding: 25px;
+            margin-bottom: 50px; box-shadow: 0 4px 15px rgba(30, 45, 66, 0.05);
+        }
+        .ask-box-container textarea { width: 100%; border: 1px solid #ddd; border-radius: 10px; padding: 15px; font-size: 16px; resize: none; transition: 0.3s; margin-bottom: 15px; }
+        .ask-box-container textarea:focus { border-color: #1e2d42; box-shadow: 0 0 0 3px rgba(30, 45, 66, 0.1); outline: none; }
+
+        .question-card { background: #fff; padding: 20px; border-radius: 12px; margin-bottom: 25px; transition: transform 0.2s; border: 1px solid #f0f0f0; }
+        .question-card:hover { border-color: #1e2d42; }
+        .q-user-info { font-size: 14px; color: #777; margin-bottom: 8px; }
+        .q-user-name { color: #1e2d42; font-weight: 700; font-size: 15px; }
+        .q-main-text { font-size: 18px; font-weight: 500; color: #111; line-height: 1.5; display: block; margin-bottom: 15px; }
+
+        .shop-answer-box { background: #f4f7fa; border-left: 4px solid #1e2d42; padding: 15px 20px; border-radius: 0 10px 10px 0; margin-top: 10px; }
+        .shop-answer-text { font-size: 16px; color: #444; }
+        .shop-label { font-weight: 700; color: #333; font-size: 13px; text-transform: uppercase; display: block; margin-bottom: 5px; }
+
+        .admin-reply-pill { background: #fafafa; border: 1.5px solid #eee; border-radius: 30px; padding: 8px 20px; width: 100%; font-size: 15px; transition: 0.3s; }
+        .admin-reply-pill:focus { border-color: #1e2d42; background: #fff; outline: none; }
+        .top-section { display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-start; position: relative; }
+
+        @media (max-width: 992px) {
+            .col-gallery, .col-details { flex: 1 1 100% !important; max-width: 100% !important; position: static; }
+            .col-gallery { flex-direction: column-reverse; padding-right: 0; }
+            .thumbnail-list { flex-direction: row; margin-right: 0; margin-top: 15px; width: 100%; justify-content: center; }
         }
 
-        .ask-box-container textarea {
-            width: 100%;
-            border: 1px solid #ddd;
-            border-radius: 10px;
-            padding: 15px;
-            font-size: 16px;
-            resize: none;
-            transition: 0.3s;
-            margin-bottom: 15px;
-        }
-
-        .ask-box-container textarea:focus {
-            border-color: #e69500;
-            box-shadow: 0 0 0 3px rgba(230, 149, 0, 0.1);
-            outline: none;
-        }
-
-        .question-card {
-            background: #fff;
-            padding: 20px;
-            border-radius: 12px;
-            margin-bottom: 25px;
-            transition: transform 0.2s;
-            border: 1px solid #f0f0f0;
-        }
-
-        .question-card:hover {
-            border-color: #e69500;
-        }
-
-        .q-user-info {
-            font-size: 14px;
-            color: #777;
-            margin-bottom: 8px;
-        }
-
-        .q-user-name {
-            color: #e69500;
-            font-weight: 700;
-            font-size: 15px;
-        }
-
-        .q-main-text {
-            font-size: 18px;
-            font-weight: 500;
-            color: #111;
-            line-height: 1.5;
-            display: block;
-            margin-bottom: 15px;
-        }
-
-        .shop-answer-box {
-            background: #fffaf2;
-            border-left: 4px solid #e69500;
-            padding: 15px 20px;
-            border-radius: 0 10px 10px 0;
-            margin-top: 10px;
-        }
-
-        .shop-answer-text {
-            font-size: 16px;
-            color: #444;
-        }
-
-        .shop-label {
-            font-weight: 700;
-            color: #333;
-            font-size: 13px;
-            text-transform: uppercase;
-            display: block;
-            margin-bottom: 5px;
-        }
-
-        .admin-reply-pill {
-            background: #fafafa;
-            border: 1.5px solid #eee;
-            border-radius: 30px;
-            padding: 8px 20px;
-            width: 100%;
-            font-size: 15px;
-            transition: 0.3s;
-        }
-
-        .admin-reply-pill:focus {
-            border-color: #e69500;
-            background: #fff;
-            outline: none;
-        }
-
-        .top-section {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 20px;
-            align-items: flex-start;
-            position: relative;
-        }
-
-        @media (max-width: 1100px) {
-            .col-gallery, .col-middle-info, .col-right-buy-box {
-                flex: 1 1 100%;
-                position: static;
-            }
-        }
-
-        .col-card-eden {
-            background-color: #f8f9fa !important;
-            border: 1px solid #e0e0e0 !important;
-            border-radius: 12px !important;
-            padding: 25px !important;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05) !important;
-            display: flex;
-            flex-direction: column;
-        }
+        .col-card-eden { background-color: #f8f9fa !important; border: 1px solid #e0e0e0 !important; border-radius: 12px !important; padding: 25px !important; box-shadow: 0 2px 10px rgba(0,0,0,0.05) !important; }
     </style>
 </head>
 
@@ -340,17 +220,19 @@
 
 <div th:replace="~{fragments :: header-principal}"></div>
 
-<div class="card-container top-section" style= "top: 20px;">
+<!-- 🚀 BOTÓN VOLVER -->
+<div style="max-width: 1184px; margin: 25px auto 0 auto; padding: 0 15px;">
+    <a href="javascript:history.back()" style="color: #1e2d42; font-size: 15px; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; transition: opacity 0.2s;" onmouseover="this.style.opacity='0.7'" onmouseout="this.style.opacity='1'">
+        <i class="fa fa-arrow-left"></i> Volver a la página anterior
+    </a>
+</div>
 
-    <div class="col-gallery col-card-eden" style="position: sticky; top: 80px; display: flex; flex-direction: column;">
+<div class="card-container top-section" style= "top: 15px;">
 
-        <div class="main-image-container" style="position: relative; aspect-ratio: 1/1; display: flex; align-items: center; justify-content: center; background: #fff; border-radius: 8px; overflow: hidden;">
-        <span th:if="${product.newProduct != null and product.newProduct}"
-              style="position: absolute; top: 15px; left: 15px; background: #e69500; color: white; padding: 6px 12px; font-weight: 700; border-radius: 4px; z-index: 10;">NUEVO</span>
-            <img id="mainImage" th:src="@{${product.imageUrl}}" th:alt="${product.name}" style="max-width: 100%; max-height: 100%; object-fit: contain;">
-        </div>
+    <!-- COLUMNA 1: GALERÍA DE IMÁGENES ANCHA -->
+    <div class="col-gallery col-card-eden">
 
-        <!-- 🚀 HTML ACTUALIZADO PARA LAS MINIATURAS -->
+        <!-- Miniaturas Verticales -->
         <div class="thumbnail-list">
             <div class="thumbnail active" onclick="changeImage(this)">
                 <img th:src="@{${product.imageUrl}}">
@@ -363,11 +245,32 @@
             </div>
         </div>
 
+        <!-- Imagen Principal -->
+        <div class="main-image-container" style="position: relative;">
+            <span th:if="${product.newProduct != null and product.newProduct}"
+                  style="position: absolute; top: 15px; left: 15px; background: #1e2d42; color: white; padding: 6px 12px; font-weight: 700; border-radius: 4px; z-index: 10;">NUEVO</span>
+
+            <!-- Corazón de Favorito FIJO -->
+            <div class="fav-container-fix">
+                <a href="javascript:void(0);"
+                   th:id="'btn-fav-' + ${product.id}"
+                   th:onclick="'toggleFavorite(' + ${product.id} + ')'"
+                   title="Añadir a favoritos">
+                    <i class="fa" th:classappend="${isFavorite} ? 'fa-heart' : 'fa-heart-o'"></i>
+                </a>
+            </div>
+
+            <img id="mainImage" th:src="@{${product.imageUrl}}" th:alt="${product.name}">
+        </div>
+
     </div>
 
-    <div class="col-middle-info col-card-eden" style="position: sticky; top: 80px; display: flex; flex-direction: column;" >
+    <!-- COLUMNA 2: DETALLES, PRECIO Y COMPRA -->
+    <div class="col-details col-card-eden">
+
+        <!-- ESTRELLAS Y VENDIDOS -->
         <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px; font-size: 13px;">
-            <div style="color: #e69500;">
+            <div style="color: #1e2d42;">
                 <i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star-half-o"></i>
                 <span style="color: #666; margin-left: 5px;">(12 opiniones)</span>
             </div>
@@ -375,8 +278,10 @@
             <span style="color: #666;">+50 vendidos</span>
         </div>
 
-        <h1 class="product-title" th:text="${product.name}" style="font-size: 26px; font-weight: 700; margin-bottom: 15px;"></h1>
+        <!-- TÍTULO -->
+        <h1 class="product-title" th:text="${product.name}"></h1>
 
+        <!-- PRECIO -->
         <div style="margin-bottom: 20px;">
             <div class="price-main" th:text="${'$ ' + #numbers.formatDecimal(product.price, 1, 'POINT', 2, 'COMMA')}"></div>
             <div style="font-size: 14px; color: #999; margin-top: 4px;">
@@ -385,7 +290,8 @@
             </div>
         </div>
 
-        <div style="margin-bottom: 25px; padding: 15px; background: #f8f9fa; border-radius: 8px;">
+        <!-- CUOTAS -->
+        <div style="margin-bottom: 25px; padding: 15px; background: #f8f9fa; border-radius: 8px; border: 1px solid #eee;">
             <div style="color: #00a650; font-weight: 600; font-size: 16px;">
                 <i class="fa fa-credit-card"></i>
                 Mismo precio en <span th:text="${product.installments ?: 6}"></span> cuotas sin interés
@@ -395,8 +301,57 @@
             </a>
         </div>
 
-        <div class="seller-notes-card" style="border: none; padding: 0; background: none;">
-            <h3 style="font-size: 14px; font-weight: 700; text-transform: uppercase; color: #333; margin-bottom: 10px;"></h3>
+        <!-- LÓGICA DE BOTONES DE COMPRA Y STOCK -->
+        <div style="margin-bottom: 25px; padding-bottom: 25px; border-bottom: 1px solid #eee;">
+
+            <th:block th:if="${!product.activo}">
+                <div style="background-color: #f8d7da; border: 1px solid #f5c6cb; border-radius: 8px; padding: 15px; margin-bottom: 15px; text-align: center;">
+                    <i class="fa fa-times-circle" style="color: #721c24; font-size: 24px; margin-bottom: 10px; display: block;"></i>
+                    <span style="color: #721c24; font-weight: 700; font-size: 16px;">Este producto no está disponible</span>
+                </div>
+                <button type="button" class="btn-action btn-add-cart" style="background-color: #eee; color: #999; border: 1px solid #ccc; cursor: not-allowed;" disabled>Agregar al carrito</button>
+            </th:block>
+
+            <th:block th:if="${product.activo and (product.stock == null or product.stock <= 0)}">
+                <div style="background-color: #fff3cd; border: 1px solid #ffeeba; border-radius: 8px; padding: 15px; margin-bottom: 15px; text-align: center;">
+                    <i class="fa fa-tools" style="color: #856404; font-size: 24px; margin-bottom: 10px; display: block;"></i>
+                    <span style="color: #856404; font-weight: 700; font-size: 16px;">Pedir por encargo</span>
+                    <p style="color: #856404; font-size: 13px; margin-top: 5px; margin-bottom: 0;">Fabricamos este modelo a medida.</p>
+                </div>
+                <a href="#questions-section" class="btn-action btn-add-cart" style="display: block; text-align: center; text-decoration: none; box-sizing: border-box;">
+                    Consultar a la tienda
+                </a>
+            </th:block>
+
+            <th:block th:if="${product.activo and product.stock != null and product.stock > 0}">
+                <div class="quantity-selector" style="margin-bottom: 20px;">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <span style="font-size: 15px; color: #333; font-weight: 500;">Cantidad:</span>
+                        <div style="display: flex; align-items: center; border: 1px solid #ccc; border-radius: 6px; padding: 2px; background: #fff;">
+                            <button type="button" onclick="updateQty(-1)" style="padding: 4px 12px; border:none; background:none; color:#1e2d42; font-weight: bold; cursor:pointer; font-size: 18px;">-</button>
+
+                            <input type="text" name="qty" id="quantityInput" value="1"
+                                   th:data-max="${product.stock}"
+                                   readonly style="width:40px; text-align:center; border:none; font-weight:600; font-size: 16px;">
+
+                            <button type="button" onclick="updateQty(1)" style="padding: 4px 12px; border:none; background:none; color:#1e2d42; font-weight: bold; cursor:pointer; font-size: 18px;">+</button>
+                        </div>
+                        <span style="font-size: 14px; color: #00a650; font-weight: 500;">
+                            <span th:text="'(+' + (${product.stock} > 10 ? '10' : ${product.stock}) + ' disponibles)'"></span>
+                        </span>
+                    </div>
+                </div>
+
+                <button type="button" class="btn-action btn-add-cart"
+                        th:onclick="'agregarConAjax(' + ${product.id} + ', document.getElementById(\'quantityInput\').value)'">
+                    Agregar al carrito
+                </button>
+            </th:block>
+        </div>
+
+        <!-- NOTAS DEL VENDEDOR -->
+        <div class="seller-notes-card" style="border: none; padding: 0; background: none; margin-bottom: 0;">
+            <h3 style="font-size: 14px; font-weight: 700; text-transform: uppercase; color: #333; margin-bottom: 10px;">Descripción del Vendedor</h3>
             <div class="seller-content">
                 <div id="notes-display" th:utext="${product.sellerNotes ?: 'Bienvenido a El Edén.'}"></div>
 
@@ -404,74 +359,18 @@
                     <form th:action="@{/api/products/{id}/update-notes(id=${product.id})}" method="post">
                         <textarea id="summernote" name="sellerNotes" th:text="${product.sellerNotes}"></textarea>
                         <div style="margin-top: 10px; text-align: right;">
-                            <button type="button" class="btn-action" onclick="toggleEdit(false)" style="width:auto; padding:5px 15px; background:#ccc; margin:0;">Cancelar</button>
-                            <button type="submit" class="btn-action" style="width:auto; padding:5px 15px; background:#e69500; color:#fff; margin:0;">Guardar</button>
+                            <button type="button" class="btn-action" onclick="toggleEdit(false)" style="width:auto; padding:5px 15px; background:#ccc; margin:0; border:none;">Cancelar</button>
+                            <button type="submit" class="btn-action" style="width:auto; padding:5px 15px; background:#1e2d42; color:#fff; margin:0; border:none;">Guardar</button>
                         </div>
                     </form>
                 </div>
 
                 <button sec:authorize="hasRole('ADMIN')" id="btn-edit-trigger" onclick="toggleEdit(true)"
-                        style="background: none; border: 1px solid #e69500; color: #e69500; padding: 4px 10px; border-radius: 4px; margin-top: 10px; cursor: pointer; font-size: 12px; font-weight: 600;">
+                        style="background: none; border: 1px solid #1e2d42; color: #1e2d42; padding: 4px 10px; border-radius: 4px; margin-top: 10px; cursor: pointer; font-size: 12px; font-weight: 600;">
                     <i class="fa fa-pencil"></i> EDITAR NOTAS
                 </button>
             </div>
         </div>
-    </div>
-
-    <div class="col-right-wrapper col-card-eden" style="position: sticky; top: 80px;">
-
-        <!-- 🚀 CONDICIÓN 1: PRODUCTO NO ACTIVO -->
-        <th:block th:if="${!product.activo}">
-            <div style="background-color: #f8d7da; border: 1px solid #f5c6cb; border-radius: 8px; padding: 15px; margin-bottom: 20px; text-align: center;">
-                <i class="fa fa-times-circle" style="color: #721c24; font-size: 24px; margin-bottom: 10px; display: block;"></i>
-                <span style="color: #721c24; font-weight: 700; font-size: 16px;">Este producto no está disponible</span>
-            </div>
-
-            <button type="button" class="btn-action" style="background-color: #ccc; color: #666; cursor: not-allowed;" disabled>Comprar ahora</button>
-            <button type="button" class="btn-action" style="background-color: #eee; color: #999; border: 1px solid #ccc; cursor: not-allowed;" disabled>Agregar al carrito</button>
-        </th:block>
-
-        <!-- 🚀 CONDICIÓN 2: ACTIVO PERO SIN STOCK (Pedido por encargo para la mueblería) -->
-        <th:block th:if="${product.activo and (product.stock == null or product.stock <= 0)}">
-            <div style="background-color: #fff3cd; border: 1px solid #ffeeba; border-radius: 8px; padding: 15px; margin-bottom: 20px; text-align: center;">
-                <i class="fa fa-tools" style="color: #856404; font-size: 24px; margin-bottom: 10px; display: block;"></i>
-                <span style="color: #856404; font-weight: 700; font-size: 16px;">Pedir por encargo</span>
-                <p style="color: #856404; font-size: 13px; margin-top: 5px; margin-bottom: 0;">Fabricamos este modelo a medida.</p>
-            </div>
-
-            <a href="#questions-section" class="btn-action btn-buy-now" style="display: block; text-align: center; text-decoration: none; box-sizing: border-box;">
-                Consultar tienda
-            </a>
-        </th:block>
-
-        <!-- 🚀 CONDICIÓN 3: ACTIVO Y CON STOCK (Compra normal habilitada) -->
-        <th:block th:if="${product.activo and product.stock != null and product.stock > 0}">
-            <form th:action="@{/cart/quick-buy/{id}(id=${product.id})}" method="post">
-
-                <div class="quantity-selector" style="margin-bottom: 20px;">
-                    <div style="display: flex; align-items: center; gap: 10px;">
-                        <span style="font-size: 14px; color: #333;">Cantidad:</span>
-                        <div style="display: flex; align-items: center; border: 1px solid #ddd; border-radius: 4px; padding: 2px;">
-                            <button type="button" onclick="updateQty(-1)" style="padding: 2px 10px; border:none; background:none; color:#3483fa; font-weight: bold; cursor:pointer;">-</button>
-
-                            <input type="text" name="qty" id="quantityInput" value="1"
-                                   th:data-max="${product.stock}"
-                                   readonly style="width:30px; text-align:center; border:none; font-weight:600; font-size: 14px;">
-
-                            <button type="button" onclick="updateQty(1)" style="padding: 2px 10px; border:none; background:none; color:#3483fa; font-weight: bold; cursor:pointer;">+</button>
-                        </div>
-                        <span style="font-size: 14px; color: #333;">1 unidad</span>
-                    </div>
-                    <div style="font-size: 13px; color: #999; margin-top: 8px;">
-                        <span th:text="'(+' + (${product.stock} > 10 ? '10' : ${product.stock}) + ' disponibles)'"></span>
-                    </div>
-                </div>
-
-                <button type="submit" class="btn-action btn-buy-now">Comprar ahora</button>
-                <button type="button" class="btn-action btn-add-cart" th:onclick="'addToCart(' + ${product.id} + ')'">Agregar al carrito</button>
-
-            </form>
-        </th:block>
 
     </div>
 </div>
@@ -511,7 +410,7 @@
     <div style="display: flex; justify-content: space-between; align-items: center;" class="bottom-section-title">
         <h2 style="margin: 0; border: none;">Características técnicas</h2>
         <button sec:authorize="hasRole('ADMIN')" id="btn-specs-trigger" onclick="toggleSpecsEdit(true)"
-                style="background: none; border: 2px solid #e69500; color: #e69500; padding: 10px 24px; border-radius: 5px; cursor: pointer; font-size: 20px;">
+                style="background: none; border: 2px solid #1e2d42; color: #1e2d42; padding: 10px 24px; border-radius: 5px; cursor: pointer; font-size: 20px;">
             <i class="fa fa-pencil"></i> Editar Ficha
         </button>
     </div>
@@ -567,7 +466,7 @@
             </table>
             <div style="margin-top: 20px; text-align: right;">
                 <button type="button" onclick="toggleSpecsEdit(false)" style="background:#ccc; border:none; padding:8px 20px; border-radius:5px; cursor:pointer;">Cancelar</button>
-                <button type="submit" style="background:#e69500; border:none; color:white; padding:8px 20px; border-radius:5px; cursor:pointer; font-weight:bold;">Guardar Cambios</button>
+                <button type="submit" style="background:#1e2d42; border:none; color:white; padding:8px 20px; border-radius:5px; cursor:pointer; font-weight:bold;">Guardar Cambios</button>
             </div>
         </form>
     </div>
@@ -582,7 +481,7 @@
                 <textarea name="text" required placeholder="Escribí tu duda acá..."></textarea>
                 <div style="text-align: right;">
                     <button type="submit" class="btn-action"
-                            style="width: auto; padding: 12px 40px; background: #e69500; color: white; margin: 0; border-radius: 30px;">
+                            style="width: auto; padding: 12px 40px; background: #1e2d42; border: none; color: white; margin: 0; border-radius: 30px;">
                         Enviar pregunta
                     </button>
                 </div>
@@ -623,7 +522,7 @@
                         <form th:action="@{/api/products/question/{id}/answer(id=${q.id})}" method="post" style="display: flex; gap: 10px;">
                             <input type="hidden" name="productId" th:value="${product.id}">
                             <input type="text" name="answerText" required class="admin-reply-pill" placeholder="Responder como administrador...">
-                            <button type="submit" style="background: none; border: none; color: #e69500; font-weight: bold; cursor: pointer; min-width: 80px;">
+                            <button type="submit" style="background: none; border: none; color: #1e2d42; font-weight: bold; cursor: pointer; min-width: 80px;">
                                 RESPONDER
                             </button>
                         </form>
@@ -653,6 +552,7 @@
 <script th:src="@{/assets/js/jquery.js}"></script>
 <script th:src="@{/assets/js/bootstrap.min.js}"></script>
 <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.js"></script>
+<script th:src="@{/assets/js/cart-logic.js}"></script>
 
 <script th:inline="javascript">
     function toggleEdit(show) {
@@ -689,7 +589,6 @@
         }
     }
 
-
     function toggleSpecsEdit(show) {
         const display = document.getElementById('specs-display');
         const editContainer = document.getElementById('specs-edit-container');
@@ -721,10 +620,6 @@
         if (val >= 1 && val <= maxStock) input.value = val;
     }
 
-    function addToCart(id) {
-        const qty = document.getElementById('quantityInput').value;
-        window.location.href = '/cart/add/' + id + '?qty=' + qty;
-    }
 </script>
 </body>
 </html>

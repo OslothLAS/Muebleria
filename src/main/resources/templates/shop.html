@@ -10,13 +10,18 @@
     <!-- 1. Heredamos los estilos globales del header/footer -->
     <th:block th:replace="~{fragments :: head-css}"></th:block>
 
-    <!-- 2. Heredamos EXCLUSIVAMENTE los estilos de las tarjetas (corazón arriba, botones responsivos, etc) -->
+    <!-- 2. Heredamos EXCLUSIVAMENTE los estilos de las tarjetas -->
     <th:block th:replace="~{fragments :: css-tarjetas}"></th:block>
 
     <style>
+        /* 🚀 ANTÍDOTO PARA PERMITIR EL EFECTO STICKY EN BOOTSTRAP VIEJO */
+        body, html, section#all-products, .container, .row {
+            overflow: visible !important;
+        }
+
         /* --- ESTILOS EXCLUSIVOS DE LA TIENDA (SHOP) --- */
         body {
-            background-color: #818181 !important; /* Mantenemos tu fondo gris oscuro exclusivo para la tienda */
+            background-color: #818181 !important;
             font-family: 'Roboto', sans-serif;
             color: #333;
         }
@@ -41,6 +46,99 @@
             visibility: hidden; opacity: 0; transition: 0.3s;
         }
         .cart-overlay.active { visibility: visible; opacity: 1; }
+
+        /* --- ESTILOS PARA LA BARRA DE FILTROS --- */
+        .filters-sidebar {
+            background: #fff;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            margin-bottom: 30px;
+        }
+        .filter-group { margin-bottom: 25px; }
+        .filter-group:last-child { margin-bottom: 0; }
+        .filter-title {
+            font-size: 15px; font-weight: 700; color: #1e2d42;
+            margin-bottom: 15px; text-transform: uppercase; letter-spacing: 0.5px;
+            border-bottom: 2px solid #f0f0f0; padding-bottom: 8px;
+        }
+        .filter-checkbox-label {
+            display: flex; align-items: center; gap: 10px;
+            font-size: 14px; color: #555; cursor: pointer;
+            margin-bottom: 10px; font-weight: 400; transition: 0.2s;
+        }
+        .filter-checkbox-label:hover { color: #1e2d42; }
+        .filter-checkbox-label input[type="checkbox"] {
+            width: 16px; height: 16px; cursor: pointer; margin: 0;
+        }
+        .price-inputs { display: flex; gap: 10px; align-items: center; }
+        .price-inputs input {
+            width: 100%; padding: 8px; border: 1px solid #ddd;
+            border-radius: 4px; font-size: 13px; outline: none;
+        }
+        .price-inputs input:focus { border-color: #1e2d42; }
+        .btn-apply-filters {
+            background-color: #1e2d42; color: #fff; width: 100%;
+            padding: 10px; border: none; border-radius: 4px;
+            font-weight: 600; font-size: 14px; margin-top: 15px; transition: 0.2s;
+        }
+        .btn-apply-filters:hover { background-color: #131c29; }
+
+        /* ========================================== */
+        /* LA MAGIA DEFINITIVA DEL PANEL STICKY       */
+        /* ========================================== */
+
+        /* 1. Forzamos a la fila a ser Flexbox sin que se rompa el diseño */
+        .shop-flex-container {
+            display: flex !important;
+            flex-wrap: wrap;
+        }
+        .shop-flex-container::before,
+        .shop-flex-container::after {
+            display: none !important; /* Mata el bug de Bootstrap con Flexbox */
+        }
+
+        @media (min-width: 992px) {
+            .btn-mobile-filters { display: none; }
+
+            /* 2. El div que envuelve (la jaula) debe estirarse hasta abajo */
+            .altura-completa {
+                display: block !important;
+                height: 100% !important;
+            }
+
+            /* 3. Ahora sí, el panel se desliza por dentro de la caja estirada */
+            .filters-sidebar {
+                position: -webkit-sticky !important;
+                position: sticky !important;
+                top: 41px !important; /* Distancia del navbar */
+                z-index: 100;
+                max-height: calc(100vh - 40px);
+                overflow-y: auto;
+            }
+
+            .filters-sidebar::-webkit-scrollbar { width: 5px; }
+            .filters-sidebar::-webkit-scrollbar-thumb { background: #ccc; border-radius: 10px; }
+        }
+
+        @media (max-width: 991px) {
+            .filters-sidebar { padding: 15px; }
+            .btn-mobile-filters {
+                display: block; width: 100%; background: #fff; border: 1px solid #ddd;
+                padding: 12px 15px; border-radius: 6px; font-weight: bold;
+                text-align: left; margin-bottom: 15px; color: #1e2d42; font-size: 15px;
+            }
+            .btn-mobile-filters i { float: right; margin-top: 3px; }
+        }
+
+        /* ========================================== */
+        /* 🚀 ENSANCHAR TARJETAS EN CELULAR           */
+        /* ========================================== */
+        @media (max-width: 767px) {
+            .col-md-9 .white-panel { padding: 10px !important; }
+            .new-arrivals-content .row { margin-left: -5px !important; margin-right: -5px !important; }
+            .product-card { padding-left: 5px !important; padding-right: 5px !important; }
+        }
     </style>
 </head>
 
@@ -48,131 +146,220 @@
 
 <div th:replace="~{fragments :: header-principal}"></div>
 
+<!-- 🚀 BOTÓN VOLVER AL INICIO -->
+<div class="container" style="padding-top: 25px; padding-bottom: 5px;">
+    <a href="/" style="color: #1e2d42; font-size: 15px; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; transition: opacity 0.2s;" onmouseover="this.style.opacity='0.7'" onmouseout="this.style.opacity='1'">
+        <i class="fa fa-arrow-left"></i> Volver al inicio
+    </a>
+</div>
+
 <section id="all-products">
-    <div class="container white-panel">
+    <div class="container" style="padding-top: 10px;">
 
-        <!-- Selector de ordenamiento -->
-        <div class="row" style="margin-bottom: 20px;">
-            <div class="col-md-12">
-                <div style="display: flex; justify-content: flex-end; align-items: center;">
-                    <label style="margin-right: 10px; color: #666; font-weight: 400;">Ordenar por:</label>
-                    <form action="/products" method="get" style="margin: 0;">
-                        <input type="hidden" name="keyword" th:value="${keyword}">
-                        <select name="sort" class="form-control" onchange="this.form.submit()"
-                                style="width: 180px; border-radius: 4px; border: 1px solid #ddd; color: #555;">
-                            <option value="new" th:selected="${sort == 'new'}">Más Nuevos</option>
-                            <option value="price_asc" th:selected="${sort == 'price_asc'}">Menor precio</option>
-                            <option value="price_desc" th:selected="${sort == 'price_desc'}">Mayor precio</option>
-                        </select>
-                    </form>
-                </div>
-            </div>
-        </div>
+        <!-- 🚀 FILA CON FLEXBOX PARA QUE LAS COLUMNAS MIDAN LO MISMO -->
+        <div class="row shop-flex-container">
 
-        <!-- Contenedor dinámico de HTMX -->
-        <div id="contenedor-dinamico" th:fragment="lista-productos">
-            <div class="htmx-indicator">
-                <div style="display: flex; align-items: center; gap: 10px;">
-                    <div class="spinner-border text-warning" role="status" style="width: 2rem; height: 2rem; color: #e69500; border-width: 3px;"></div>
-                    <span style="color: #666; font-weight: 500; font-size: 14px;">Cargando más...</span>
-                </div>
-            </div>
+            <!-- ========================================== -->
+            <!-- 🚀 COLUMNA IZQUIERDA: FILTROS (3 Columnas) -->
+            <!-- ========================================== -->
+            <div class="col-md-3 col-sm-12">
 
-            <div class="new-arrivals-content">
-                <div class="row">
-                    <!-- Mensaje sin productos -->
-                    <div class="col-md-12 text-center" th:if="${allProducts.empty}">
-                        <h3 style="color: #999; margin-top: 50px; font-weight: 300;">No se encontraron productos.</h3>
+                <!-- Botón Mobile para abrir/cerrar filtros -->
+                <button class="btn-mobile-filters" data-toggle="collapse" data-target="#filter-collapse">
+                    <i class="fa fa-sliders"></i> Mostrar Filtros
+                </button>
+
+                <!-- 🚀 CONTENEDOR ESTIRADO AL 100% PARA QUE FUNCIONE EL STICKY -->
+                <div id="filter-collapse" class="collapse dont-collapse-sm altura-completa">
+
+                    <div class="filters-sidebar">
+                        <!-- FORMULARIO MAESTRO DE FILTROS -->
+                        <form action="/products" method="get" id="filter-form">
+                            <!-- Conservamos la búsqueda si venía del navbar -->
+                            <input type="hidden" name="keyword" th:value="${keyword}">
+
+                            <!-- 1. ORDENAR POR -->
+                            <div class="filter-group">
+                                <h4 class="filter-title">Ordenar por</h4>
+                                <select name="sort" class="form-control" onchange="this.form.submit()" style="border-radius: 4px; border: 1px solid #ddd; color: #555; box-shadow: none;">
+                                    <option value="new" th:selected="${sort == 'new'}">Más Nuevos</option>
+                                    <option value="price_asc" th:selected="${sort == 'price_asc'}">Menor precio</option>
+                                    <option value="price_desc" th:selected="${sort == 'price_desc'}">Mayor precio</option>
+                                </select>
+                            </div>
+
+                            <!-- 2. CATEGORÍAS -->
+                            <div class="filter-group">
+                                <h4 class="filter-title">Categorías</h4>
+                                <label class="filter-checkbox-label">
+                                    <input type="checkbox" name="categorias" value="Habitacion" onchange="this.form.submit()"
+                                           th:checked="${#lists.contains(categoriasMarcadas, 'Habitacion')}"> Habitación
+                                </label>
+                                <label class="filter-checkbox-label">
+                                    <input type="checkbox" name="categorias" value="Baño" onchange="this.form.submit()"
+                                           th:checked="${#lists.contains(categoriasMarcadas, 'Baño')}"> Baño
+                                </label>
+                                <label class="filter-checkbox-label">
+                                    <input type="checkbox" name="categorias" value="Balcon" onchange="this.form.submit()"
+                                           th:checked="${#lists.contains(categoriasMarcadas, 'Balcon')}"> Balcón
+                                </label>
+                                <label class="filter-checkbox-label">
+                                    <input type="checkbox" name="categorias" value="Comedor" onchange="this.form.submit()"
+                                           th:checked="${#lists.contains(categoriasMarcadas, 'Comedor')}"> Comedor
+                                </label>
+                                <label class="filter-checkbox-label">
+                                    <input type="checkbox" name="categorias" value="Living" onchange="this.form.submit()"
+                                           th:checked="${#lists.contains(categoriasMarcadas, 'Living')}"> Living
+                                </label>
+                                <label class="filter-checkbox-label">
+                                    <input type="checkbox" name="categorias" value="Exterior" onchange="this.form.submit()"
+                                           th:checked="${#lists.contains(categoriasMarcadas, 'Exterior')}"> Exterior
+                                </label>
+                            </div>
+
+                            <!-- 3. RANGO DE PRECIO -->
+                            <div class="filter-group">
+                                <h4 class="filter-title">Precio</h4>
+                                <div class="price-inputs">
+                                    <input type="number" name="minPrice" placeholder="Mín" min="0" th:value="${minPrice}">
+                                    <span style="color: #999;">-</span>
+                                    <input type="number" name="maxPrice" placeholder="Máx" min="0" th:value="${maxPrice}">
+                                </div>
+                            </div>
+
+                            <!-- 4. DISPONIBILIDAD -->
+                            <div class="filter-group">
+                                <h4 class="filter-title">Disponibilidad</h4>
+                                <label class="filter-checkbox-label">
+                                    <input type="checkbox" name="inStock" value="true" onchange="this.form.submit()"
+                                           th:checked="${inStock}"> Con Stock Inmediato
+                                </label>
+                            </div>
+
+                            <!-- BOTÓN APLICAR -->
+                            <button type="submit" class="btn-apply-filters">Aplicar Filtros</button>
+
+                            <!-- BOTÓN LIMPIAR -->
+                            <a href="/products" style="display: block; text-align: center; margin-top: 10px; font-size: 13px; color: #999; text-decoration: underline;">Limpiar filtros</a>
+                        </form>
                     </div>
+                </div>
+            </div>
 
-                    <!-- 🚀 APLICAMOS col-xs-6 col-6 PARA LAS 2 COLUMNAS EN MOBILE -->
-                    <div class="col-md-3 col-sm-4 col-xs-6 col-6 product-card fade-in-scroll"
-                         th:each="product, iterStat : ${allProducts}"
-                         th:if="${product['activo'] != false}"
-                         th:fragment="items-scroll">
+            <!-- ========================================== -->
+            <!-- 🚀 COLUMNA DERECHA: PRODUCTOS (9 Columnas) -->
+            <!-- ========================================== -->
+            <div class="col-md-9 col-sm-12">
+                <div class="white-panel" style="margin-top: 0; background-color: #F6F4F0; border-radius: 6px; padding: 30px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
 
-                        <!-- Gatillo para carga infinita (HTMX) -->
-                        <div th:if="${iterStat.last and currentPage < totalPages - 1}"
-                             th:attr="hx-get=@{/products(page=${currentPage + 1}, keyword=${keyword}, sort=${sort})}"
-                             hx-trigger="revealed"
-                             hx-swap="afterend"
-                             hx-target="closest .product-card"
-                             hx-indicator=".htmx-indicator">
+                    <div id="contenedor-dinamico" th:fragment="lista-productos">
+                        <div class="htmx-indicator">
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <div class="spinner-border text-warning" role="status" style="width: 2rem; height: 2rem; color: #e69500; border-width: 3px;"></div>
+                                <span style="color: #666; font-weight: 500; font-size: 14px;">Cargando más...</span>
+                            </div>
                         </div>
 
-                        <!-- Estructura de la tarjeta heredando las propiedades de Fragments -->
-                        <div class="single-new-arrival" th:id="'card-producto-' + ${product['id']}"
-                             th:fragment="cardProducto">
+                        <div class="new-arrivals-content">
+                            <div class="row">
+                                <!-- Mensaje sin productos -->
+                                <div class="col-md-12 text-center" th:if="${allProducts.empty}">
+                                    <i class="fa fa-search" style="font-size: 40px; color: #ddd; margin-top: 40px; margin-bottom: 15px;"></i>
+                                    <h3 style="color: #999; font-weight: 300;">No se encontraron productos con estos filtros.</h3>
+                                </div>
 
-                            <!-- 🚀 CORAZÓN FLOTANTE: Movido arriba de la imagen -->
-                            <a href="javascript:void(0);"
-                               th:fragment="btnFavorito"
-                               th:with="
-                               currentId=${product != null ? T(java.lang.Long).valueOf(product['id'].toString()) : productId},
-                               currentFav=${isFavorite != null ? isFavorite : #lists.contains(favoritesIds ?: {}, currentId)}"
-                               th:id="'btn-fav-' + ${currentId}"
-                               class="mi-btn-fav"
-                               th:classappend="${currentFav} ? 'activo' : ''"
-                               th:onclick="'toggleFavorite(' + ${currentId} + ')'"
-                               title="Añadir a favoritos">
-                                <i class="fa" th:classappend="${currentFav} ? 'fa-heart' : 'fa-heart-o'"></i>
-                            </a>
+                                <!-- TARJETAS DE PRODUCTOS -->
+                                <div class="col-md-4 col-sm-6 col-xs-6 col-6 product-card fade-in-scroll"
+                                     th:each="product, iterStat : ${allProducts}"
+                                     th:if="${product['activo'] != false}"
+                                     th:fragment="items-scroll">
 
-                            <!-- IMAGEN DEL PRODUCTO -->
-                            <div class="single-new-arrival-bg">
-                                <span class="label-new" th:if="${product['newProduct']}"
-                                      style="position: absolute; top: 15px; left: 15px; background: #1e2d42; color: #fff; padding: 4px 12px; font-size: 11px; border-radius: 3px; z-index: 10;">
-                                    Nuevo
-                                </span>
-                                <a th:href="@{/product/{id}(id=${product['id']})}">
-                                    <img th:src="@{${product['imageUrl']}}" alt="image">
-                                </a>
-                            </div>
+                                    <!-- Gatillo para carga infinita (HTMX) -->
+                                    <div th:if="${iterStat.last and currentPage < totalPages - 1}"
+                                         th:attr="hx-get=@{/products(page=${currentPage + 1}, keyword=${keyword}, sort=${sort}, categorias=${param.categorias}, minPrice=${param.minPrice}, maxPrice=${param.maxPrice}, inStock=${param.inStock})}"
+                                         hx-trigger="revealed"
+                                         hx-swap="afterend"
+                                         hx-target="closest .product-card"
+                                         hx-indicator=".htmx-indicator">
+                                    </div>
 
-                            <!-- TEXTO Y PRECIO -->
-                            <div class="single-new-arrival-caption">
-                                <h4><a th:href="@{/product/{id}(id=${product['id']})}" th:text="${product['name']}">Nombre</a></h4>
-                                <p class="arrival-product-price" th:text="${'$ ' + product['price']}">$0.00</p>
-                            </div>
+                                    <!-- Estructura de la tarjeta heredando las propiedades de Fragments -->
+                                    <div class="single-new-arrival" th:id="'card-producto-' + ${product['id']}"
+                                         th:fragment="cardProducto">
 
-                            <!-- ACCIONES (CARRITO) -->
-                            <div class="mis-acciones-producto">
-                                <div style="width: 100%;"
-                                     th:with="safeId=${T(java.lang.Long).valueOf(product['id'].toString())},
-                                      qtyInCart=${(productQuantities != null and productQuantities.containsKey(safeId)) ? productQuantities.get(safeId) : 0}"
-                                     th:id="'acciones-cart-' + ${safeId}"
-                                     th:fragment="cartActionsFragment">
+                                        <!-- CORAZÓN FLOTANTE -->
+                                        <a href="javascript:void(0);"
+                                           th:fragment="btnFavorito"
+                                           th:with="
+                                           currentId=${product != null ? T(java.lang.Long).valueOf(product['id'].toString()) : productId},
+                                           currentFav=${isFavorite != null ? isFavorite : #lists.contains(favoritesIds ?: {}, currentId)}"
+                                           th:id="'btn-fav-' + ${currentId}"
+                                           class="mi-btn-fav"
+                                           th:classappend="${currentFav} ? 'activo' : ''"
+                                           th:onclick="'toggleFavorite(' + ${currentId} + ')'"
+                                           title="Añadir a favoritos">
+                                            <i class="fa" th:classappend="${currentFav} ? 'fa-heart' : 'fa-heart-o'"></i>
+                                        </a>
 
-                                    <a href="javascript:void(0);"
-                                       class="mi-btn-agregar"
-                                       th:if="${qtyInCart == 0}"
-                                       th:onclick="'agregarConAjax(' + ${safeId} + ')'">
-                                        Agregar al carrito
-                                    </a>
+                                        <!-- IMAGEN DEL PRODUCTO -->
+                                        <div class="single-new-arrival-bg">
+                                            <span class="label-new" th:if="${product['newProduct']}"
+                                                  style="position: absolute; top: 15px; left: 15px; background: #1e2d42; color: #fff; padding: 4px 12px; font-size: 11px; border-radius: 3px; z-index: 10;">
+                                                Nuevo
+                                            </span>
+                                            <a th:href="@{/product/{id}(id=${product['id']})}">
+                                                <img th:src="@{${product['imageUrl']}}" alt="image">
+                                            </a>
+                                        </div>
 
-                                    <div class="mi-control-cantidad" th:if="${qtyInCart != null && qtyInCart > 0}">
-                                        <button class="mi-btn-circulo" th:onclick="'updateCardQty(' + ${safeId} + ', -1)'">-</button>
-                                        <span class="mi-numero-cantidad" th:id="'card-qty-val-' + ${safeId}" th:text="${qtyInCart}">1</span>
-                                        <button class="mi-btn-circulo" th:onclick="'updateCardQty(' + ${safeId} + ', 1)'">+</button>
+                                        <!-- TEXTO Y PRECIO -->
+                                        <div class="single-new-arrival-caption">
+                                            <h4><a th:href="@{/product/{id}(id=${product['id']})}" th:text="${product['name']}">Nombre</a></h4>
+                                            <p class="arrival-product-price" th:text="${'$ ' + product['price']}">$0.00</p>
+                                        </div>
+
+                                        <!-- ACCIONES (CARRITO) -->
+                                        <div class="mis-acciones-producto">
+                                            <div style="width: 100%;"
+                                                 th:with="safeId=${T(java.lang.Long).valueOf(product['id'].toString())},
+                                                  qtyInCart=${(productQuantities != null and productQuantities.containsKey(safeId)) ? productQuantities.get(safeId) : 0}"
+                                                 th:id="'acciones-cart-' + ${safeId}"
+                                                 th:fragment="cartActionsFragment">
+
+                                                <a href="javascript:void(0);"
+                                                   class="mi-btn-agregar"
+                                                   th:if="${qtyInCart == 0}"
+                                                   th:onclick="'agregarConAjax(' + ${safeId} + ')'">
+                                                    Agregar al carrito
+                                                </a>
+
+                                                <div class="mi-control-cantidad" th:if="${qtyInCart != null && qtyInCart > 0}">
+                                                    <button class="mi-btn-circulo" th:onclick="'updateCardQty(' + ${safeId} + ', -1)'">-</button>
+                                                    <span class="mi-numero-cantidad" th:id="'card-qty-val-' + ${safeId}" th:text="${qtyInCart}">1</span>
+                                                    <button class="mi-btn-circulo" th:onclick="'updateCardQty(' + ${safeId} + ', 1)'">+</button>
+                                                </div>
+                                            </div>
+                                        </div>
+
                                     </div>
                                 </div>
                             </div>
 
+                            <!-- Fin del Scroll -->
+                            <div class="row" th:if="${currentPage == totalPages - 1 and totalPages > 0}">
+                                <div class="col-md-12 text-center" style="margin-top: 60px; margin-bottom: 20px; opacity: 0.5;">
+                                    <p style="font-size: 13px; letter-spacing: 1px; text-transform: uppercase; color: #999;">
+                                        <i class="fa fa-circle" style="font-size: 6px; vertical-align: middle; margin-right: 10px; color: #e69500;"></i>
+                                        Has llegado al final
+                                        <i class="fa fa-circle" style="font-size: 6px; vertical-align: middle; margin-left: 10px; color: #e69500;"></i>
+                                    </p>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
-
-                <!-- Fin del Scroll -->
-                <div class="row" th:if="${currentPage == totalPages - 1 and totalPages > 0}">
-                    <div class="col-md-12 text-center" style="margin-top: 60px; margin-bottom: 20px; opacity: 0.5;">
-                        <p style="font-size: 13px; letter-spacing: 1px; text-transform: uppercase; color: #999;">
-                            <i class="fa fa-circle" style="font-size: 6px; vertical-align: middle; margin-right: 10px; color: #e69500;"></i>
-                            Has llegado al final
-                            <i class="fa fa-circle" style="font-size: 6px; vertical-align: middle; margin-left: 10px; color: #e69500;"></i>
-                        </p>
-                    </div>
-                </div>
             </div>
+
         </div>
     </div>
 </section>

@@ -350,10 +350,19 @@
                                     <span class="lnr lnr-user" style="font-size: 20px;"></span>
                                 </a>
                             </li>
+                            <!-- 👤 USUARIO LOGUEADO (ESCRITORIO / HEADER PRINCIPAL) -->
                             <li class="dropdown" sec:authorize="isAuthenticated()">
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" style="display: flex; align-items: center; gap: 10px;">
+                                    <!-- Foto de perfil o iniciales si no hay foto -->
+                                    <img th:if="${#authentication.principal.attributes['picture'] != null and !#strings.isEmpty(#authentication.principal.attributes['picture'])}"
+                                         th:src="${#authentication.principal.attributes['picture']}"
+                                         alt="Avatar" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 1.5px solid #1e2d42;">
+
+                                    <img th:unless="${#authentication.principal.attributes['picture'] != null and !#strings.isEmpty(#authentication.principal.attributes['picture'])}"
+                                         th:src="'https://ui-avatars.com/api/?name=' + (${#authentication.principal.attributes['given_name']} ?: 'Usuario') + '&background=1e2d42&color=fff&size=100'"
+                                         alt="Avatar" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 1.5px solid #1e2d42;">
+
                                     <span th:text="${#authentication.principal.attributes['given_name']}" style="font-size: 13px; font-weight: 600; text-transform: capitalize; color: #555;">Usuario</span>
-                                    <span class="lnr lnr-user" style="font-size: 20px;"></span>
                                 </a>
                                 <ul class="dropdown-menu profile-menu">
                                     <li sec:authorize="hasRole('ADMIN')"><a href="/admin/products" style="color: #e69500; font-weight: bold;"><i class="fa fa-cogs"></i> Panel de Administrador</a></li>
@@ -422,10 +431,19 @@
                                 </li>
                             </ul>
                         </li>
+                        <!-- 👤 USUARIO LOGUEADO (BARRA STICKY / MÓVIL) -->
                         <li class="dropdown" sec:authorize="isAuthenticated()">
                             <a href="#" class="dropdown-toggle profile-link" data-toggle="dropdown">
+                                <!-- Foto de perfil o iniciales si no hay foto -->
+                                <img th:if="${#authentication.principal.attributes['picture'] != null and !#strings.isEmpty(#authentication.principal.attributes['picture'])}"
+                                     th:src="${#authentication.principal.attributes['picture']}"
+                                     alt="Avatar" style="width: 28px; height: 28px; border-radius: 50%; object-fit: cover; border: 1.5px solid #1e2d42;">
+
+                                <img th:unless="${#authentication.principal.attributes['picture'] != null and !#strings.isEmpty(#authentication.principal.attributes['picture'])}"
+                                     th:src="'https://ui-avatars.com/api/?name=' + (${#authentication.principal.attributes['given_name']} ?: 'Usuario') + '&background=1e2d42&color=fff&size=100'"
+                                     alt="Avatar" style="width: 28px; height: 28px; border-radius: 50%; object-fit: cover; border: 1.5px solid #1e2d42;">
+
                                 <span th:text="${#authentication.principal.attributes['given_name']}" style="font-size: 13px; font-weight: 600; text-transform: capitalize; color: #555;">Usuario</span>
-                                <span class="lnr lnr-user"></span>
                             </a>
                             <ul class="dropdown-menu profile-menu">
                                 <li sec:authorize="hasRole('ADMIN')"><a href="/admin/products" style="color: #e69500; font-weight: bold;"><i class="fa fa-cogs"></i> Panel de Administrador</a></li>
@@ -459,7 +477,7 @@
                                 <li><a href="/#exterior"> Exterior</a></li>
                             </ul>
                         </li>
-                        <li><a href="/products">Tienda</a></li>
+                        <li><a href="/products">Ver catalogo</a></li>
                         <li><a href="/about">Quienes Somos</a></li>
                         <li><a href="/contact">Contacto</a></li>
                     </ul>
