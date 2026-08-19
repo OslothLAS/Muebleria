@@ -48,11 +48,15 @@ public class NotificationController {
             return "redirect:/";
         }
 
-        // 🚀 CAMBIAMOS ESTA LÍNEA
-        String userId = principal.getName();
+        // 🚀 CORRECCIÓN: Extraemos el email real en lugar del ID de Auth0
+        String userEmail = principal.getAttribute("email");
+        if (userEmail == null) {
+            userEmail = principal.getName(); // Fallback por si acaso
+        }
 
-        model.addAttribute("todasLasNotificaciones", notificacionAppService.obtenerTodas(userId));
-        notificacionAppService.marcarTodasComoLeidas(userId);
+        // Ahora busca en la BD las notificaciones que coincidan con "silveroosmar911@gmail.com"
+        model.addAttribute("todasLasNotificaciones", notificacionAppService.obtenerTodas(userEmail));
+        notificacionAppService.marcarTodasComoLeidas(userEmail);
 
         return "mis-notificaciones";
     }

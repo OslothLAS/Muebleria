@@ -5,6 +5,8 @@ import com.example.Ecommerce_Muebleria.BackProfiles.repositories.UserProfileRepo
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class UserProfileService {
 
@@ -19,6 +21,7 @@ public class UserProfileService {
             return newProfile;
         });
     }
+
 
     public void saveOrUpdateProfile(UserProfile profile) {
         repository.save(profile);

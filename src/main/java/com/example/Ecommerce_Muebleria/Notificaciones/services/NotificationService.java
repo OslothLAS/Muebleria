@@ -1,5 +1,6 @@
 package com.example.Ecommerce_Muebleria.Notificaciones.services;
 
+import com.example.Ecommerce_Muebleria.BackProfiles.repositories.UserProfileRepository;
 import com.example.Ecommerce_Muebleria.Notificaciones.entities.NotificacionApp;
 import com.example.Ecommerce_Muebleria.Notificaciones.entities.NotificationToken;
 import com.example.Ecommerce_Muebleria.Notificaciones.repositories.NotificacionAppRepository;
@@ -8,8 +9,11 @@ import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.Message;
 import com.google.firebase.messaging.Notification;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
 
 @Service
 public class NotificationService {
@@ -20,10 +24,33 @@ public class NotificationService {
     private  NotificacionAppRepository repository;
 
     @Autowired
+    private NotificacionAppService notificacionAppService;
+
+    @Autowired
     private NotificacionAppRepository appRepository;
 
     public NotificationService(NotificationTokenRepository tokenRepository) {
         this.tokenRepository = tokenRepository;
+    }
+
+
+    @Value("${app.admin.email}")
+    private String adminEmail;
+
+    public void notificarCompraAlAdmin(Long orderId, Double total) {
+
+        // ¡Usamos el constructor que ya armaste en tu entidad!
+        NotificacionApp noti = new NotificacionApp(
+                adminEmail,                                                      // A quién va dirigida
+                "🛒 Nueva compra registrada",                                    // Título
+                "Se ha realizado el pedido #" + orderId + " por $" + total,      // Mensaje
+                "/api/notifications/mis-notificaciones"                                      // URL de acción
+        );
+
+        notificacionAppService.marcarTodasComoLeidas(adminEmail);
+
+        repository.save(noti);
+
     }
 
     @Transactional
@@ -32,6 +59,8 @@ public class NotificationService {
         repository.save(nuevaNotificacion);
         enviarNotificacion(email, titulo, mensaje);
     }
+
+
 
     @Transactional
     public void saveToken(String token, String userEmail) {

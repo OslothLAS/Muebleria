@@ -19,10 +19,19 @@ public class GlobalAtributosController {
     @ModelAttribute
     public void agregarAtributosGlobales(Model model, @AuthenticationPrincipal OAuth2User principal) {
         if (principal != null) {
-            String userId = principal.getName();
 
-         model.addAttribute("cantNotificaciones", notificacionService.contarNoLeidas(userId));
-            model.addAttribute("ultimasNotificaciones", notificacionService.obtenerUltimas5(userId));
+            // 🚀 EXTRAEMOS EL EMAIL EN LUGAR DEL ID DE AUTH0
+            String userEmail = principal.getAttribute("email");
+
+            // Fallback por si algún usuario logueado no tiene el email público
+            if (userEmail == null) {
+                userEmail = principal.getName();
+            }
+
+            // Ahora el servicio busca correctamente por el correo
+            model.addAttribute("cantNotificaciones", notificacionService.contarNoLeidas(userEmail));
+            model.addAttribute("ultimasNotificaciones", notificacionService.obtenerUltimas5(userEmail));
+
         } else {
             // Si no está logueado, mandamos cero y lista vacía
             model.addAttribute("cantNotificaciones", 0);

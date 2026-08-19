@@ -1,6 +1,7 @@
 package com.example.Ecommerce_Muebleria.Front.services;
 
 import com.example.Ecommerce_Muebleria.BackCartOrder.services.OrderServiceCartBack;
+import com.example.Ecommerce_Muebleria.Notificaciones.services.NotificationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,6 +18,9 @@ public class OrderService {
 
     @Autowired
     private OrderServiceCartBack orderServiceCartBack;
+
+    @Autowired
+    private NotificationService notificationService;
 
     // --- 1. TRAER UNA ORDEN ESPECÍFICA ---
     public Order getOrder(Long orderId) {
@@ -36,11 +40,17 @@ public class OrderService {
         try {
             System.out.println("💳 Procesando confirmación de pago: " + paymentId + " para el usuario: " + cartId);
 
-            // 1. Rescatamos TODOS los datos de envío, facturación y email
             Map<String, String> checkoutData = orderServiceCartBack.getShippingDataFromPayment(paymentId);
 
-            // 🚀 2. Le pasamos el Map completo al backend para que guarde todo de una vez
-            orderServiceCartBack.saveOrderFromCart(cartId, "APPROVED", checkoutData);
+            // 🚀 2. CAPTURAMOS la orden que ahora nos devuelve el backend
+            Order ordenGuardada = orderServiceCartBack.saveOrderFromCart(cartId, "APPROVED", checkoutData);
+
+            // 🚀 3. DISPARAMOS LA NOTIFICACIÓN AL ADMIN
+            try {
+                notificationService.notificarCompraAlAdmin(ordenGuardada.getId(), ordenGuardada.getTotalAmount().doubleValue());
+            } catch (Exception e) {
+                System.err.println("⚠️ Error enviando notificación: " + e.getMessage());
+            }
 
             System.out.println("✅ Backend notificado del éxito para: " + cartId);
         } catch (Exception e) {
@@ -87,17 +97,24 @@ public class OrderService {
         }
     }
 
-    // --- 🚀 3. Flujo para Pago por Transferencia ---
+    // --- PARA TRANSFERENCIAS ---
     public void processTransferCheckout(
             String shippingAddress, String shippingZipCode, String shippingCity, String shippingBetweenStreets, String shippingReferencesInfo,
             String billingAddress, String billingZipCode, String billingCity, String billingBetweenStreets, String billingReferencesInfo,
             String cartId, String userEmail) {
 
-        // Se comunica con el microservicio en el backend (Micro 8082) para crear la orden directamente
-        orderServiceCartBack.createTransferOrder(
+        // 🚀 CAPTURAMOS la orden de transferencia
+        Order ordenGuardada = orderServiceCartBack.createTransferOrder(
                 shippingAddress, shippingZipCode, shippingCity, shippingBetweenStreets, shippingReferencesInfo,
                 billingAddress, billingZipCode, billingCity, billingBetweenStreets, billingReferencesInfo,
                 cartId, userEmail
         );
+
+        // 🚀 DISPARAMOS LA NOTIFICACIÓN AL ADMIN
+        try {
+            notificationService.notificarCompraAlAdmin(ordenGuardada.getId(), ordenGuardada.getTotalAmount().doubleValue());
+        } catch (Exception e) {
+            System.err.println("⚠️ Error enviando notificación: " + e.getMessage());
+        }
     }
 }

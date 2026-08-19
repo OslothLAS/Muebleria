@@ -12,4 +12,5 @@ public interface UserProfileRepository extends JpaRepository<UserProfile, Long> 
     // Busca el perfil basándose en el email de Auth0
     Optional<UserProfile> findByEmail(String email);
     Optional<UserProfile> findByAuth0Id(String auth0Id);
+
 }

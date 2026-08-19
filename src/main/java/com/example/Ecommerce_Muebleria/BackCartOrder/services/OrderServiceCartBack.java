@@ -142,8 +142,8 @@ public class OrderServiceCartBack {
     }
 
     @Transactional
-    // 🚀 2. Ahora recibe el Map limpio directamente
-    public void saveOrderFromCart(String userId, String status, Map<String, String> checkoutData) {
+    // 🚀 1. Cambiamos 'void' por 'Order'
+    public Order saveOrderFromCart(String userId, String status, Map<String, String> checkoutData) {
         Cart cart = cartRepository.findByUserId(userId)
                 .orElseThrow(() -> new RuntimeException("Carrito no encontrado para ID: " + userId));
 
@@ -161,13 +161,13 @@ public class OrderServiceCartBack {
         order.setStatus(status);
         order.setDateCreated(LocalDateTime.now());
 
-        // 🚀 Asignamos datos de Envío
+        // Asignamos datos de Envío
         order.setShippingAddress(checkoutData.getOrDefault("shipping_address", "N/A"));
         order.setZipCode(checkoutData.getOrDefault("shipping_zip", "0000"));
         order.setCity(checkoutData.getOrDefault("shipping_city", "N/A"));
         order.setReferencesInfo(checkoutData.getOrDefault("shipping_refs", ""));
 
-        // 🚀 Asignamos datos de Facturación
+        // Asignamos datos de Facturación
         order.setBillingAddress(checkoutData.getOrDefault("billing_address", "N/A"));
         order.setBillingZipCode(checkoutData.getOrDefault("billing_zip", "0000"));
         order.setBillingCity(checkoutData.getOrDefault("billing_city", "N/A"));
@@ -184,10 +184,7 @@ public class OrderServiceCartBack {
                     BigDecimal.ZERO;
             oi.setPrice(itemPrice);
 
-            // 🚀 ESTA ES LA LÍNEA CLAVE PARA QUE EL MAIL TENGA EL NOMBRE
             String nombre = cartItem.getProductDetail() != null ? cartItem.getProductDetail().getName() : "Mueble sin nombre";
-            System.out.println("🕵️ DIAGNÓSTICO - ID: " + cartItem.getProductId() + " | Nombre detectado: " + nombre);
-
             oi.setProductName(nombre);
 
             oi.setOrder(finalOrder);
@@ -197,13 +194,14 @@ public class OrderServiceCartBack {
         order.setOrderItems(orderItems);
         order.setTotalAmount(calculateTotal(cart.getItems()));
 
+        // Guardamos la orden
         order = orderRepository.save(order);
 
         if ("APPROVED".equalsIgnoreCase(status)) {
             OrderEmailMessage emailMessage = new OrderEmailMessage(
                     order.getId(),
                     userId,
-                    checkoutData.getOrDefault("email", "cliente@ejemplo.com"), // Usamos el correo del Map
+                    checkoutData.getOrDefault("email", "cliente@ejemplo.com"),
                     "Cliente",
                     order.getTotalAmount()
             );
@@ -211,6 +209,9 @@ public class OrderServiceCartBack {
         }
 
         cartServiceCartBack.emptyCart(userId);
+
+        // 🚀 2. Retornamos la orden guardada
+        return order;
     }
 
     private BigDecimal calculateTotal(List<CartItem> items) {
@@ -269,7 +270,8 @@ public class OrderServiceCartBack {
     }
 
     @Transactional
-    public void createTransferOrder(
+    // 🚀 1. Cambiamos 'void' por 'Order'
+    public Order createTransferOrder(
             String shippingAddress, String shippingZipCode, String shippingCity, String shippingBetweenStreets, String shippingReferencesInfo,
             String billingAddress, String billingZipCode, String billingCity, String billingBetweenStreets, String billingReferencesInfo,
             String userId, String userEmail) {
@@ -277,7 +279,6 @@ public class OrderServiceCartBack {
         Cart cart = cartRepository.findByUserId(userId)
                 .orElseThrow(() -> new RuntimeException("Carrito no encontrado para ID: " + userId));
 
-        // 1. Buscamos los detalles de los productos (tu app se consulta a sí misma en el 8080)
         for (CartItem item : cart.getItems()) {
             Product dto = productWebClient.get()
                     .uri("http://localhost:8080/api/products/" + item.getProductId())
@@ -287,10 +288,9 @@ public class OrderServiceCartBack {
             item.setProductDetail(dto);
         }
 
-        // 2. Armamos la orden
         Order order = new Order();
         order.setUserId(userId);
-        order.setStatus("PENDING_TRANSFER"); // 🚀 Estado clave para la transferencia
+        order.setStatus("PENDING_TRANSFER");
         order.setDateCreated(LocalDateTime.now());
 
         // Datos de Envío
@@ -323,16 +323,13 @@ public class OrderServiceCartBack {
 
         order.setOrderItems(orderItems);
 
-        // 🚀 3. Calculamos el total y APLICAMOS EL 10% DE DESCUENTO
         BigDecimal subtotal = calculateTotal(cart.getItems());
         BigDecimal totalConDescuento = subtotal.multiply(new BigDecimal("0.90"));
         order.setTotalAmount(totalConDescuento);
 
-        // 4. Guardamos en DB
+        // Guardamos en DB
         order = orderRepository.save(order);
 
-        // 🚀 5. Publicamos el evento a RabbitMQ (Para que el cliente reciba el CBU)
-        // NOTA: Reutilizamos tu clase OrderEmailMessage, luego adaptaremos el Listener para que detecte si es transferencia
         OrderEmailMessage emailMessage = new OrderEmailMessage(
                 order.getId(),
                 userId,
@@ -342,8 +339,10 @@ public class OrderServiceCartBack {
         );
         orderMessagePublisher.publishOrderEmailEvent(emailMessage);
 
-        // 6. Vaciamos el carrito
         cartServiceCartBack.emptyCart(userId);
+
+        // 🚀 2. Retornamos la orden guardada
+        return order;
     }
 
 
