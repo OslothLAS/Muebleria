@@ -28,7 +28,14 @@ public class ImageService {
     public String uploadImg(MultipartFile file) throws IOException {
         if (file == null || file.isEmpty()) return null;
 
-        Map uploadResult = cloudinary.uploader().upload(file.getBytes(), ObjectUtils.emptyMap());
+        // 🛡️ Solo imágenes: evita usar tu Cloudinary para hospedar HTML, ejecutables, PDFs, etc.
+        String contentType = file.getContentType();
+        if (contentType == null || !contentType.startsWith("image/")) {
+            throw new IOException("El archivo no es una imagen: " + contentType);
+        }
+
+        // resource_type=image hace que Cloudinary rechace todo lo que no sea realmente una imagen
+        Map uploadResult = cloudinary.uploader().upload(file.getBytes(), ObjectUtils.asMap("resource_type", "image"));
         return uploadResult.get("secure_url").toString();
     }
 }

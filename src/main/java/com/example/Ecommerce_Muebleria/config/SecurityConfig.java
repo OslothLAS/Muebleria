@@ -38,18 +38,35 @@ public class SecurityConfig {
         log.info("🔧 Configurando Seguridad Híbrida del Monolito...");
 
         http
-                .csrf(csrf -> csrf.disable()) // Mantenemos disable por compatibilidad con tus servicios previos
+                // 🛡️ CSRF activo: Thymeleaf agrega el token solo en los <form th:action method="post">.
+                // Se excluyen únicamente los fetch() JSON de bajo impacto (la cookie SameSite=Lax los cubre).
+                .csrf(csrf -> csrf.ignoringRequestMatchers("/cart/api/update-quantity", "/api/notifications/subscribe"))
                 .authorizeHttpRequests(auth -> auth
+                        // ⚠️ El orden importa: gana la primera regla que coincide.
+
+                        // 🔒 APIs internas del monolito: el Front usa los services directamente, nadie las llama por HTTP.
+                        //    Abiertas permitían leer órdenes ajenas y manipular carritos de cualquier usuario.
+                        .requestMatchers("/api/cart/**", "/api/order/**").denyAll()
+
+                        // 🔒 ADMINISTRACIÓN
+                        .requestMatchers("/admin/**", "/api/backend/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/api/collections/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/collections/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/collections/**").hasRole("ADMIN")
+                        .requestMatchers("/api/products/*/update-notes", "/api/products/*/update-specs",
+                                "/api/products/question/*/answer", "/api/products/question/*/delete").hasRole("ADMIN")
+
+                        // 🔒 USUARIOS LOGUEADOS
+                        .requestMatchers("/api/products/question/save").authenticated()
+                        .requestMatchers("/api/wishlist/**").authenticated()
+
                         // 🔓 RUTAS PÚBLICAS (E-commerce)
                         .requestMatchers("/", "/index.html", "/static/**", "/css/**", "/js/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/products/**", "/api/collections/**").permitAll()
-                        .requestMatchers("/api/cart/**", "/api/cart/checkout").permitAll()
                         .requestMatchers("/firebase-messaging-sw.js", "/api/notifications/subscribe").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/products/**", "/api/collections/**").permitAll() // Según tu código anterior era libre
-                        .requestMatchers("/api/products/question/save").authenticated()
-                        .requestMatchers("/admin/**").hasRole("ADMIN")
 
-                        .anyRequest().permitAll() // Permitimos el resto para no romper el Front durante la migración
+                        // Páginas del front (cada controller valida el login donde hace falta)
+                        .anyRequest().permitAll()
                 )
                 // 1. Configuración de LOGIN (Para usuarios web)
                 .oauth2Login(oauth2 -> oauth2

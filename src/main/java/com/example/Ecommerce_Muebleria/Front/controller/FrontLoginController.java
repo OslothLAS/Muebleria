@@ -8,6 +8,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import org.springframework.web.util.UriComponentsBuilder;
 
 @Controller
 public class FrontLoginController {
@@ -42,11 +44,18 @@ public class FrontLoginController {
             new SecurityContextLogoutHandler().logout(request, response, auth);
         }
 
-        return "redirect:/";
+        // 🛡️ También cerramos la sesión en Auth0; si no, el próximo "Ingresar" entra directo sin pedir contraseña.
+        // La URL de returnTo tiene que estar en "Allowed Logout URLs" de la app en Auth0.
+        String returnTo = ServletUriComponentsBuilder.fromCurrentContextPath().path("/").toUriString();
+        return "redirect:" + UriComponentsBuilder.fromUriString(auth0Domain + "/v2/logout")
+                .queryParam("client_id", clientId)
+                .queryParam("returnTo", returnTo)
+                .encode()
+                .toUriString();
     }
 
     @GetMapping("/access-denied")
     public String accessDenied() {
-        return "access-denied";
+        return "login/access-denied";
     }
 }

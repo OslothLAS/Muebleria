@@ -353,7 +353,7 @@
         <div class="seller-notes-card" style="border: none; padding: 0; background: none; margin-bottom: 0;">
             <h3 style="font-size: 14px; font-weight: 700; text-transform: uppercase; color: #333; margin-bottom: 10px;">Descripción del Vendedor</h3>
             <div class="seller-content">
-                <div id="notes-display" th:utext="${product.sellerNotes ?: 'Bienvenido a El Edén.'}"></div>
+                <div id="notes-display" th:utext="${sellerNotesSafe ?: 'Bienvenido a El Edén.'}"></div>
 
                 <div sec:authorize="hasRole('ADMIN')" id="edit-notes-form" style="display: none; margin-top: 15px;">
                     <form th:action="@{/api/products/{id}/update-notes(id=${product.id})}" method="post">

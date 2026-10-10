@@ -3,6 +3,7 @@ package com.example.Ecommerce_Muebleria.Front.services;
 import com.example.Ecommerce_Muebleria.BackProducts.repositories.ProductRepository;
 import com.example.Ecommerce_Muebleria.BackProducts.repositories.QuestionRepository;
 import com.example.Ecommerce_Muebleria.Front.dtos.QuestionDTO;
+import com.example.Ecommerce_Muebleria.config.HtmlSanitizer;
 import com.example.Ecommerce_Muebleria.entities.commons.Product;
 // IMPORTANTE: Asegurate de importar tus Repositorios correctos de JPA
 import com.example.Ecommerce_Muebleria.entities.products.Question;
@@ -200,7 +201,7 @@ public class ProductService {
 
     public void updateProductNotes(Long productId, String notes) {
         productRepository.findById(productId).ifPresent(product -> {
-            // product.setNotes(notes); // Descomentar si tenés el campo 'notes'
+            product.setSellerNotes(HtmlSanitizer.clean(notes)); // 🛡️ se muestra con th:utext: siempre sanitizado
             productRepository.save(product);
             log.info("✅ Notas del producto {} actualizadas.", productId);
         });

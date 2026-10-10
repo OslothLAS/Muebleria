@@ -141,11 +141,62 @@ public class OrderServiceCartBack {
         return orderRepository.findByUserId(userId);
     }
 
+    public Optional<Order> findByPaymentId(String paymentId) {
+        return orderRepository.findByPaymentId(paymentId);
+    }
+
+    /**
+     * 🛡️ Consulta el pago DIRECTAMENTE a Mercado Pago (nunca confiar en los parámetros de la URL de retorno)
+     * y verifica que esté en un estado permitido y que pertenezca al carrito de quien lo reclama.
+     * Devuelve la metadata del checkout + "transaction_amount" (lo que realmente se pagó).
+     */
+    public Map<String, String> verifyPayment(String paymentId, String userId, Set<String> allowedStatuses) {
+        if (paymentId == null || !paymentId.matches("\\d{1,20}")) {
+            throw new IllegalArgumentException("ID de pago inválido");
+        }
+
+        Payment payment;
+        try {
+            MercadoPagoConfig.setAccessToken(accessToken);
+            payment = new PaymentClient().get(Long.parseLong(paymentId));
+        } catch (Exception e) {
+            throw new IllegalStateException("No se pudo verificar el pago " + paymentId + " con Mercado Pago", e);
+        }
+
+        if (payment == null || !allowedStatuses.contains(payment.getStatus())) {
+            throw new IllegalStateException("El pago " + paymentId + " no está en un estado válido: "
+                    + (payment != null ? payment.getStatus() : "null"));
+        }
+
+        String expectedReference = userId.replace("|", "_");
+        if (!expectedReference.equals(payment.getExternalReference())) {
+            throw new IllegalStateException("El pago " + paymentId + " no corresponde a este carrito");
+        }
+
+        Map<String, String> data = extractCheckoutData(payment.getMetadata());
+        if (payment.getTransactionAmount() != null) {
+            data.put("transaction_amount", payment.getTransactionAmount().toPlainString());
+        }
+        return data;
+    }
+
+    @Transactional
+    public Order saveOrderFromCart(String userId, String status, Map<String, String> checkoutData) {
+        return saveOrderFromCart(userId, status, checkoutData, null);
+    }
+
     @Transactional
     // 🚀 1. Cambiamos 'void' por 'Order'
-    public Order saveOrderFromCart(String userId, String status, Map<String, String> checkoutData) {
+    public Order saveOrderFromCart(String userId, String status, Map<String, String> checkoutData, String paymentId) {
+        if (paymentId != null && orderRepository.findByPaymentId(paymentId).isPresent()) {
+            throw new IllegalStateException("El pago " + paymentId + " ya fue usado para otra orden");
+        }
+
         Cart cart = cartRepository.findByUserId(userId)
                 .orElseThrow(() -> new RuntimeException("Carrito no encontrado para ID: " + userId));
+        if (cart.getItems().isEmpty()) {
+            throw new IllegalStateException("El carrito está vacío");
+        }
 
         for (CartItem item : cart.getItems()) {
             Product dto = productWebClient.get()
@@ -193,6 +244,15 @@ public class OrderServiceCartBack {
 
         order.setOrderItems(orderItems);
         order.setTotalAmount(calculateTotal(cart.getItems()));
+        order.setPaymentId(paymentId);
+
+        // 🛡️ Si viene de Mercado Pago, lo pagado tiene que cubrir el carrito actual
+        // (evita pagar un carrito barato y agregarle productos antes de volver a /cart/success)
+        String paid = checkoutData.get("transaction_amount");
+        if (paymentId != null && (paid == null || new BigDecimal(paid).compareTo(order.getTotalAmount()) < 0)) {
+            throw new IllegalStateException("El monto pagado (" + paid + ") no cubre el total de la orden ("
+                    + order.getTotalAmount() + ")");
+        }
 
         // Guardamos la orden
         order = orderRepository.save(order);
@@ -227,46 +287,37 @@ public class OrderServiceCartBack {
         return orderRepository.findById(id);
     }
 
-    // 🚀 3. Rescata toda la metadata de Mercado Pago y la pasa a un Map
-    public Map<String, String> getShippingDataFromPayment(String paymentId) {
-        try {
-            PaymentClient client = new PaymentClient();
-            Payment payment = client.get(Long.parseLong(paymentId));
-            Map<String, Object> metadata = payment.getMetadata();
+    // 🚀 3. Pasa la metadata que guardamos en la preferencia de Mercado Pago a un Map
+    private Map<String, String> extractCheckoutData(Map<String, Object> metadata) {
+        Map<String, String> data = new HashMap<>(); // mutable: verifyPayment le agrega el monto
 
-            Map<String, String> data = new HashMap<>();
+        if (metadata != null) {
+            data.put("shipping_address", metadata.getOrDefault("shipping_address", "Sin dirección").toString());
+            data.put("shipping_zip", metadata.getOrDefault("shipping_zip", "Sin CP").toString());
+            data.put("shipping_city", metadata.getOrDefault("shipping_city", "Sin Ciudad").toString());
+            data.put("shipping_refs", metadata.getOrDefault("shipping_refs", "").toString());
 
-            if (metadata != null) {
-                data.put("shipping_address", metadata.getOrDefault("shipping_address", "Sin dirección").toString());
-                data.put("shipping_zip", metadata.getOrDefault("shipping_zip", "Sin CP").toString());
-                data.put("shipping_city", metadata.getOrDefault("shipping_city", "Sin Ciudad").toString());
-                data.put("shipping_refs", metadata.getOrDefault("shipping_refs", "").toString());
+            data.put("billing_address", metadata.getOrDefault("billing_address", "Sin dirección").toString());
+            data.put("billing_zip", metadata.getOrDefault("billing_zip", "Sin CP").toString());
+            data.put("billing_city", metadata.getOrDefault("billing_city", "Sin Ciudad").toString());
+            data.put("billing_refs", metadata.getOrDefault("billing_refs", "").toString());
 
-                data.put("billing_address", metadata.getOrDefault("billing_address", "Sin dirección").toString());
-                data.put("billing_zip", metadata.getOrDefault("billing_zip", "Sin CP").toString());
-                data.put("billing_city", metadata.getOrDefault("billing_city", "Sin Ciudad").toString());
-                data.put("billing_refs", metadata.getOrDefault("billing_refs", "").toString());
+            data.put("email", metadata.getOrDefault("user_email", "cliente_sin_mail@ejemplo.com").toString());
+        } else {
+            data.put("shipping_address", "Sin dirección");
+            data.put("shipping_zip", "Sin CP");
+            data.put("shipping_city", "Sin Ciudad");
+            data.put("shipping_refs", "");
 
-                data.put("email", metadata.getOrDefault("user_email", "cliente_sin_mail@ejemplo.com").toString());
-            } else {
-                data.put("shipping_address", "Sin dirección");
-                data.put("shipping_zip", "Sin CP");
-                data.put("shipping_city", "Sin Ciudad");
-                data.put("shipping_refs", "");
+            data.put("billing_address", "Sin dirección");
+            data.put("billing_zip", "Sin CP");
+            data.put("billing_city", "Sin Ciudad");
+            data.put("billing_refs", "");
 
-                data.put("billing_address", "Sin dirección");
-                data.put("billing_zip", "Sin CP");
-                data.put("billing_city", "Sin Ciudad");
-                data.put("billing_refs", "");
-
-                data.put("email", "cliente_sin_mail@ejemplo.com");
-            }
-
-            return data;
-        } catch (Exception e) {
-            System.err.println("❌ Error al recuperar metadatos de MP: " + e.getMessage());
-            return Collections.emptyMap();
+            data.put("email", "cliente_sin_mail@ejemplo.com");
         }
+
+        return data;
     }
 
     @Transactional
@@ -278,6 +329,9 @@ public class OrderServiceCartBack {
 
         Cart cart = cartRepository.findByUserId(userId)
                 .orElseThrow(() -> new RuntimeException("Carrito no encontrado para ID: " + userId));
+        if (cart.getItems().isEmpty()) {
+            throw new IllegalStateException("El carrito está vacío");
+        }
 
         for (CartItem item : cart.getItems()) {
             Product dto = productWebClient.get()

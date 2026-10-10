@@ -43,6 +43,7 @@ public class CartService {
 
     public void addToCart(Long productId, Integer quantity, String cartId) {
         int qty = (quantity == null) ? 1 : quantity;
+        if (qty <= 0) return; // 🛡️ cantidades negativas o cero se ignoran
         // ✅ Ejecución directa, sin latencia
         cartServiceCartBack.addItemToCart(cartId, productId, qty);
     }

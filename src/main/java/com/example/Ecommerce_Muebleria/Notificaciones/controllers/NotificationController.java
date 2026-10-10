@@ -45,7 +45,7 @@ public class NotificationController {
     @GetMapping("/mis-notificaciones")
     public String verTodasLasNotificaciones(Model model, @AuthenticationPrincipal OAuth2User principal) {
         if (principal == null) {
-            return "redirect:/";
+            return "redirect:/oauth2/authorization/auth0";
         }
 
         // 🚀 CORRECCIÓN: Extraemos el email real en lugar del ID de Auth0
@@ -58,6 +58,6 @@ public class NotificationController {
         model.addAttribute("todasLasNotificaciones", notificacionAppService.obtenerTodas(userEmail));
         notificacionAppService.marcarTodasComoLeidas(userEmail);
 
-        return "mis-notificaciones";
+        return "usuarios/mis-notificaciones";
     }
 }

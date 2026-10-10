@@ -4,6 +4,7 @@ import com.example.Ecommerce_Muebleria.entities.commons.Product;
 import com.example.Ecommerce_Muebleria.entities.products.Question;
 import com.example.Ecommerce_Muebleria.BackProducts.services.ProductServiceProductBack;
 import com.example.Ecommerce_Muebleria.BackProducts.services.QuestionServiceProductBack;
+import com.example.Ecommerce_Muebleria.config.HtmlSanitizer;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -258,7 +259,7 @@ public class ProductApiControllerCartBack {
 
         return productServiceProductBack.findById(id)
                 .map(product -> {
-                    product.setSellerNotes(notes); // 💾 Guardamos el HTML
+                    product.setSellerNotes(HtmlSanitizer.clean(notes)); // 💾 Guardamos el HTML ya sanitizado
                     productServiceProductBack.save(product);
                     return ResponseEntity.ok().<Void>build();
                 })

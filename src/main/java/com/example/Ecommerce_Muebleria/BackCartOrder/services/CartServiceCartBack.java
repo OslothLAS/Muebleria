@@ -14,6 +14,9 @@ public class CartServiceCartBack {
     @Autowired
     private CartRepository cartRepository;
 
+    // 🛡️ Tope por producto: evita cantidades negativas (bajaban el total) o absurdas
+    public static final int MAX_QTY_PER_ITEM = 99;
+
     // 1. OBTENER O CREAR: Fundamental para que el invitado tenga "lugar" donde guardar items
     public Cart getCartByUserId(String userId) {
         return cartRepository.findByUserId(userId)
@@ -26,6 +29,9 @@ public class CartServiceCartBack {
 
     // 2. AGREGAR ITEM: Usa el método anterior para asegurar que el carrito exista
     public Cart addItemToCart(String userId, Long productId, int quantity) {
+        if (quantity <= 0) {
+            throw new IllegalArgumentException("La cantidad debe ser mayor a 0");
+        }
         Cart cart = getCartByUserId(userId);
 
         Optional<CartItem> existingItem = cart.getItems().stream()
@@ -33,12 +39,12 @@ public class CartServiceCartBack {
                 .findFirst();
 
         if (existingItem.isPresent()) {
-            existingItem.get().setQuantity(existingItem.get().getQuantity() + quantity);
+            existingItem.get().setQuantity(Math.min(existingItem.get().getQuantity() + quantity, MAX_QTY_PER_ITEM));
         } else {
             CartItem newItem = new CartItem();
             newItem.setProductId(productId);
             newItem.setCart(cart);
-            newItem.setQuantity(quantity);
+            newItem.setQuantity(Math.min(quantity, MAX_QTY_PER_ITEM));
             cart.getItems().add(newItem);
         }
         return cartRepository.save(cart);
@@ -46,6 +52,9 @@ public class CartServiceCartBack {
 
     // 3. ACTUALIZAR CANTIDAD (Versión limpia del método que tenías)
     public void updateQuantity(String userId, Long productId, int quantity) {
+        if (quantity <= 0 || quantity > MAX_QTY_PER_ITEM) {
+            throw new IllegalArgumentException("Cantidad inválida: " + quantity);
+        }
         Cart cart = getCartByUserId(userId);
 
         cart.getItems().stream()
@@ -68,7 +77,7 @@ public class CartServiceCartBack {
                         item -> {
                             int newQty = item.getQuantity() + delta;
                             if (newQty <= 0) cart.getItems().remove(item);
-                            else item.setQuantity(newQty);
+                            else item.setQuantity(Math.min(newQty, MAX_QTY_PER_ITEM));
                         },
                         () -> {
                             if (delta > 0) addItemToCart(userId, productId, delta);

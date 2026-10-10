@@ -21,7 +21,7 @@ public class UserProfileController {
     @GetMapping("/profile")
     public String viewProfile(Model model, @AuthenticationPrincipal OAuth2User principal) {
         if (principal == null) {
-            return "redirect:/";
+            return "redirect:/oauth2/authorization/auth0";
         }
 
         // 🚀 Obtenemos el ID único técnico (Suele venir en el atributo 'sub' o usando getName())
@@ -35,7 +35,7 @@ public class UserProfileController {
         model.addAttribute("usuarioAuth0", principal.getAttributes());
         model.addAttribute("userProfile", userProfile);
 
-        return "profile/profile";
+        return "usuarios/profile";
     }
 
     @PostMapping("/profile/save")
@@ -43,7 +43,7 @@ public class UserProfileController {
                               @AuthenticationPrincipal OAuth2User principal,
                               RedirectAttributes redirectAttributes) {
         if (principal == null) {
-            return "redirect:/";
+            return "redirect:/oauth2/authorization/auth0";
         }
 
         // Obtenemos el ID y el email de Auth0
@@ -55,10 +55,10 @@ public class UserProfileController {
         String emailAuth0 = principal.getAttribute("email");
 
         // Buscamos si ya existía en la BD
+        // 🛡️ El id SIEMPRE sale de la BD (aunque sea null): si viniera del formulario,
+        // alguien podría mandar id=5 y sobrescribir el perfil de otro usuario.
         UserProfile existingProfile = userProfileService.getProfileByAuth0Id(auth0Id);
-        if (existingProfile.getId() != null) {
-            userProfile.setId(existingProfile.getId());
-        }
+        userProfile.setId(existingProfile.getId());
 
         // Protegemos los datos inmutables desde Auth0
         userProfile.setAuth0Id(auth0Id);

@@ -6,6 +6,7 @@ import com.example.Ecommerce_Muebleria.BackProducts.services.StoreConfigService;
 import com.example.Ecommerce_Muebleria.Front.services.OrderService;
 import com.example.Ecommerce_Muebleria.Front.services.ProductService;
 import com.example.Ecommerce_Muebleria.config.GlobalConfig;
+import com.example.Ecommerce_Muebleria.config.HtmlSanitizer;
 import com.example.Ecommerce_Muebleria.entities.cart.Cart;
 import com.example.Ecommerce_Muebleria.entities.commons.Collection;
 import com.example.Ecommerce_Muebleria.Front.services.CartService;
@@ -175,6 +176,8 @@ public class HomeController {
 
         model.addAttribute("isFavorite", isFav);
         model.addAttribute("product", product);
+        // 🛡️ Se sanitiza también al mostrar, por si en la BD quedó HTML malicioso de antes del fix
+        model.addAttribute("sellerNotesSafe", HtmlSanitizer.clean(product.getSellerNotes()));
         model.addAttribute("recommendedProducts", recommendedProducts);
 
         return "product-details";

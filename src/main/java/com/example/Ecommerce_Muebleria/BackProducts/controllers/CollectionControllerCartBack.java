@@ -56,7 +56,7 @@ public class CollectionControllerCartBack {
             e.printStackTrace(); // Esto imprime el rastro completo en la consola
 
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error en el backend (8080): " + e.getMessage());
+                    .body("Error al crear la colección"); // el detalle queda solo en el log del servidor
         }
     }
 

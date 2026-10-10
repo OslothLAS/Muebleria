@@ -1,0 +1,61 @@
+# Levantar todo:   docker compose up --build
+# Apagar:          docker compose down        (agregá -v para borrar también la base de datos)
+#
+# Requisitos: archivo .env completo (copiá .env.example) y
+#             src/main/resources/serviceAccountKey.json (Firebase).
+
+services:
+
+  mysql:
+    image: mysql:8.4
+    environment:
+      MYSQL_DATABASE: ecommerce_total_db
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:?Falta DB_PASSWORD en .env}
+      # 🛡️ La app usa un usuario propio, no root
+      MYSQL_USER: muebleria
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - mysql-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-p${DB_PASSWORD}"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    # Sin "ports": la base solo es accesible desde los otros contenedores.
+    # Para conectarte desde tu PC (ej. Workbench), descomentá (3307 para no chocar con tu MySQL local):
+    # ports:
+    #   - "3307:3306"
+
+  rabbitmq:
+    image: rabbitmq:3.13-management
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USERNAME:-guest}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD:-guest}
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 10s
+      timeout: 10s
+      retries: 10
+    ports:
+      - "15672:15672"   # panel web de RabbitMQ: http://localhost:15672
+
+  app:
+    build: .
+    env_file: .env
+    environment:
+      DB_HOST: mysql
+      DB_USERNAME: muebleria
+      RABBITMQ_HOST: rabbitmq
+      FIREBASE_CREDENTIALS_PATH: /run/secrets/serviceAccountKey.json
+    volumes:
+      - ./src/main/resources/serviceAccountKey.json:/run/secrets/serviceAccountKey.json:ro
+    ports:
+      - "8080:8080"
+    depends_on:
+      mysql:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+
+volumes:
+  mysql-data:

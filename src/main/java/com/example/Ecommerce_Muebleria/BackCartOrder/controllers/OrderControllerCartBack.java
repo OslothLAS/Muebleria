@@ -39,18 +39,6 @@ public class OrderControllerCartBack {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @PostMapping("/confirm")
-    public ResponseEntity<Void> confirmOrder(@RequestParam String paymentId,
-                                             @RequestParam String cartId) {
-
-        System.out.println("💳 Procesando confirmación de pago: " + paymentId + " para el usuario: " + cartId);
-
-        // 1. Pedimos a Mercado Pago TODOS los datos (envío, facturación y email) rescatando la metadata
-        Map<String, String> checkoutData = orderServiceCartBack.getShippingDataFromPayment(paymentId);
-
-        // 🚀 2. Guardamos la orden en la DB usando el ID híbrido y pasándole el Map completo
-        orderServiceCartBack.saveOrderFromCart(cartId, "APPROVED", checkoutData);
-
-        return ResponseEntity.ok().build();
-    }
+    // 🛡️ Se eliminó POST /api/order/confirm: aprobaba órdenes con cualquier paymentId/cartId sin verificar el pago.
+    //    La confirmación se hace en /cart/success (CartController -> OrderService.confirmPurchase).
 }

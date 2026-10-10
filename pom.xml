@@ -122,6 +122,13 @@
 			<artifactId>spring-boot-starter-amqp</artifactId>
 		</dependency>
 
+		<!-- Sanitizado de HTML (notas del vendedor, evita XSS) -->
+		<dependency>
+			<groupId>org.jsoup</groupId>
+			<artifactId>jsoup</artifactId>
+			<version>1.18.1</version>
+		</dependency>
+
 		<!-- Herramientas -->
 		<dependency>
 			<groupId>org.projectlombok</groupId>

@@ -33,29 +33,6 @@ public class ProductApiController {
         return ResponseEntity.ok(product);
     }
 
-    // Agrega esto en tu HomeController o ProductController
-
-    @GetMapping("/toggle-favorite/{productId}")
-    public String toggleFavorite(@PathVariable Long productId,
-                                 Model model,
-                                 @CookieValue(name = "USER_ID_INFO", required = false) String userId) {
-
-        if (userId == null) {
-            // Opción: Si no está logueado, podrías devolver un error o redirigir
-            return null;
-        }
-
-        boolean isNowFavorite = true;
-        // --------------------------------------------------
-
-        // 2. Pasamos el dato al modelo
-        model.addAttribute("isFavorite", isNowFavorite);
-        model.addAttribute("productId", productId); // Necesario para reconstruir el ID del botón
-
-        // 3. Devolvemos SOLO el fragmento del botón de corazón
-        return "index :: btnFavorito";
-    }
-
     @PostMapping("/question/save")
     public String saveQuestion(@RequestParam Long productId,
                                @RequestParam String text,

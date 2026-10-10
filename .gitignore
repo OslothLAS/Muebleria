@@ -32,3 +32,8 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### Secretos locales ###
+.env
+secrets.properties
+src/main/resources/serviceAccountKey.json

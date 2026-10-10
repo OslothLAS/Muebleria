@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
   <!-- Incluimos tu fragmento del head con los CSS -->
-  <th:block th:replace="fragments :: head"></th:block>
+  <th:block th:replace="~{fragments :: head-css}"></th:block>
   <title>Mis Notificaciones</title>
   <style>
     .noti-card {
@@ -30,7 +30,7 @@
 <body>
 
 <!-- Incluimos tu barra de navegación (donde ya está la campanita) -->
-<div th:replace="fragments :: header"></div>
+<div th:replace="~{fragments :: header-principal}"></div>
 
 <div class="container" style="margin-top: 60px; margin-bottom: 100px; min-height: 50vh;">
   <div class="row">

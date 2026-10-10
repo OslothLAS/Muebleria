@@ -24,22 +24,29 @@ public class HistoryController {
 
     @GetMapping("/my-orders")
     public String showMyOrders(Model model, @AuthenticationPrincipal OidcUser oidcUser) {
-        if (oidcUser == null) return "redirect:/login";
+        if (oidcUser == null) return "redirect:/oauth2/authorization/auth0";
 
         // ✅ Ya no necesitamos el token acá, el Service lo maneja solo
         List<Order> userOrders = orderService.getOrders(oidcUser.getSubject());
 
         model.addAttribute("orders", userOrders);
-        return "my-orders";
+        return "usuarios/my-orders";
     }
     @GetMapping("/order-details/{id}")
     public String orderDetails(@PathVariable Long id, Model model, @AuthenticationPrincipal OidcUser oidcUser) {
-        if (oidcUser == null) return "redirect:/login";
+        if (oidcUser == null) return "redirect:/oauth2/authorization/auth0";
 
         // ✅ Limpio y Senior
         Order order = orderService.getOrder(id);
 
         if (order == null) return "redirect:/my-orders";
+
+        // 🛡️ Solo el dueño de la orden (o un admin) puede verla: los IDs son secuenciales
+        boolean isAdmin = oidcUser.getAuthorities().stream()
+                .anyMatch(a -> "ROLE_ADMIN".equals(a.getAuthority()));
+        if (!isAdmin && !oidcUser.getSubject().equals(order.getUserId())) {
+            return "redirect:/my-orders";
+        }
 
         // 🚀 EL PASO CLAVE: Hidratamos los nombres de los productos consultando al microservicio
         if (order.getOrderItems() != null) {
@@ -61,6 +68,6 @@ public class HistoryController {
         }
 
         model.addAttribute("order", order);
-        return "order-details";
+        return "usuarios/order-details";
     }
 }

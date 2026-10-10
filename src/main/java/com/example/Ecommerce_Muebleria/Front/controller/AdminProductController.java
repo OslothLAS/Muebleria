@@ -53,7 +53,7 @@ public class AdminProductController {
         model.addAttribute("collections", collections);
         model.addAttribute("product", new Product());
 
-        return "product-list"; // Asegurate de que tu HTML del dashboard se llame product-list.html
+        return "admin/product-list"; // Asegurate de que tu HTML del dashboard se llame product-list.html
     }
 
     @GetMapping("/collections/products")
@@ -66,7 +66,7 @@ public class AdminProductController {
     @GetMapping("/products/new")
     public String createProductForm(Model model) {
         model.addAttribute("product", new Product());
-        return "product-form";
+        return "admin/product-form";
     }
 
     @PostMapping("/products/save")
@@ -131,7 +131,7 @@ public class AdminProductController {
         Product product = productService.findProductById(id);
         model.addAttribute("product", product);
         model.addAttribute("titulo", "Editar Producto: " + product.getName());
-        return "product-form";
+        return "admin/product-form";
     }
 
     @PostMapping("/products/restore/{id}")

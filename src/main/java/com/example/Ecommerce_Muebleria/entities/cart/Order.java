@@ -18,6 +18,10 @@ public class Order {
     private BigDecimal totalAmount;
     private String status;
 
+    // ID del pago en Mercado Pago (único: evita reutilizar el mismo pago para varias órdenes)
+    @Column(unique = true)
+    private String paymentId;
+
 
     private String shippingAddress;
     private String zipCode;

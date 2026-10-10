@@ -76,7 +76,7 @@ public class WishlistController {
         model.addAttribute("favoritesIds", ids);
         model.addAttribute("isWishlistPage", true);
 
-        return "wishlist";
+        return "usuarios/wishlist";
     }
 
     @GetMapping("/toggle-favorite/{productId}")

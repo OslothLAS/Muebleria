@@ -17,7 +17,6 @@ import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.reactive.function.client.WebClient;
 
 
 import java.math.BigDecimal;
@@ -26,7 +25,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.springframework.security.oauth2.client.web.ClientAttributes.clientRegistrationId;
 
 @Controller
 @RequiredArgsConstructor
@@ -40,9 +38,6 @@ public class CartController {
 
     @Autowired
     private UserProfileService userProfileService;
-
-    @Autowired
-    private WebClient cartWebClient;
 
     private String getUserId(OidcUser oidcUser, HttpSession session) {
         if (oidcUser != null) {
@@ -233,23 +228,6 @@ public class CartController {
             model.addAttribute("cartCount", 0);
             model.addAttribute("myCart", new Cart());
         }
-    }
-
-
-    @PostMapping("/checkout")
-    public String startCheckout(@AuthenticationPrincipal OidcUser oidcUser) {
-        if (oidcUser == null) return "redirect:/oauth2/authorization/auth0";
-
-        // Pedimos el link al Micro 8082
-        String mpUrl = cartWebClient.post()
-                .uri("/api/cart/checkout")
-                .attributes(clientRegistrationId("auth0"))
-                .retrieve()
-                .bodyToMono(String.class)
-                .block();
-
-        // Redirección externa a Mercado Pago
-        return "redirect:" + mpUrl;
     }
 
 

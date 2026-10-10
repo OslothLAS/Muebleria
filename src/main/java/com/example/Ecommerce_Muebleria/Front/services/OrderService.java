@@ -10,6 +10,8 @@ import com.example.Ecommerce_Muebleria.entities.cart.Order;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 
 
 @Service
@@ -24,7 +26,7 @@ public class OrderService {
 
     // --- 1. TRAER UNA ORDEN ESPECÍFICA ---
     public Order getOrder(Long orderId) {
-        return orderServiceCartBack.findById(orderId).orElseThrow(RuntimeException::new);
+        return orderServiceCartBack.findById(orderId).orElse(null);
     }
 
     public List<Order> getOrders(String userId) {
@@ -40,10 +42,17 @@ public class OrderService {
         try {
             System.out.println("💳 Procesando confirmación de pago: " + paymentId + " para el usuario: " + cartId);
 
-            Map<String, String> checkoutData = orderServiceCartBack.getShippingDataFromPayment(paymentId);
+            // Si el usuario recarga /cart/success, la orden ya existe: no hacemos nada más
+            Optional<Order> existente = orderServiceCartBack.findByPaymentId(paymentId);
+            if (existente.isPresent() && cartId.equals(existente.get().getUserId())) {
+                return;
+            }
+
+            // 🛡️ 1. Verificamos con Mercado Pago que el pago esté aprobado y sea de este carrito
+            Map<String, String> checkoutData = orderServiceCartBack.verifyPayment(paymentId, cartId, Set.of("approved"));
 
             // 🚀 2. CAPTURAMOS la orden que ahora nos devuelve el backend
-            Order ordenGuardada = orderServiceCartBack.saveOrderFromCart(cartId, "APPROVED", checkoutData);
+            Order ordenGuardada = orderServiceCartBack.saveOrderFromCart(cartId, "APPROVED", checkoutData, paymentId);
 
             // 🚀 3. DISPARAMOS LA NOTIFICACIÓN AL ADMIN
             try {
